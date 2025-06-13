@@ -1,0 +1,222 @@
+/*
+ * admin_liquor_list.css
+ * お酒管理一覧ページ固有のスタイル
+ * ----------------------------------------
+ */
+
+:root {
+    /* カラーパレット */
+    --primary-color: #A0522D; /* メインカラー (登録ボタンなど) */
+    --primary-dark-color: #8B4513; /* メインカラーの濃い色 (登録ボタンのボーダーなど) */
+    --edit-button-color: #5bc0de; /* 編集ボタンの水色 */
+    --delete-button-color: #d9534f; /* 削除ボタンの赤色 */
+    --text-color-dark: #333;
+    --text-color-light: #fff;
+    --border-color-light: #eee;
+    --background-color-light: #f5f5f5;
+    --background-color-hover: #f9f9f9;
+    --white: #fff;
+
+    /* フォントサイズ */
+    --font-size-base: 1.6rem;
+    --font-size-button-sm: 1.4rem;
+    --font-size-button-lg: 2.6rem;
+    --font-size-icon-lg: 3.5rem;
+}
+
+/* データ一覧テーブル */
+.admin-liquor-list {
+    margin-top: 40px; /* ページタイトルとの間隔 */
+}
+
+.table-container {
+    overflow-x: auto; /* テーブルが横にはみ出る場合にスクロール可能に */
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse; /* ボーダーの結合 */
+    font-size: var(--font-size-base);
+    min-width: 1200px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+}
+
+.data-table th,
+.data-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color-light);
+    text-align: left;
+    vertical-align: middle; /* セルの内容を中央に */
+}
+
+.data-table th {
+    background-color: var(--background-color-light);
+    font-weight: 600;
+    color: var(--text-color-dark);
+    white-space: nowrap; /* ヘッダーのテキストが改行されないように */
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none; /* 最後の行の下線はなし */
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--background-color-hover); /* ホバー時の背景色 */
+}
+
+.product-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover; /* 画像の表示方法 */
+    border-radius: 4px;
+    border: 1px solid var(--border-color-light);
+}
+
+/* テーブル内のボタン */
+.btn-sm {
+    display: inline-block;
+    padding: 8px 15px;
+    font-size: var(--font-size-button-sm);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 0 4px; /* ボタン間の余白 */
+}
+
+.btn-edit {
+    background-color: var(--edit-button-color); /* 水色 */
+    color: var(--text-color-light);
+}
+
+.btn-delete {
+    background-color: var(--delete-button-color); /* 赤色 */
+    color: var(--text-color-light);
+}
+
+
+/* 新しいお酒を登録するボタンエリア */
+.add-liquor-button-area {
+    text-align: center;
+    margin-top: 60px; /* 一覧との間隔 */
+    margin-bottom: 40px; /* フッターとの間隔 */
+}
+
+/* 新しいお酒登録ボタンのスタイル (影・エフェクトなし) */
+.btn-add-new {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center; /* 中央寄せ */
+    padding: 20px 50px; /* パディングを大きく */
+    font-size: var(--font-size-button-lg); /* フォントサイズを大きく */
+    font-weight: bold;
+    background-color: var(--primary-color); /* メインカラー */
+    color: var(--text-color-light);
+    border: 3px solid var(--primary-dark-color); /* 太いボーダーでボタンらしさを強調 */
+    border-radius: 8px; /* 角丸は残しつつ自然に */
+    cursor: pointer;
+}
+
+.btn-icon {
+    font-size: var(--font-size-icon-lg); /* アイコンのサイズを大きく */
+    margin-right: 15px; /* アイコンとテキストの間隔を広げる */
+    line-height: 1;
+}
+
+
+/* ヘッダーの現在のページ表示 */
+.admin-nav__list li a.is-current {
+    color: var(--primary-color); /* 現在のページの色 */
+}
+
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+    :root {
+        --font-size-base: 1.5rem;
+        --font-size-button-lg: 2.2rem;
+        --font-size-icon-lg: 3.0rem;
+    }
+    .table-container {
+        padding: 15px;
+    }
+    .data-table th,
+    .data-table td {
+        padding: 12px;
+    }
+    .product-thumb {
+        width: 50px;
+        height: 50px;
+    }
+    .btn-add-new {
+        padding: 18px 40px;
+        border-radius: 6px;
+    }
+    .btn-icon {
+        margin-right: 12px;
+    }
+    .data-table {
+        min-width: 1000px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --font-size-base: 1.4rem;
+        --font-size-button-sm: 1.2rem;
+        --font-size-button-lg: 1.8rem;
+        --font-size-icon-lg: 2.4rem;
+    }
+    .admin-liquor-list {
+        margin-top: 30px;
+    }
+    .table-container {
+        padding: 10px;
+    }
+    .data-table {
+        min-width: 900px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+    }
+    .data-table th,
+    .data-table td {
+        padding: 8px;
+    }
+    .product-thumb {
+        width: 40px;
+        height: 40px;
+    }
+    .btn-sm {
+        padding: 5px 10px;
+    }
+    .add-liquor-button-area {
+        margin-top: 40px;
+        margin-bottom: 30px;
+    }
+    .btn-add-new {
+        padding: 15px 30px;
+        border-width: 2px; /* スマホではボーダーを少し細く */
+        border-radius: 5px;
+    }
+    .btn-icon {
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        --font-size-button-lg: 1.8rem;
+        --font-size-icon-lg: 2.2rem;
+    }
+    .data-table {
+        min-width: 750px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+    }
+    .btn-add-new {
+        width: 90%;
+        max-width: 300px;
+        padding: 12px 20px;
+    }
+    .btn-icon {
+        margin-right: 8px;
+    }
+}

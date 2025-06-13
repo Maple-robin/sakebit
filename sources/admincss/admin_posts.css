@@ -1,0 +1,175 @@
+/* base */
+/* html, body のスタイルは削除 */
+/* ここから下はページ固有のスタイルだけ残す */
+
+/* Admin Page Specific Styles */
+.admin-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
+
+/* テーブル・ボタン・リアクション・フッターなどはそのまま */
+.admin-table-section {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    font-size: 1.4rem;
+}
+
+.admin-table th {
+    background-color: #f0f0f0;
+    font-weight: 600;
+    color: #555;
+    white-space: nowrap;
+}
+
+.admin-table tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.admin-table .post-content-cell {
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Reaction buttons */
+.reaction-button {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.reaction-button.good {
+    color: #28a745;
+    border-color: #28a745;
+}
+
+.reaction-button.good:hover,
+.reaction-button.good.active {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.reaction-button.bad {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.reaction-button.bad:hover,
+.reaction-button.bad.active {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.reaction-button span {
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.admin-table .delete-button {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.3rem;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.admin-table .delete-button:hover {
+    background-color: #c82333;
+}
+
+/* footer */
+.footer {
+    background-color: #eeeeee;
+    padding: 50px 0 30px;
+}
+
+.footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.footer__nav li {
+    margin: 5px 15px;
+}
+
+.footer__nav li a {
+    font-size: 1.4rem;
+    color: #444;
+    transition: color 0.3s ease;
+}
+
+.footer__nav li a:hover {
+    color: #000;
+}
+
+.footer__sns {
+    margin-bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer__sns a {
+    display: inline-block;
+}
+
+.footer__sns img {
+    width: 28px;
+    height: 28px;
+    transition: opacity 0.3s ease;
+}
+
+.footer__sns img:hover {
+    opacity: 0.7;
+}
+
+.footer__copyright {
+    font-size: 1.2rem;
+    color: #666;
+    width: 100%;
+}

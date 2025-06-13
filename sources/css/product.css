@@ -1,0 +1,693 @@
+/*
+ * product-detail.css (商品詳細ページ固有のスタイル)
+ * ----------------------------------------
+ */
+
+/* 共通のインナー幅はproducts.cssで定義されています */
+/* .common-inner { ... } */
+
+/* Breadcrumb (パンくずリスト) のスタイルもproducts.cssで定義されています */
+/* .breadcrumb { ... } */
+
+
+/* product-detail-section */
+.product-detail-section {
+    padding: 60px 0; /* スマホ時の上下の余白 */
+}
+
+.product-detail-content {
+    display: flex;
+    flex-direction: column; /* スマホでは縦並び */
+    gap: 40px; /* 画像と情報の間の隙間 */
+    margin-bottom: 60px;
+}
+
+/* Product Gallery (メインビジュアルエリア) */
+.product-gallery {
+    width: 100%;
+}
+
+.product-gallery__main {
+    width: 100%;
+    max-width: 400px;
+    height: 500px;
+    background: #faf7f3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin: 0 auto 20px auto;
+}
+
+.product-gallery__main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* coverに変更で余白なし */
+    display: block;
+    background: #faf7f3;
+}
+
+.product-gallery__thumbnails {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto; /* スマホで横スクロール可能に */
+    padding-bottom: 10px; /* スクロールバーのための余白 */
+    -webkit-overflow-scrolling: touch; /* スムーズなスクロール */
+}
+
+.product-gallery__thumbnails img {
+    width: 80px; /* サムネイルのサイズ */
+    height: 80px;
+    object-fit: cover;
+    border: 1px solid #eee;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* 縮まない */
+}
+
+.product-gallery__thumbnails img:hover,
+.product-gallery__thumbnails img.is-active {
+    border-color: #A0522D;
+    box-shadow: 0 0 5px rgba(160, 82, 45, 0.5);
+}
+
+/* Product Info (商品情報概要エリア) */
+.product-info {
+    width: 100%;
+}
+
+.product-info__name {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 2.8rem; /* スマホでの商品名サイズ */
+    font-weight: 700;
+    line-height: 1.3;
+    color: #333;
+    margin-bottom: 10px; /* 種類との間に少しマージン */
+}
+
+/* 種類 (強調されたタグのようなスタイル) */
+.product-info__type {
+    display: inline-block; /* インラインブロックにして、テキストに合わせた幅にする */
+    font-size: 1.6rem; /* 商品名より小さく、キャッチコピーより少し大きく */
+    font-weight: 600; /* 少し太く */
+    color: #fff; /* 文字色を白に */
+    background-color: #A0522D; /* ブランドのアクセントカラーを背景に */
+    border: 1px solid #A0522D; /* 背景色と同じ色の枠線 */
+    padding: 7px 15px; /* パディングを調整 */
+    border-radius: 5px; /* 丸みを持たせる */
+    margin-bottom: 15px; /* キャッチコピーとの間にマージン */
+    line-height: 1.2; /* 高さの調整 */
+}
+
+
+.product-info__catchcopy {
+    font-size: 1.6rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.product-info__price {
+    font-size: 3.2rem; /* 価格の強調 */
+    font-weight: bold;
+    color: #A0522D; /* 価格の色 */
+    margin-bottom: 5px;
+}
+
+.product-info__price span {
+    font-size: 1.6rem;
+    font-weight: normal;
+    color: #666;
+}
+
+.product-info__tax-note {
+    font-size: 1.2rem;
+    color: #888;
+    margin-bottom: 25px;
+}
+
+/* ECサイトへのリンク */
+.product-external-link {
+    margin-bottom: 30px;
+}
+
+.btn-to-ec-site {
+    display: block; /* ブロック要素にして幅いっぱいに */
+    width: 100%;
+    max-width: 350px; /* ボタンの最大幅を制限 */
+    margin: 0 auto 10px; /* 中央寄せと下マージン */
+    padding: 15px 30px;
+    background-color: #A0522D; /* ECサイトへのボタンの色 */
+    color: #fff;
+    font-size: 1.7rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 影を追加して目立たせる */
+}
+
+.btn-to-ec-site:hover {
+    background-color: #8B4513; /* ホバー時の色 */
+}
+
+.product-info__stock {
+    font-size: 1.4rem;
+    color: #666; /* 在庫情報の色を統一 */
+    font-weight: 500;
+    text-align: center; /* 中央寄せ */
+}
+
+.product-info__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+/* タグの共通スタイル (種類からは切り離す) */
+.product-info__tags li {
+    font-size: 1.3rem;
+    color: #888;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    border-radius: 3px;
+    background-color: #f5f5f5;
+}
+
+
+/* Product Description (商品詳細説明エリア) */
+/* product-description クラスは共通化のため、アコーディオンアイテムのタイトルに適用 */
+/* .product-description { margin-bottom: 60px; } は削除 */
+
+/* .section-titleはtop.cssで定義されています */
+/* .section-title { ... } */
+
+.product-description__title,
+.paired-snacks__title {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 2.4rem; /* セクション見出しサイズ */
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* アコーディオンの見出しは下線なしにする */
+.product-accordion-item__title {
+    margin-bottom: 0; /* 下線と間隔調整 */
+    padding-bottom: 0; /* 下線と間隔調整 */
+    border-bottom: none; /* 下線を削除 */
+    cursor: pointer; /* カーソルをポインターに */
+    display: flex; /* アイコン配置のため */
+    justify-content: space-between; /* アイコンを右端に */
+    align-items: center;
+    padding: 15px 0; /* クリックしやすいようにパディングを追加 */
+    border-top: 1px solid #eee; /* 各アイテムの間に区切り線 */
+}
+.product-accordion-item:last-of-type .product-accordion-item__title {
+    border-bottom: 1px solid #eee; /* 最後のアイテムに下線 */
+}
+
+/* アコーディオンアイコンの基本スタイル */
+.accordion-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px; /* 右側に余白を追加 */
+}
+
+/* 横棒と縦棒のスタイル */
+.accordion-icon::before,
+.accordion-icon::after {
+    content: '';
+    position: absolute;
+    background-color: #A0522D; /* アイコンの色 */
+    transition: transform 0.3s ease; /* 回転アニメーションを追加 */
+}
+
+/* 横棒のスタイル */
+.accordion-icon::before {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+/* 縦棒のスタイル */
+.accordion-icon::after {
+    top: 0;
+    left: 50%;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-50%);
+}
+
+/* 開いている状態でのアイコン（－） */
+.product-accordion-item:not(.is-closed) .accordion-icon::after {
+    transform: translateX(-50%) rotate(90deg); /* 縦棒を回転させて横棒にする */
+}
+
+
+/* アコーディオンコンテンツ */
+.product-accordion-item__content p {
+    font-size: 1.6rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 20px;
+}
+.product-accordion-item__content p:last-of-type {
+    margin-bottom: 0;
+}
+.product-accordion-item__content {
+    padding-top: 10px; /* 見出しとの間の余白 */
+    padding-bottom: 20px; /* コンテンツの下の余白 */
+}
+
+
+/* Paired Snacks (相性のいいおつまみエリア) */
+.paired-snacks {
+    margin-top: 60px; /* アコーディオンセクションとの間の余白 */
+    margin-bottom: 60px;
+    position: relative; /* ページネーションの配置のため */
+}
+
+/* Swiperコンテナの余白調整 */
+.paired-snacks-swiper {
+    padding: 0; /* 左右の矢印を削除したので、paddingをリセット */
+}
+
+/* 各スライド（商品アイテム）のスタイル */
+.paired-snacks-swiper .swiper-slide {
+    height: auto; /* 高さを自動調整 */
+    display: flex; /* product-itemの中央揃え用 */
+    justify-content: center;
+    align-items: flex-start; /* 上寄せ */
+}
+
+.paired-snacks-swiper .product-item {
+    width: 100%; /* スライド内のproduct-itemが幅いっぱいに広がるように */
+    height: 100%; /* 親要素の高さに合わせる */
+}
+
+/* Swiperナビゲーションボタン（矢印）のスタイルを非表示に */
+.paired-snacks .swiper-button-prev,
+.paired-snacks .swiper-button-next {
+    display: none; /* 矢印を完全に非表示 */
+}
+
+/* Swiperページネーション（ドット）のスタイル調整 */
+.paired-snacks .swiper-pagination {
+    position: relative; /* ページネーションをスライダーの下に配置するためにrelativeにする */
+    margin-top: 30px; /* スライダーとページネーションの間の余白 */
+    bottom: auto; /* Swiperデフォルトのbottomをリセット */
+    top: auto; /* Swiperデフォルトのtopをリセット */
+    transform: none; /* Swiperデフォルトのtransformをリセット */
+}
+
+.paired-snacks .swiper-pagination-bullet {
+    background-color: #ccc; /* 通常のドットの色 */
+    opacity: 1;
+}
+
+.paired-snacks .swiper-pagination-bullet-active {
+    background-color: #A0522D; /* アクティブなドットの色 */
+}
+/* 数量コントロールとカートに入れるボタンのコンテナ */
+.product-quantity-add-to-cart {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column; /* スマホでは縦並び */
+    gap: 10px; /* 数量コントロールとボタンの間の隙間を画像に合わせて調整 */
+    align-items: center; /* 中央寄せ */
+}
+
+/* 数量コントロール */
+.product-quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0; /* ボタンと入力フィールドの間の隙間をなくす */
+    border: 1px solid #A0522D; /* 全体を囲む枠線 */
+    border-radius: 4px;
+    width: 100%; /* 親要素の幅いっぱいに広げる */
+    max-width: 350px; /* ボタンの最大幅に合わせる */
+}
+
+.product-quantity-controls .quantity-minus,
+.product-quantity-controls .quantity-plus {
+    background-color: #fff;
+    border: none; /* 個別のボタンの枠線はなし */
+    width: 40px; /* サイズ調整 */
+    height: 40px; /* サイズ調整 */
+    font-size: 2.2rem; /* サイズ調整 */
+    font-weight: normal;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+.product-quantity-controls .quantity-minus:hover,
+.product-quantity-controls .quantity-plus:hover {
+    background-color: #f0f0f0;
+}
+
+.product-quantity-controls .quantity-input {
+    flex-grow: 1; /* 残りの幅を埋める */
+    padding: 0; /* パディングなし */
+    height: 40px; /* 高さ調整 */
+    text-align: center;
+    border: none; /* 個別の入力フィールドの枠線はなし */
+    border-left: 1px solid #A0522D; /* 左右の区切り線 */
+    border-right: 1px solid #A0522D;
+    font-size: 1.8rem;
+    -moz-appearance: textfield;
+    outline: none; /* フォーカス時のアウトラインを消す */
+}
+/* Chrome, Safari, Edge, Operaで矢印を非表示 */
+.product-quantity-controls .quantity-input::-webkit-outer-spin-button,
+.product-quantity-controls .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* お気に入りボタン */
+.product-info__favorite {
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.btn-favorite {
+    display: block;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+    padding: 15px 30px;
+    background-color: #A0522D;
+    color: #fff;
+    font-size: 1.7rem;
+    font-weight: 500;
+    border: 1px solid #A0522D;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-favorite i {
+    font-size: 1.8rem;
+    color: inherit;
+    width: 20px;
+    text-align: center;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.btn-favorite:not(.is-favorited):hover {
+    background-color: #8B4513;
+    color: #fff;
+}
+
+.btn-favorite.is-favorited {
+    background-color: #fff;
+    color: #A0522D;
+    border-color: #A0522D;
+}
+
+.btn-favorite.is-favorited:hover {
+    background-color: #F8F8F8;
+    color: #A0522D;
+    border-color: #A0522D;
+}
+
+@media (min-width: 768px) {
+    .product-info__favorite {
+        text-align: left;
+        width: auto;
+    }
+    .btn-favorite {
+        width: auto;
+        max-width: 350px;
+        padding: 18px 40px;
+    }
+}
+
+/* --- ボタン・数量コントロールの幅・余白を完全統一 --- */
+
+/* ボタンと数量コントロールをまとめるラッパー */
+.product-info__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px; /* ボタン・数量コントロール間の余白を統一 */
+    align-items: center;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto 30px auto;
+}
+
+/* 数量＋カート・お気に入りの各ブロックも幅を統一 */
+.product-quantity-add-to-cart,
+.product-info__favorite {
+    width: 100%;
+    max-width: 350px;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 数量コントロールとカートボタンの間も統一 */
+    align-items: center;
+}
+
+/* 数量コントロール・ボタン幅を完全統一 */
+.product-quantity-controls,
+.btn-to-ec-site,
+.btn-favorite {
+    width: 100%;
+    max-width: 350px;
+    box-sizing: border-box;
+}
+
+/* ボタンデザイン統一 */
+.btn-to-ec-site,
+.btn-favorite {
+    padding: 15px 30px;
+    font-size: 1.7rem;
+    font-weight: 500;
+    border-radius: 5px;
+    border: 1px solid #A0522D;
+    background-color: #A0522D;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.btn-to-ec-site:hover,
+.btn-favorite:not(.is-favorited):hover {
+    background-color: #8B4513;
+}
+
+.btn-favorite.is-favorited {
+    background-color: #fff;
+    color: #A0522D;
+    border-color: #A0522D;
+}
+
+.btn-favorite.is-favorited:hover {
+    background-color: #F8F8F8;
+    color: #A0522D;
+    border-color: #A0522D;
+}
+
+@media (min-width: 768px) {
+    .product-info__buttons {
+        align-items: flex-start;
+        margin: 0 0 30px 0;
+    }
+    .product-quantity-add-to-cart,
+    .product_info__favorite {
+        align-items: flex-start;
+    }
+    .product-quantity-controls,
+    .btn-to-ec-site,
+    .btn-favorite {
+        width: 350px;
+        max-width: 350px;
+    }
+}
+
+/* PC (min-width: 768px) */
+@media (min-width: 768px) {
+    /* 数量コントロールとカートに入れるボタンのコンテナ */
+    .product-quantity-add-to-cart {
+        flex-direction: row; /* PCでは横並び */
+        justify-content: flex-start; /* 左寄せ */
+        gap: 20px; /* 数量コントロールとボタンの間の隙間 */
+    }
+
+    .product-quantity-controls {
+        width: auto; /* PCで幅自動 */
+        max-width: none; /* 最大幅制限を解除 */
+    }
+
+    .product-quantity-controls .quantity-minus,
+    .product-quantity-controls .quantity-plus {
+        width: 45px; /* PCでのサイズ調整 */
+        height: 45px; /* PCでのサイズ調整 */
+        font-size: 2.5rem; /* PCでのサイズ調整 */
+    }
+
+    .product-quantity-controls .quantity-input {
+        width: 70px; /* PCでの幅調整 */
+        height: 45px; /* PCでの高さ調整 */
+        font-size: 2rem; /* PCでのサイズ調整 */
+    }
+
+    /* PC (min-width: 768px) */
+    .product-detail-section {
+        padding: 100px 0; /* PC時の上下の余白 */
+    }
+
+    .product-detail_content {
+        flex-direction: row; /* PCでは横並び */
+        gap: 60px;
+    }
+
+    .product-gallery {
+        width: 50%; /* PCでの画像エリアの幅 */
+        flex-shrink: 0;
+    }
+    .product-gallery__thumbnails {
+        overflow-x: visible; /* PCではスクロール不要 */
+        padding-bottom: 0;
+        justify-content: flex-start;
+    }
+    .product-gallery__thumbnails img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .product-info {
+        width: 50%; /* PCでの情報エリアの幅 */
+    }
+
+    .product-info__name {
+        font-size: 4.2rem;
+    }
+
+    /* 種類 */
+    .product-info__type {
+        font-size: 1.8rem; /* PCでの種類サイズ */
+        padding: 8px 20px; /* PCでのパディングを調整 */
+        margin-bottom: 20px;
+    }
+
+    .product-info__catchcopy {
+        font-size: 1.8rem;
+    }
+
+    .product-info__price {
+        font-size: 4.8rem;
+    }
+    .product-info__price span {
+        font-size: 2rem;
+    }
+
+    .product-external-link {
+        text-align: left; /* PCでは左寄せ */
+    }
+    .btn-to-ec-site {
+        margin: 0 0 10px 0; /* PCでは左寄せで下マージン */
+        width: auto; /* PCで幅自動 */
+        max-width: 350px; /* 最大幅は維持 */
+        padding: 18px 40px;
+    }
+    .product-info__stock {
+        text-align: left; /* PCでは左寄せ */
+    }
+
+    .product-info__tags li {
+        font-size: 1.4rem;
+    }
+
+    /* Product Description, Paired Snacks */
+    /* product-description マージン調整は product-accordion-item に移動 */
+    /* .product-description { margin-bottom: 100px; } は削除 */
+
+    .product-description__title,
+    .paired-snacks__title {
+        font-size: 3.2rem;
+        margin-bottom: 40px;
+        padding-bottom: 15px;
+    }
+
+    /* アコーディオン見出しPC調整 */
+    .product-accordion-item__title {
+        padding: 20px 0; /* PCでのパディングを調整 */
+    }
+
+    .product-description p {
+        font-size: 1.7rem;
+    }
+
+    /* SwiperページネーションのPCでの位置調整 */
+    .paired-snacks {
+        margin-top: 100px; /* PCでのアコーディオンセクションとの間の余白 */
+        margin-bottom: 100px;
+    }
+    .paired-snacks .swiper-pagination {
+        margin-top: 40px; /* PCでのページネーションの余白 */
+    }
+
+    /* お気に入りボタン PC用調整 */
+    @media (min-width: 768px) {
+        .product-info__favorite {
+            text-align: left;
+        }
+        .btn-favorite {
+            padding: 15px 30px;
+            width: 240px; /* PCでの幅 */
+        }
+    }
+}
+
+/* メインコンテンツに左右の余白を追加 */
+main {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* 共通の内側余白を適用する場合 */
+.common-inner {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* 必要に応じて、レスポンシブ対応 */
+@media (min-width: 768px) {
+    main {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    .common-inner {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}

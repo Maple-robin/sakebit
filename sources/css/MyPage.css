@@ -1,0 +1,888 @@
+/* base */
+html {
+    font-size: 62.5%; /* 1rem = 10px */
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f8f8; /* 商品セクションの背景色に合わせた明るい背景 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 1.6rem; /* 基本フォントサイズ */
+    margin: 0; /* bodyのデフォルトマージンをリセット */
+    padding: 0; /* bodyのデフォルトパディングをリセット */
+    box-sizing: border-box;
+
+    display: flex; /* bodyをフレックスコンテナにする */
+    flex-direction: column; /* 子要素を縦に並べる */
+    min-height: 100vh; /* bodyがビューポートの高さ全体を占めるようにする */
+}
+
+*, *:before, *:after {
+    box-sizing: inherit; /* box-sizingを継承 */
+}
+
+a {
+    text-decoration: none; /* リンクの下線を削除 */
+    color: inherit; /* 親要素の文字色を継承 */
+}
+
+input {
+    font-family: 'Noto Sans JP', sans-serif; /* 入力フィールドのフォント */
+    font-size: 1.6rem;
+}
+
+button {
+    padding: 10px 20px; /* ボタンの内側余白を統一 */
+    font-size: 1.6rem; /* フォントサイズを統一 */
+    border-radius: 5px; /* 角丸を統一 */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* utility */
+.pc-only {
+    display: none;
+}
+
+/* common */
+.header,
+.footer__inner {
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* header */
+.header {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    padding: 15px 20px;
+    position: fixed; /* ヘッダー固定 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999; /* 最前面に */
+}
+
+.header__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px; /* ヘッダーの高さ */
+}
+
+.header__logo a {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.header__nav .nav__list {
+    display: none; /* スマホでは非表示 */
+}
+
+/* ハンバーガーメニューアイコン */
+.hamburger-menu {
+    display: block; /* スマホで表示 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    position: relative;
+    z-index: 1000; /* メニュー本体より上に */
+    width: 48px; /* タップしやすさ考慮 */
+    height: 48px;
+    display: flex; /* 中央寄せ用 */
+    flex-direction: column; /* 縦並び */
+    justify-content: center; /* 縦方向中央 */
+    align-items: center; /* 横方向中央 */
+}
+
+.hamburger-menu span {
+    display: block;
+    width: 28px; /* 線の幅 */
+    height: 2px; /* 線の太さ */
+    background-color: #333;
+    margin-bottom: 6px; /* 線間のスペース */
+    transition: 0.3s; /* アニメーション */
+    position: relative; /* transformの基準 */
+}
+
+.hamburger-menu span:last-child {
+    margin-bottom: 0;
+}
+
+/* ハンバーガーメニューのアクティブ状態 */
+.hamburger-menu.is-active span:nth-of-type(1) {
+    transform: translateY(8px) rotate(45deg); /* 上の線を回転 */
+}
+
+.hamburger-menu.is-active span:nth-of-type(2) {
+    opacity: 0; /* 中央の線を非表示 */
+}
+
+.hamburger-menu.is-active span:nth-of-type(3) {
+    transform: translateY(-8px) rotate(-45deg); /* 下の線を回転 */
+}
+
+/* モバイル用メニュー (ドロワーメニュー) */
+.sp-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.95);
+    z-index: 990;
+    display: none; /* 初期状態で非表示 */
+    flex-direction: column;
+    align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.4s ease;
+    transform: translateX(100%);
+    padding: 110px 0 20px;
+}
+
+/* メニューのアクティブ状態 */
+.sp-menu.is-active {
+    display: flex; /* メニューを表示 */
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* 各要素の幅とパディングを調整 */
+.sp-menu__header {
+    display: flex;
+    justify-content: flex-start; /* 左寄せ */
+    align-items: center;
+    width: 100%;
+    padding: 0 40px 20px; /* 左右のパディングを増やす */
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.sp-menu__login {
+    font-size: 2rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sp-menu__login .fas {
+    font-size: 2.4rem;
+    color: #555;
+}
+
+/* 閉じるボタンのスタイルは削除 */
+/* .sp-menu__close-button {
+    display: none;
+} */
+
+
+.sp-menu__search {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0 40px; /* 左右のパディングを増やす */
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sp-menu__search input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 12px; /* ここを大きくしました */
+    font-size: 1.8rem; /* ここを大きくしました */
+    background-color: transparent;
+    color: #333;
+}
+
+.sp-menu__search button {
+    background: none;
+    border: none;
+    padding: 8px 10px;
+    color: #888;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.sp-menu__list {
+    text-align: left; /* 左寄せ */
+    width: 100%;
+    padding: 0 40px; /* 左右のパディングを増やす */
+}
+
+.sp-menu__list--bottom {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.sp-menu__list li {
+    margin-bottom: 25px;
+    font-size: 2rem;
+    font-weight: 500;
+    color: #333;
+    display: block;
+    padding: 0;
+    border-bottom: none;
+}
+
+.sp-menu__list li:last-child {
+    margin-bottom: 0;
+}
+
+.sp-menu__list li a {
+    display: block;
+    padding: 10px 0;
+    color: #333;
+}
+
+.sp-menu__list li a:hover {
+    color: #A0522D;
+}
+
+.sp-menu__category-toggle {
+    display: flex;
+    justify-content: space-between; /* 左右に配置 */
+    align-items: center;
+    color: #333;
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+.sp-menu__category-toggle .category-icon {
+    font-size: 1.6rem;
+    transition: transform 0.3s ease;
+}
+
+.sp-menu__category-toggle.is-open .category-icon {
+    transform: rotate(180deg);
+}
+
+.sp-menu__sub-list {
+    max-height: 0; /* 初期状態では高さを0に */
+    overflow: hidden; /* 隠す */
+    transition: max-height 0.4s ease-out;
+    text-align: left;
+    padding-left: 20px;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    /* 修正前はここに max-height: 200px; と overflow-y: auto; があり、これが問題の原因でした */
+}
+
+.sp-menu__sub-list.is-open {
+    max-height: 200px; /* 開いたときに適切な高さを設定 */
+    overflow-y: auto; /* スクロールを有効に */
+    -webkit-overflow-scrolling: touch; /* iOSでのスムーズなスクロール */
+}
+
+.sp-menu__sub-list li {
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    border-bottom: none;
+}
+
+.sp-menu__sub-list li:last-child {
+    margin-bottom: 0;
+}
+
+.sp-menu__sub-list li a {
+    color: #555;
+}
+
+.sp-menu__sub-list li a:hover {
+    color: #A0522D;
+}
+
+.sp-menu__divider {
+    display: none;
+}
+
+
+/* main content adjustment */
+main {
+    margin-top: 60px;
+    flex-grow: 1;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+/* スクロールを無効化 */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* マイページコンテナ */
+.mypage-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
+
+/* ページタイトル (section-titleのスタイルを適用) */
+.page-title {
+    text-align: center;
+    margin-bottom: 40px;
+    font-family: 'Zen Old Mincho', serif;
+    font-weight: 500;
+}
+
+.page-title .en {
+    display: block;
+    font-size: 2.8rem;
+    color: #000;
+    letter-spacing: 0.1em;
+    margin-bottom: 5px;
+}
+
+.page-title .ja {
+    display: block;
+    font-size: 1.6rem;
+    color: #555;
+    letter-spacing: 0.05em;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.page-title .ja::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 1px;
+    background-color: #C0C0C0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+}
+
+/* プロフィールセクション */
+.profile-section {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-icon {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 20px;
+    border: 3px solid #A0522D;
+}
+
+.profile-username {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.profile-birthday {
+    font-size: 1.5rem;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.profile-bio {
+    font-size: 1.6rem;
+    color: #555;
+    margin-bottom: 30px;
+    line-height: 1.8;
+    text-align: left;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.edit-profile-button {
+    background-color: #555;
+    color: #fff;
+    border: none;
+}
+
+.edit-profile-button:hover {
+    background-color: #333;
+}
+
+/* タブセクション */
+.posts-section {
+    margin-bottom: 40px;
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+    background-color: transparent;
+    border: none;
+    padding: 15px 25px;
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: #777;
+    cursor: pointer;
+    transition: color 0.3s, border-bottom 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+.tab-button.active {
+    color: #A0522D;
+    border-bottom: 3px solid #A0522D;
+}
+
+.tab-button:hover:not(.active) {
+    color: #333;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 投稿カード (posts.cssから流用) */
+.posts-list {
+    display: grid;
+    gap: 30px;
+    padding-bottom: 20px;
+}
+
+.post-card {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.post-user-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    background-color: #eee;
+}
+
+.post-title {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    flex-grow: 1;
+}
+
+.post-content {
+    font-size: 1.6rem;
+    color: #555;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.post-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: auto;
+}
+
+/* メニューボタン */
+.menu-button {
+    background: none;
+    border: none;
+    font-size: 2.0rem;
+    color: #999;
+    padding: 5px;
+    position: relative;
+}
+
+.menu-button:hover {
+    color: #555;
+}
+
+/* メニュードロップダウン */
+.menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-width: 120px;
+    z-index: 100;
+    display: none;
+}
+
+.menu-dropdown.is-active {
+    display: block;
+}
+
+.menu-dropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-dropdown ul li a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    font-size: 1.4rem;
+}
+
+.menu-dropdown ul li a:hover {
+    background-color: #f5f5f5;
+    color: #A0522D;
+}
+
+/* グッド・バッドボタン */
+.reaction-button {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 8px 15px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #555;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.reaction-button.good {
+    color: #28a745;
+    border-color: #28a745;
+}
+.reaction-button.good:hover {
+    background-color: #28a745;
+    color: #fff;
+}
+.reaction-button.good.active {
+    background-color: #28a745;
+    color: #fff;
+}
+
+
+.reaction-button.bad {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+.reaction-button.bad:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+.reaction-button.bad.active {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+.reaction-button span {
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+
+/* footer */
+.footer {
+    background-color: #eeeeee;
+    padding: 50px 0 30px;
+}
+
+.footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.footer__nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+.footer__nav li {
+    margin: 5px 15px;
+}
+
+.footer__nav li a {
+    font-size: 1.4rem;
+    color: #444;
+    transition: color 0.3s ease;
+}
+
+.footer__nav li a:hover {
+    color: #000;
+}
+
+/* SNSセクションのスタイル */
+.footer__sns {
+    margin-bottom: 30px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.footer__sns a {
+    display: inline-block;
+}
+
+.footer__sns img {
+    width: 28px;
+    height: 28px;
+    transition: opacity 0.3s ease;
+}
+
+.footer__sns img:hover {
+    opacity: 0.7;
+}
+
+.footer__copyright {
+    font-size: 1.2rem;
+    color: #666;
+    width: 100%;
+}
+
+
+/* PC (min-width: 768px) */
+@media (min-width: 768px) {
+    /* utility */
+    .pc-only {
+        display: inline;
+    }
+
+    /* header */
+    .header__nav .nav__list {
+        display: flex;
+        gap: 40px;
+    }
+
+    .header__nav .nav__list li a {
+        font-size: 1.5rem;
+    }
+
+    .hamburger-menu {
+        display: none;
+    }
+
+    /* PCではスマホメニューを非表示に */
+    .sp-menu {
+        display: none;
+    }
+
+    /* footer */
+    .footer {
+        padding: 80px 0;
+    }
+
+    .footer__nav li {
+        margin: 0 20px;
+    }
+
+    .posts-list {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    /* PC時のページタイトル調整 */
+    .page-title {
+        margin-bottom: 80px;
+    }
+
+    .page-title .en {
+        font-size: 4.8rem;
+    }
+
+    .page-title .ja {
+        font-size: 2.2rem;
+    }
+
+    .page-title .ja::after {
+        width: 60px;
+    }
+}
+
+/* スマートフォン向けの追加調整 (既存のメディアクエリに統合) */
+@media (max-width: 600px) {
+    .mypage-container {
+        padding: 0 10px;
+    }
+
+    /* モバイル時のページタイトル調整 */
+    .page-title {
+        font-size: 2.8rem;
+        margin-bottom: 30px;
+    }
+
+    .page-title .en {
+        font-size: 2.8rem;
+    }
+
+    .page-title .ja {
+        font-size: 1.6rem;
+    }
+
+    .profile-section {
+        padding: 20px;
+    }
+
+    .profile-icon {
+        width: 80px;
+        height: 80px;
+    }
+
+    .profile-username {
+        font-size: 2.0rem;
+    }
+
+    .profile-birthday {
+        font-size: 1.4rem;
+    }
+
+    .profile-bio {
+        font-size: 1.5rem;
+    }
+
+    .edit-profile-button {
+        font-size: 1.4rem;
+        padding: 8px 15px;
+    }
+
+    .tabs {
+        margin-bottom: 20px;
+    }
+
+    .tab-button {
+        font-size: 1.6rem;
+        padding: 12px 20px;
+    }
+
+    .posts-list {
+        gap: 20px;
+    }
+
+    .post-card {
+        padding: 20px;
+    }
+
+    .post-user-icon {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+    }
+
+    .post-title {
+        font-size: 1.6rem;
+    }
+
+    .post-content {
+        font-size: 1.5rem;
+    }
+
+    .reaction-button {
+        padding: 6px 12px;
+        font-size: 1.3rem;
+    }
+
+    .reaction-button span {
+        font-size: 1.3rem;
+    }
+}
+
+/* 購入履歴ボタンのスタイル */
+.history-button {
+    display: flex; /* フレックスボックスを使用 */
+    justify-content: center; /* 水平方向に中央揃え */
+    align-items: center; /* 垂直方向に中央揃え */
+    margin: 20px auto;
+    width: 200px; /* ボタンの幅を固定 */
+    height: 50px; /* ボタンの高さを固定 */
+    font-size: 1.4rem; /* フォントサイズを統一 */
+    color: #fff;
+    background-color: #555; /* 編集ボタンと同じ色に統一 */
+    border: none;
+    border-radius: 5px; /* 角丸を統一 */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.history-button:hover {
+    background-color: #333; /* 編集ボタンと同じホバー色に統一 */
+}
+
+/* 編集ボタンのスタイル */
+.edit-profile-button {
+    display: flex; /* フレックスボックスを使用 */
+    justify-content: center; /* 水平方向に中央揃え */
+    align-items: center; /* 垂直方向に中央揃え */
+    margin: 20px auto;
+    width: 200px; /* ボタンの幅を固定 */
+    height: 50px; /* ボタンの高さを固定 */
+    font-size: 1.4rem; /* フォントサイズを統一 */
+    color: #fff;
+    background-color: #555; /* 色を統一 */
+    border: none;
+    border-radius: 5px; /* 角丸を統一 */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-profile-button:hover {
+    background-color: #333; /* ホバー色を統一 */
+}
