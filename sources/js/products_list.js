@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 12,
             name: 'シングルモルト 〇〇aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-            image: '../img/berry.png',
+            image: 'img/berry.png',
             volume: '700ml',
             price: 4000,
             tags: ['本格派', '熟成'],
