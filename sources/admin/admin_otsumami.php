@@ -15,17 +15,17 @@
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
-                <a href="admin.html">OUR BRAND 管理者ページ</a>
+                <a href="admin.php">OUR BRAND 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
-                    <li><a href="admin_products.html">お酒管理</a></li>
-                    <li><a href="admin_otsumami.html" class="is-current">おつまみ管理</a></li>
-                    <li><a href="admin_users.html">ユーザー管理</a></li>
-                    <li><a href="admin_posts.html">投稿管理</a></li>
-                    <li><a href="admin_inquiries.html">お問い合わせ管理</a></li>
-                    <li><a href="admin_faq.html">FAQ登録</a></li>
-                    <li><a href="admin_reports.html">通報管理</a></li>
+                    <li><a href="admin_products.php">お酒管理</a></li>
+                    <li><a href="admin_otsumami.php" class="is-current">おつまみ管理</a></li>
+                    <li><a href="admin_users.php">ユーザー管理</a></li>
+                    <li><a href="admin_posts.php">投稿管理</a></li>
+                    <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
+                    <li><a href="admin_faq.php">FAQ登録</a></li>
+                    <li><a href="admin_reports.php">通報管理</a></li>
                 </ul>
             </nav>
         </div>
@@ -68,7 +68,7 @@
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub3" alt="クラッカー サブ3" class="product-thumb"></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a href="admin_otumami_edit.html" class="btn btn-sm btn-edit">編集</a>
+                                        <a href="admin_otumami_edit.php" class="btn btn-sm btn-edit">編集</a>
                                         <button class="btn btn-sm btn-delete">削除</button>
                                     </div>
                                 </td>
@@ -113,7 +113,7 @@
             </section>
 
             <div class="add-otsumami-button-area">
-                <a href="admin_otsumami_add.html" class="btn btn-primary btn-add-new">
+                <a href="admin_otsumami_add.php" class="btn btn-primary btn-add-new">
                     <span class="btn-icon">＋</span> 新しいおつまみを登録する
                 </a>
             </div>
