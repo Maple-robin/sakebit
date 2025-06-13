@@ -12,14 +12,14 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- 実際のプロジェクトではパスを適切に設定してください -->
-    <link rel="stylesheet" href="../css/checkout.css">
+    <link rel="stylesheet" href="css/checkout.css">
 </head>
 
 <body>
     <header class="header">
         <div class="header__inner">
             <h1 class="header__logo">
-                <a href="index.html">OUR BRAND</a>
+                <a href="index.php">OUR BRAND</a>
             </h1>
         </div>
     </header>
@@ -211,7 +211,7 @@
                     </div>
 
                     <div class="payment-option-paypal">
-                        <img src="../img/paypal.png" alt="PayPal" class="paypal-logo">
+                        <img src="img/paypal.png" alt="PayPal" class="paypal-logo">
                         <span class="paypal-label">PayPalで支払う</span>
                     </div>
 
@@ -291,7 +291,7 @@
                 </div>
 
                 <div class="checkout-actions">
-                    <a href="cart.html" class="link-back-to-cart"><i class="fas fa-chevron-left"></i> 買い物かごに戻る</a>
+                    <a href="cart.php" class="link-back-to-cart"><i class="fas fa-chevron-left"></i> 買い物かごに戻る</a>
                     <button type="submit" class="button-primary" id="place-order-button">今すぐ支払う</button>
                 </div>
 
@@ -339,28 +339,28 @@
                 <li>
                     <span class="footer__nav-title">商品一覧</span>
                     <ul class="footer__subnav">
-                        <li><a href="products_list.html?category=日本酒">日本酒</a></li>
-                        <li><a href="products_list.html?category=中国酒">中国酒</a></li>
-                        <li><a href="products_list.html?category=梅酒">梅酒</a></li>
-                        <li><a href="products_list.html?category=缶チューハイ">缶チューハイ</a></li>
-                        <li><a href="products_list.html?category=焼酎">焼酎</a></li>
-                        <li><a href="products_list.html?category=ウィスキー">ウィスキー</a></li>
-                        <li><a href="products_list.html?category=スピリッツ">スピリッツ</a></li>
-                        <li><a href="products_list.html?category=リキュール">リキュール</a></li>
-                        <li><a href="products_list.html?category=ワイン">ワイン</a></li>
-                        <li><a href="products_list.html?category=ビール">ビール</a></li>
+                        <li><a href="products_list.php?category=日本酒">日本酒</a></li>
+                        <li><a href="products_list.php?category=中国酒">中国酒</a></li>
+                        <li><a href="products_list.php?category=梅酒">梅酒</a></li>
+                        <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
+                        <li><a href="products_list.php?category=焼酎">焼酎</a></li>
+                        <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
+                        <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
+                        <li><a href="products_list.php?category=リキュール">リキュール</a></li>
+                        <li><a href="products_list.php?category=ワイン">ワイン</a></li>
+                        <li><a href="products_list.php?category=ビール">ビール</a></li>
                     </ul>
                 </li>
-                <li><a href="faq.html">よくあるご質問／お問合せ</a></li>
-                <li><a href="MyPage.html">会員登録・ログイン</a></li>
-                <li><a href="history.html">購入履歴</a></li>
-                <li><a href="cart.html">買い物かごを見る</a></li>
-                <li><a href="privacy.html">プライバシーポリシー</a></li>
-                <li><a href="terms.html">利用規約</a></li>
+                <li><a href="faq.php">よくあるご質問／お問合せ</a></li>
+                <li><a href="MyPage.php">会員登録・ログイン</a></li>
+                <li><a href="history.php">購入履歴</a></li>
+                <li><a href="cart.php">買い物かごを見る</a></li>
+                <li><a href="privacy.php">プライバシーポリシー</a></li>
+                <li><a href="terms.php">利用規約</a></li>
             </ul>
             <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.html">
-                    <img src="../img/logo.png" alt="OUR BRAND" style="height:32px;">
+                <a href="index.php">
+                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
                 </a>
             </div>
             <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
@@ -368,8 +368,8 @@
     </footer>
 
     <!-- 実際のプロジェクトではパスを適切に設定してください -->
-    <script src="../js/checkout.js"></script>
-    <script src="../js/script.js"></script>
+    <script src="js/checkout.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>

@@ -27,19 +27,19 @@
             </button>
             <!-- ロゴを中央に配置 -->
             <h1 class="header__logo">
-                <a href="index.html">OUR BRAND</a>
+                <a href="index.php">OUR BRAND</a>
             </h1>
             <!-- ナビゲーションとアイコンを右端に配置 -->
             <nav class="header__nav">
                 <ul class="nav__list pc-only">
-                    <li><a href="products_list.html">商品一覧</a></li>
-                    <li><a href="contact.html">お問い合わせ</a></li>
+                    <li><a href="products_list.php">商品一覧</a></li>
+                    <li><a href="contact.php">お問い合わせ</a></li>
                 </ul>
                 <div class="header__icons">
-                    <a href="wishlist.html" class="header__icon-link">
+                    <a href="wishlist.php" class="header__icon-link">
                         <i class="fas fa-heart"></i>
                     </a>
-                    <a href="cart.html" class="header__icon-link">
+                    <a href="cart.php" class="header__icon-link">
                         <i class="fas fa-shopping-cart"></i>
                     </a>
                 </div>
@@ -62,37 +62,37 @@
             <li class="sp-menu__category-toggle">
                 商品カテゴリ <i class="fas fa-chevron-down category-icon"></i>
                 <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.html?category=日本酒">日本酒</a></li>
-                    <li><a href="products_list.html?category=中国酒">中国酒</a></li>
-                    <li><a href="products_list.html?category=梅酒">梅酒</a></li>
-                    <li><a href="products_list.html?category=缶チューハイ">缶チューハイ</a></li>
-                    <li><a href="products_list.html?category=焼酎">焼酎</a></li>
-                    <li><a href="products_list.html?category=ウィスキー">ウィスキー</a></li>
-                    <li><a href="products_list.html?category=スピリッツ">スピリッツ</a></li>
-                    <li><a href="products_list.html?category=リキュール">リキュール</a></li>
-                    <li><a href="products_list.html?category=ワイン">ワイン</a></li>
-                    <li><a href="products_list.html?category=ビール">ビール</a></li>
+                    <li><a href="products_list.php?category=日本酒">日本酒</a></li>
+                    <li><a href="products_list.php?category=中国酒">中国酒</a></li>
+                    <li><a href="products_list.php?category=梅酒">梅酒</a></li>
+                    <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
+                    <li><a href="products_list.php?category=焼酎">焼酎</a></li>
+                    <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
+                    <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
+                    <li><a href="products_list.php?category=リキュール">リキュール</a></li>
+                    <li><a href="products_list.php?category=ワイン">ワイン</a></li>
+                    <li><a href="products_list.php?category=ビール">ビール</a></li>
                 </ul>
             </li>
             <li class="sp-menu__category-toggle">
                 商品タグ <i class="fas fa-chevron-down category-icon"></i>
                 <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.html?tag=初心者向け">初心者向け</a></li>
-                    <li><a href="products_list.html?tag=甘口">甘口</a></li>
-                    <li><a href="products_list.html?tag=辛口">辛口</a></li>
-                    <li><a href="products_list.html?tag=度数低め">度数低め</a></li>
-                    <li><a href="products_list.html?tag=度数高め">度数高め</a></li>
+                    <li><a href="products_list.php?tag=初心者向け">初心者向け</a></li>
+                    <li><a href="products_list.php?tag=甘口">甘口</a></li>
+                    <li><a href="products_list.php?tag=辛口">辛口</a></li>
+                    <li><a href="products_list.php?tag=度数低め">度数低め</a></li>
+                    <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
                 </ul>
             </li>
-            <li class="sp-menu__item"><a href="posts.html">投稿ページ</a></li>
-            <li class="sp-menu__item"><a href="MyPage.html">マイページ</a></li>
+            <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
+            <li class="sp-menu__item"><a href="MyPage.php">マイページ</a></li>
         </ul>
 
         <div class="sp-menu__divider"></div>
 
         <ul class="sp-menu__list sp-menu__list--bottom">
-            <li class="sp-menu__item"><a href="faq.html">よくある質問</a></li>
-            <li class="sp-menu__item"><a href="contact.html">お問い合わせ</a></li>
+            <li class="sp-menu__item"><a href="faq.php">よくある質問</a></li>
+            <li class="sp-menu__item"><a href="contact.php">お問い合わせ</a></li>
         </ul>
     </nav>
     <main>
@@ -120,7 +120,7 @@
                 <div class="swiper mySwiperProducts">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="img/gingerale.png" alt="商品名１">
                                 </div>
@@ -130,7 +130,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="img/osake.png" alt="商品名２">
                                 </div>
@@ -140,7 +140,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="img/sake.png" alt="商品名３">
                                 </div>
@@ -150,7 +150,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="images/product4.jpg" alt="商品名４">
                                 </div>
@@ -160,7 +160,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="images/product5.jpg" alt="商品名５">
                                 </div>
@@ -172,7 +172,7 @@
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>
-                <a href="products_list.html?sort=ranking" class="btn-all-products">ランキング一覧を見る</a>
+                <a href="products_list.php?sort=ranking" class="btn-all-products">ランキング一覧を見る</a>
             </div>
         </section>
         <section class="products beginner-friendly">
@@ -184,7 +184,7 @@
                 <div class="swiper mySwiperBeginners">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="img/gingerale.png" alt="初心者向け商品１">
                                 </div>
@@ -194,7 +194,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="img/osake.png" alt="初心者向け商品２">
                                 </div>
@@ -204,7 +204,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="img/sake.png" alt="初心者向け商品３">
                                 </div>
@@ -214,7 +214,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="images/product4.jpg" alt="初心者向け商品４">
                                 </div>
@@ -224,7 +224,7 @@
                             </a>
                         </div>
                         <div class="swiper-slide product-item">
-                            <a href="product.html">
+                            <a href="product.php">
                                 <div class="product-item__img-wrap">
                                     <img src="images/product5.jpg" alt="初心者向け商品５">
                                 </div>
@@ -236,7 +236,7 @@
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>
-                <a href="products_list.html?tag=初心者向け" class="btn-all-products">初心者向け一覧を見る</a>
+                <a href="products_list.php?tag=初心者向け" class="btn-all-products">初心者向け一覧を見る</a>
             </div>
         </section>
         <section class="categories">
@@ -247,61 +247,61 @@
                 </h2>
                 <ul class="category-list">
                     <li class="category-list__item">
-                        <a href="products_list.html?category=日本酒" class="category-card">
+                        <a href="products_list.php?category=日本酒" class="category-card">
                             <img src="img/sake.png" alt="日本酒" class="category-card__img">
                             <h3 class="category-card__name">日本酒</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=中国酒" class="category-card">
+                        <a href="products_list.php?category=中国酒" class="category-card">
                             <img src="img/国花瓷(こっかじ) 中国酒　斜めを向いて倒れている　中国風のものに囲まれている.png" alt="中国酒" class="category-card__img">
                             <h3 class="category-card__name">中国酒</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=梅酒" class="category-card">
+                        <a href="products_list.php?category=梅酒" class="category-card">
                             <img src="img/梅酒原酒_image1.png" alt="梅酒" class="category-card__img">
                             <h3 class="category-card__name">梅酒</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=缶チューハイ" class="category-card">
+                        <a href="products_list.php?category=缶チューハイ" class="category-card">
                             <img src="img/chuhai.png" alt="缶チューハイ" class="category-card__img">
                             <h3 class="category-card__name">缶チューハイ</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=焼酎" class="category-card">
+                        <a href="products_list.php?category=焼酎" class="category-card">
                             <img src="img/shochu.png" alt="焼酎" class="category-card__img">
                             <h3 class="category-card__name">焼酎</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=ウィスキー" class="category-card">
+                        <a href="products_list.php?category=ウィスキー" class="category-card">
                             <img src="img/whisky.png" alt="ウィスキー" class="category-card__img">
                             <h3 class="category-card__name">ウィスキー</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=スピリッツ" class="category-card">
+                        <a href="products_list.php?category=スピリッツ" class="category-card">
                             <img src="img/ボンベイ・サファイア スピリッツ　大きく表示　斜めをむいて倒れている　レモンに囲まれている.png" alt="スピリッツ" class="category-card__img">
                             <h3 class="category-card__name">スピリッツ</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=リキュール" class="category-card">
+                        <a href="products_list.php?category=リキュール" class="category-card">
                             <img src="img/liqueur.png" alt="リキュール" class="category-card__img">
                             <h3 class="category-card__name">リキュール</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=ワイン" class="category-card">
+                        <a href="products_list.php?category=ワイン" class="category-card">
                             <img src="img/wine.png" alt="ワイン" class="category-card__img">
                             <h3 class="category-card__name">ワイン</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
-                        <a href="products_list.html?category=ビール" class="category-card">
+                        <a href="products_list.php?category=ビール" class="category-card">
                             <img src="img/beer.png" alt="ビール" class="category-card__img">
                             <h3 class="category-card__name">ビール</h3>
                         </a>
@@ -309,7 +309,7 @@
                 </ul>
             </div>
             </ul>
-            <a href="products_list.html?sort=newest" class="btn-all-products" style="margin-top: 32px;">すべての商品を見る</a>
+            <a href="products_list.php?sort=newest" class="btn-all-products" style="margin-top: 32px;">すべての商品を見る</a>
             </div>
         </section>
         </section>
@@ -321,27 +321,27 @@
                 <li>
                     <span class="footer__nav-title">商品一覧</span>
                     <ul class="footer__subnav">
-                        <li><a href="products_list.html?category=日本酒">日本酒</a></li>
-                        <li><a href="products_list.html?category=中国酒">中国酒</a></li>
-                        <li><a href="products_list.html?category=梅酒">梅酒</a></li>
-                        <li><a href="products_list.html?category=缶チューハイ">缶チューハイ</a></li>
-                        <li><a href="products_list.html?category=焼酎">焼酎</a></li>
-                        <li><a href="products_list.html?category=ウィスキー">ウィスキー</a></li>
-                        <li><a href="products_list.html?category=スピリッツ">スピリッツ</a></li>
-                        <li><a href="products_list.html?category=リキュール">リキュール</a></li>
-                        <li><a href="products_list.html?category=ワイン">ワイン</a></li>
-                        <li><a href="products_list.html?category=ビール">ビール</a></li>
+                        <li><a href="products_list.php?category=日本酒">日本酒</a></li>
+                        <li><a href="products_list.php?category=中国酒">中国酒</a></li>
+                        <li><a href="products_list.php?category=梅酒">梅酒</a></li>
+                        <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
+                        <li><a href="products_list.php?category=焼酎">焼酎</a></li>
+                        <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
+                        <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
+                        <li><a href="products_list.php?category=リキュール">リキュール</a></li>
+                        <li><a href="products_list.php?category=ワイン">ワイン</a></li>
+                        <li><a href="products_list.php?category=ビール">ビール</a></li>
                     </ul>
                 </li>
-                <li><a href="faq.html">よくあるご質問／お問合せ</a></li>
-                <li><a href="MyPage.html">会員登録・ログイン</a></li>
-                <li><a href="history.html">購入履歴</a></li>
-                <li><a href="cart.html">買い物かごを見る</a></li>
-                <li><a href="privacy.html">プライバシーポリシー</a></li>
-                <li><a href="terms.html">利用規約</a></li>
+                <li><a href="faq.php">よくあるご質問／お問合せ</a></li>
+                <li><a href="MyPage.php">会員登録・ログイン</a></li>
+                <li><a href="history.php">購入履歴</a></li>
+                <li><a href="cart.php">買い物かごを見る</a></li>
+                <li><a href="privacy.php">プライバシーポリシー</a></li>
+                <li><a href="terms.php">利用規約</a></li>
             </ul>
             <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.html">
+                <a href="index.php">
                     <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
                 </a>
             </div>
