@@ -42,6 +42,10 @@
                     <a href="cart.php" class="header__icon-link">
                         <i class="fas fa-shopping-cart"></i>
                     </a>
+                    <a href="login.php" class="header__icon-link">
+                        <i class="fas fa-user-circle"></i>
+                        <span style="font-size: 14px; margin-left: 4px;">ログイン</span>
+                    </a>
                 </div>
             </nav>
         </div>
@@ -49,7 +53,7 @@
 
     <nav class="sp-menu">
         <div class="sp-menu__header">
-            <div class="sp-menu__login">
+            <div class="sp-menu__login" onclick="location.href='login.php'" style="cursor:pointer;">
                 <i class="fas fa-user-circle"></i> ログイン
             </div>
         </div>

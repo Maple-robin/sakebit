@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
             volume: '200ml',
             price: 1750,
             quantity: 2,
-            imageUrl: '../img/gingerale.png' // 仮の画像パス
+            imageUrl: 'img/gingerale.png' // 仮の画像パス
         },
         {
             id: 'product-2',

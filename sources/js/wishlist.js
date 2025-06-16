@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 1,
             name: '【新発売】ベリーベリー カシスaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-            image: '../img/berry.png', // このパスは仮です。実際に画像があるか確認してください
+            image: 'img/berry.png', // このパスは仮です。実際に画像があるか確認してください
             volume: '200ml/720ml',
             price: 1750,
             tags: ['新発売', '甘口', '初心者向け'],
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 12,
             name: 'シングルモルト 〇〇aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-            image: '../img/berry.png', // このパスは仮です。実際に画像があるか確認してください
+            image: 'img/berry.png', // このパスは仮です。実際に画像があるか確認してください
             volume: '700ml',
             price: 4000,
             tags: ['本格派', '熟成'],
