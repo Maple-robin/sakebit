@@ -75,4 +75,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     });
+
+    // 全ページ共通：ログインボタンでlogin.phpに遷移
+    document.querySelectorAll('.js-login-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            window.location.href = 'login.php';
+        });
+    });
 });

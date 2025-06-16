@@ -42,10 +42,6 @@
                     <a href="cart.php" class="header__icon-link">
                         <i class="fas fa-shopping-cart"></i>
                     </a>
-                    <a href="login.php" class="header__icon-link">
-                        <i class="fas fa-user-circle"></i>
-                        <span style="font-size: 14px; margin-left: 4px;">ログイン</span>
-                    </a>
                 </div>
             </nav>
         </div>

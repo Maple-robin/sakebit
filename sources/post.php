@@ -53,7 +53,7 @@
     <!-- スマホ用メニューも必要なら同様に -->
     <nav class="sp-menu">
         <div class="sp-menu__header">
-            <div class="sp-menu__login">
+            <div class="sp-menu__login js-login-btn" style="cursor:pointer;">
                 <i class="fas fa-user-circle"></i> ログイン
             </div>
         </div>
