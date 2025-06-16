@@ -3,28 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>お問い合わせ管理 | OUR BRAND 管理者ページ</title>
+    <title>通報管理 | OUR BRAND 管理者ページ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../admincss/admin.css">
-    <link rel="stylesheet" href="../admincss/admin_inquiries.css">
+    <link rel="stylesheet" href="../admincss/admin_reports.css">
 </head>
 <body>
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
-                <a href="admin.html">OUR BRAND 管理者ページ</a>
+                <a href="admin.php">OUR BRAND 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
-                    <li><a href="admin_products.html">お酒管理</a></li>
-                    <li><a href="admin_otsumami.html">おつまみ管理</a></li>
-                    <li><a href="admin_users.html">ユーザー管理</a></li>
-                    <li><a href="admin_posts.html">投稿管理</a></li>
-                    <li><a href="admin_inquiries.html" class="is-current">お問い合わせ管理</a></li>
-                    <li><a href="admin_faq.html">FAQ管理</a></li>
-                    <li><a href="admin_reports.html">通報管理</a></li>
+                    <li><a href="admin_products.php">お酒管理</a></li>
+                    <li><a href="admin_otsumami.php">おつまみ管理</a></li>
+                    <li><a href="admin_users.php">ユーザー管理</a></li>
+                    <li><a href="admin_posts.php">投稿管理</a></li>
+                    <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
+                    <li><a href="admin_faq.php">FAQ管理</a></li>
+                    <li><a href="admin_reports.php" class="is-current">通報管理</a></li>
                 </ul>
             </nav>
         </div>
@@ -33,23 +34,22 @@
     <main class="admin-main">
         <div class="admin-main__inner">
             <h2 class="admin-page-title">
-                <span class="en">INQUIRY MANAGEMENT</span>
-                <span class="ja">( お問い合わせ管理 )</span>
+                <span class="en">REPORT MANAGEMENT</span>
+                <span class="ja">( 通報管理 )</span>
             </h2>
             <section class="admin-table-section">
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>ユーザー名</th>
-                            <th>メールアドレス</th>
-                            <th>タイトル</th>
-                            <th>内容</th>
-                            <th>返信状況</th>
+                            <th>通報者ユーザー名</th>
+                            <th>投稿タイトル</th>
+                            <th>投稿内容</th>
+                            <th>通報カテゴリ</th>
+                            <th>通報内容</th>
                             <th>操作</th>
                         </tr>
                     </thead>
-                    <tbody id="inquiry-management-table-body">
-                        <!-- ここにJSで各問い合わせ行が追加される想定 -->
+                    <tbody id="report-management-table-body">
                     </tbody>
                 </table>
             </section>
@@ -62,6 +62,6 @@
         </div>
     </footer>
 
-    <script src="../adminjs/admin_inquiries.js"></script>
+    <script src="../adminjs/admin_reports.js"></script>
 </body>
 </html>

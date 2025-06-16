@@ -13,17 +13,17 @@
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
-                <a href="admin.html">OUR BRAND 管理者ページ</a>
+                <a href="admin.php">OUR BRAND 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
-                    <li><a href="admin_products.html">お酒管理</a></li>
-                    <li><a href="admin_otsumami.html">おつまみ管理</a></li>
-                    <li><a href="admin_users.html">ユーザー管理</a></li>
-                    <li><a href="admin_posts.html">投稿管理</a></li>
-                    <li><a href="admin_inquiries.html">お問い合わせ管理</a></li>
-                    <li><a href="admin_faq.html">FAQ管理</a></li>
-                    <li><a href="admin_reports.html">通報管理</a></li>
+                    <li><a href="admin_products.php">お酒管理</a></li>
+                    <li><a href="admin_otsumami.php">おつまみ管理</a></li>
+                    <li><a href="admin_users.php">ユーザー管理</a></li>
+                    <li><a href="admin_posts.php">投稿管理</a></li>
+                    <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
+                    <li><a href="admin_faq.php">FAQ管理</a></li>
+                    <li><a href="admin_reports.php">通報管理</a></li>
                 </ul>
             </nav>
             </div>
@@ -38,17 +38,17 @@
                     <div class="admin-summary__card">
                         <h3>新規お問い合わせ</h3>
                         <p class="admin-summary__count">3</p>
-                        <a href="admin_inquiries.html" class="admin-summary__link">詳細を見る</a>
+                        <a href="admin_inquiries.php" class="admin-summary__link">詳細を見る</a>
                     </div>
                     <div class="admin-summary__card">
                         <h3>未対応の通報</h3>
                         <p class="admin-summary__count">1</p>
-                        <a href="admin_reports.html" class="admin-summary__link">詳細を見る</a>
+                        <a href="admin_reports.php" class="admin-summary__link">詳細を見る</a>
                     </div>
                     <div class="admin-summary__card">
                         <h3>本日の新規投稿</h3>
                         <p class="admin-summary__count">12</p>
-                        <a href="admin_posts.html" class="admin-summary__link">詳細を見る</a>
+                        <a href="admin_posts.php" class="admin-summary__link">詳細を見る</a>
                     </div>
                     <div class="admin-summary__card">
                         <h3>未承認の商品レビュー</h3>
@@ -61,10 +61,10 @@
             <section class="admin-quick-links">
                 <h2 class="admin-section-title">クイックリンク</h2>
                 <ul class="quick-link__list">
-                    <li><a href="admin_products_add.html">新しいお酒を登録</a></li>
-                    <li><a href="admin_users.html">ユーザーリストを見る</a></li>
-                    <li><a href="admin_otsumami_add.html">新しいおつまみを登録</a></li>
-                    <li><a href="admin_faq_add.html">FAQ項目を追加</a></li>
+                    <li><a href="admin_products_add.php">新しいお酒を登録</a></li>
+                    <li><a href="admin_users.php">ユーザーリストを見る</a></li>
+                    <li><a href="admin_otsumami_add.php">新しいおつまみを登録</a></li>
+                    <li><a href="admin_faq_add.php">FAQ項目を追加</a></li>
                 </ul>
             </section>
         </div>

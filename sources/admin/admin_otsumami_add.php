@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OUR BRAND | お酒管理（編集）</title>
+    <title>OUR BRAND | 新しいおつまみを登録</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,17 +15,17 @@
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
-                <a href="admin.html">OUR BRAND 管理者ページ</a>
+                <a href="admin.php">OUR BRAND 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
-                    <li><a href="admin_products.html" >お酒管理</a></li>
-                    <li><a href="admin_otsumami.html" >おつまみ管理</a></li>
-                    <li><a href="admin_users.html">ユーザー管理</a></li>
-                    <li><a href="admin_posts.html">投稿管理</a></li>
-                    <li><a href="admin_inquiries.html">お問い合わせ管理</a></li>
-                    <li><a href="admin_faq.html">FAQ登録</a></li>
-                    <li><a href="admin_reports.html">通報管理</a></li>
+                    <li><a href="admin_products.php">お酒管理</a></li>
+                    <li><a href="admin_otsumami.php" >おつまみ管理</a></li>
+                    <li><a href="admin_users.php">ユーザー管理</a></li>
+                    <li><a href="admin_posts.php">投稿管理</a></li>
+                    <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
+                    <li><a href="admin_faq.php">FAQ登録</a></li>
+                    <li><a href="admin_reports.php">通報管理</a></li>
                 </ul>
             </nav>
         </div>
@@ -34,11 +34,11 @@
     <main class="admin-main">
         <div class="admin-main__inner">
             <h2 class="admin-page-title">
-                <span class="en">EDIT SNACK</span>
-                <span class="ja">( おつまみデータ編集 )</span>
+                <span class="en">ADD SNACK</span>
+                <span class="ja">( 新しいおつまみを登録 )</span>
             </h2>
 
-            <section class="admin-section admin-otsumami-edit-form">
+            <section class="admin-section admin-otsumami-add-form">
                 <form action="#" method="post" enctype="multipart/form-data" class="admin-form">
                     <div class="form-group">
                         <label for="otsumami_name">おつまみ名 <span class="required-tag">必須</span></label>
@@ -103,13 +103,13 @@
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-lg">変更を保存</button>
+                        <button type="submit" class="btn btn-primary btn-lg">このおつまみを登録する</button>
                     </div>
                 </form>
             </section>
 
             <div class="back-to-list-button-area">
-                <a href="admin_otsumami.html" class="btn btn-secondary btn-back-to-list">
+                <a href="admin_otsumami.php" class="btn btn-secondary btn-back-to-list">
                     おつまみ管理一覧に戻る
                 </a>
             </div>
@@ -122,8 +122,6 @@
             <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
         </div>
     </footer>
-
-    <script src="../adminjs/admin_otumami_edit.js"></script>
 
 </body>
 </html>
