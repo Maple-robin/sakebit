@@ -29,52 +29,60 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- ここから下は既存のSwiper初期化などを残す場合 ---
-    new Swiper('.mySwiperHero', {
-        loop: true,
-        autoplay: {
-            delay: 5000,
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-    });
-
-    new Swiper('.mySwiperProducts', {
-        slidesPerView: 'auto',
-        spaceBetween: 20,
-        freeMode: true,
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        breakpoints: {
-            768: {
-                slidesPerView: 3,
-                spaceBetween: 30,
-                freeMode: false,
-            }
+    // Swiperが読み込まれている場合のみ初期化
+    if (typeof Swiper !== 'undefined') {
+        if (document.querySelector('.mySwiperHero')) {
+            new Swiper('.mySwiperHero', {
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+            });
         }
-    });
 
-    new Swiper('.mySwiperBeginners', {
-        slidesPerView: 'auto',
-        spaceBetween: 20,
-        freeMode: true,
-        pagination: {
-            el: '.swiper-pagination',
-            clickable: true,
-        },
-        breakpoints: {
-            768: {
-                slidesPerView: 3,
-                spaceBetween: 30,
-                freeMode: false,
-            }
+        if (document.querySelector('.mySwiperProducts')) {
+            new Swiper('.mySwiperProducts', {
+                slidesPerView: 'auto',
+                spaceBetween: 20,
+                freeMode: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                        freeMode: false,
+                    }
+                }
+            });
         }
-    });
+
+        if (document.querySelector('.mySwiperBeginners')) {
+            new Swiper('.mySwiperBeginners', {
+                slidesPerView: 'auto',
+                spaceBetween: 20,
+                freeMode: true,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                breakpoints: {
+                    768: {
+                        slidesPerView: 3,
+                        spaceBetween: 30,
+                        freeMode: false,
+                    }
+                }
+            });
+        }
+    }
 
     // 全ページ共通：ログインボタンでlogin.phpに遷移
     document.querySelectorAll('.js-login-btn').forEach(btn => {

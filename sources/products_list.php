@@ -210,9 +210,9 @@
     </footer>
 
     <!-- JavaScriptファイルを修正後のproducts_list.jsに更新 -->
+    <script src="js/script.js"></script>
     <script src="js/products_list.js"></script>
     <script src="js/sticky-controls.js"></script>
-    <script src="js/script.js"></script>
 </body>
 
 </html>
