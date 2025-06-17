@@ -300,10 +300,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // PHPからの登録結果メッセージを表示
             <?php if ($signup_success): ?>
-                displayMessage('登録が完了しました！', 'success'); // ★メッセージを「登録が完了しました！」のみに変更
+                displayMessage('登録が完了しました！', 'success');
                 setTimeout(function() {
                     window.location.href = 'index.php?registered=true'; // index.phpへリダイレクト
-                }, 3000); // 3秒後にリダイレクト
+                }, 1000); // ★3秒から1秒に短縮しました★
             <?php elseif (!empty($signup_error_message)): ?>
                 displayMessage('<?= htmlspecialchars($signup_error_message) ?>', 'error');
             <?php endif; ?>
@@ -390,5 +390,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- js/script.js も引き続き必要に応じてインクルードしてください -->
     <script src="js/script.js"></script>
 </body>
-
 </html>
