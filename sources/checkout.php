@@ -1,3 +1,18 @@
+<?php
+/*!
+@file index.php
+@brief トップページ
+@copyright Copyright (c) 2024 Your Name.
+*/
+
+// セッションを開始 (HTML出力の前に置く)
+session_start();
+
+// contents_db.php など、必要なファイルをインクルード（必要に応じて）
+// require_once __DIR__ . '/common/contents_db.php';
+
+// ここにトップページ固有のPHPロジックがあれば記述
+?>
 <!DOCTYPE html>
 <html lang="ja">
 

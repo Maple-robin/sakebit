@@ -1,3 +1,72 @@
+<?php
+/*!
+@file login.php
+@brief ログインページと処理
+@copyright Copyright (c) 2024 Your Name.
+*/
+
+// セッションを開始
+session_start();
+
+// contents_db.php をインクルード
+require_once __DIR__ . '/common/contents_db.php';
+
+$debug_mode = false; // デバッグモードのオン/オフ
+
+$login_error_message = '';
+$login_success = false;
+$submitted_email = ''; // フォームに再表示するためのメールアドレス
+
+// 既にログインしている場合は、トップページにリダイレクト
+if (isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit();
+}
+
+// 新規登録からのリダイレクトの場合、メッセージを表示
+if (isset($_GET['registered']) && $_GET['registered'] === 'true') {
+    // ログインページで新規登録完了メッセージを表示する
+    // ただし、このページに留まる場合はdisplayMessageを呼ぶ必要があるため、
+    // JavaScriptで制御します。PHPはリダイレクトのみ。
+}
+
+
+// POSTリクエストがある場合のみ処理を実行
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // フォームデータの取得とサニタイズ
+    $email = $_POST['username'] ?? ''; // HTMLフォームのnameが'username'なので注意
+    $password = $_POST['password'] ?? '';
+
+    $submitted_email = htmlspecialchars($email); // 入力されたメールアドレスを保持
+
+    // サーバーサイドでのバリデーション
+    if (empty($email) || empty($password)) {
+        $login_error_message = 'メールアドレスとパスワードを入力してください。';
+    } else {
+        $user_db = new cuser_info();
+        $user_data = $user_db->get_user_by_email_for_login($debug_mode, $email);
+
+        if ($user_data) {
+            // パスワードの検証
+            if (password_verify($password, $user_data['user_pass'])) {
+                // ログイン成功！セッションにユーザー情報を保存
+                $_SESSION['user_id'] = $user_data['user_id'];
+                $_SESSION['user_name'] = $user_data['user_name'];
+                $_SESSION['user_email'] = $user_data['user_email'];
+                // 必要に応じて他の情報もセッションに保存
+
+                // ログイン成功後、トップページへリダイレクト
+                header('Location: index.php?loggedin=true'); // ログイン成功フラグを追加
+                exit();
+            } else {
+                $login_error_message = 'メールアドレスまたはパスワードが間違っています。';
+            }
+        } else {
+            $login_error_message = 'メールアドレスまたはパスワードが間違っています。';
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -13,6 +82,47 @@
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* カスタムメッセージボックスのスタイル（signup.php と同様）*/
+        .custom-message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.6rem;
+            color: #fff;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            min-width: 300px;
+            text-align: center;
+        }
+        .custom-message-box.success {
+            background-color: #28a745; /* 緑色 */
+        }
+        .custom-message-box.error {
+            background-color: #dc3545; /* 赤色 */
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+        /* エラーメッセージと成功メッセージのスタイル */
+        .error-message, .success-message {
+            color: #dc3545; /* 赤色 */
+            font-size: 0.9em;
+            margin-top: 5px;
+            text-align: center;
+        }
+        .success-message {
+            color: #28a745; /* 緑色 */
+        }
+    </style>
 </head>
 
 <body>
@@ -49,9 +159,15 @@
 
     <nav class="sp-menu">
         <div class="sp-menu__header">
-            <div class="sp-menu__login js-login-btn" style="cursor:pointer;">
-                <i class="fas fa-user-circle"></i> ログイン
-            </div>
+            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
+                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
+                    <i class="fas fa-user-circle"></i> ログアウト
+                </a>
+            <?php else: ?>
+                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
+                    <i class="fas fa-user-circle"></i> ログイン
+                </a>
+            <?php endif; ?>
         </div>
         <div class="sp-menu__search">
             <input type="text" placeholder="検索...">
@@ -73,7 +189,6 @@
                     <li><a href="products_list.php?category=ビール">ビール</a></li>
                 </ul>
             </li>
-            <!-- ↓ここから追加 -->
             <li class="sp-menu__category-toggle">
                 商品タグ <i class="fas fa-chevron-down category-icon"></i>
                 <ul class="sp-menu__sub-list">
@@ -84,7 +199,6 @@
                     <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
                 </ul>
             </li>
-            <!-- ↑ここまで追加 -->
             <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
             <li class="sp-menu__item"><a href="MyPage.php">マイページ</a></li>
         </ul>
@@ -98,10 +212,16 @@
     <main>
         <div class="login-container">
             <h1 class="login-logo">OUR BRAND</h1>
-            <form class="login-form">
+            <form class="login-form" method="post" action="login.php">
+                <?php if (!empty($login_error_message)): ?>
+                    <p class="error-message"><?= htmlspecialchars($login_error_message) ?></p>
+                <?php endif; ?>
+                <?php if (isset($_GET['registered']) && $_GET['registered'] === 'true'): ?>
+                    <p class="success-message">新規登録が完了しました！</p>
+                <?php endif; ?>
                 <div class="form-group">
                     <label for="username">メールアドレス</label>
-                    <input type="text" id="username" name="username" required>
+                    <input type="text" id="username" name="username" required value="<?= $submitted_email ?>">
                 </div>
                 <div class="form-group">
                     <label for="password">パスワード</label>
@@ -150,6 +270,50 @@
         </div>
     </footer>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // カスタムメッセージボックスを表示する関数
+            function displayMessage(message, type) {
+                const messageBox = document.createElement('div');
+                messageBox.classList.add('custom-message-box');
+                if (type === 'success') {
+                    messageBox.classList.add('success');
+                } else if (type === 'error') {
+                    messageBox.classList.add('error');
+                }
+                messageBox.textContent = message;
+
+                const existingMessageBox = document.querySelector('.custom-message-box');
+                if (existingMessageBox) {
+                    existingMessageBox.remove();
+                }
+
+                document.body.appendChild(messageBox);
+
+                setTimeout(() => {
+                    messageBox.remove();
+                }, 3000); // 3秒後に消える
+            }
+
+            // 新規登録からのリダイレクトメッセージがあれば表示
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registered') === 'true') {
+                displayMessage('新規登録が完了しました！', 'success');
+                // メッセージ表示後、URLからパラメータを削除（任意）
+                history.replaceState(null, '', window.location.pathname);
+            }
+             // ログイン成功からのリダイレクトメッセージがあれば表示 (login.php から index.php にリダイレクト後)
+            if (urlParams.get('loggedin') === 'true') {
+                displayMessage('ログインしました！', 'success');
+                history.replaceState(null, '', window.location.pathname);
+            }
+            // ログアウト成功からのメッセージ表示 (logout.php から index.php にリダイレクト後)
+            if (urlParams.get('loggedout') === 'true') {
+                displayMessage('ログアウトしました！', 'success');
+                history.replaceState(null, '', window.location.pathname);
+            }
+        });
+    </script>
     <script src="js/script.js"></script>
 </body>
 

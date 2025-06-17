@@ -146,6 +146,15 @@ class cuser_info extends crecord {
         return $this->fetch_assoc();
     }
 
+    // ★追加: メールアドレスでユーザー情報を取得するメソッド（ログイン用）
+    public function get_user_by_email_for_login($debug, $email) {
+        $query = "SELECT user_id, user_name, user_email, user_pass, user_age FROM user_info WHERE user_email = :user_email";
+        $prep_arr = array(':user_email' => $email);
+        $this->select_query($debug, $query, $prep_arr);
+        return $this->fetch_assoc();
+    }
+
+
     public function __destruct() {
         parent::__destruct();
     }
@@ -1051,5 +1060,4 @@ class corder_items extends crecord {
         parent::__destruct();
     }
 }
-
 ?>

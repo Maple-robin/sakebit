@@ -1,5 +1,20 @@
 <?php
 /*!
+@file index.php
+@brief トップページ
+@copyright Copyright (c) 2024 Your Name.
+*/
+
+// セッションを開始 (HTML出力の前に置く)
+session_start();
+
+// contents_db.php など、必要なファイルをインクルード（必要に応じて）
+// require_once __DIR__ . '/common/contents_db.php';
+
+// ここにトップページ固有のPHPロジックがあれば記述
+?>
+<?php
+/*!
 @file signup.php
 @brief 新規登録ページと処理
 @copyright Copyright (c) 2024 Your Name.
@@ -173,9 +188,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- スマホ用メニューも必要なら同様に -->
     <nav class="sp-menu">
         <div class="sp-menu__header">
-            <div class="sp-menu__login js-login-btn" style="cursor:pointer;">
-                <i class="fas fa-user-circle"></i> ログイン
-            </div>
+            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
+                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
+                    <i class="fas fa-user-circle"></i> ログアウト
+                </a>
+            <?php else: ?>
+                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
+                    <i class="fas fa-user-circle"></i> ログイン
+                </a>
+            <?php endif; ?>
         </div>
         <div class="sp-menu__search">
             <input type="text" placeholder="検索...">

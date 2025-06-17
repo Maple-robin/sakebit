@@ -1,3 +1,18 @@
+<?php
+/*!
+@file index.php
+@brief トップページ
+@copyright Copyright (c) 2024 Your Name.
+*/
+
+// セッションを開始 (HTML出力の前に置く)
+session_start();
+
+// contents_db.php など、必要なファイルをインクルード（必要に応じて）
+// require_once __DIR__ . '/common/contents_db.php';
+
+// ここにトップページ固有のPHPロジックがあれば記述
+?>
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -14,6 +29,37 @@
     <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/top.css">
+    <style>
+        /* カスタムメッセージボックスのスタイル（signup.php と同様）*/
+        .custom-message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.6rem;
+            color: #fff;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            min-width: 300px;
+            text-align: center;
+        }
+        .custom-message-box.success {
+            background-color: #28a745; /* 緑色 */
+        }
+        .custom-message-box.error {
+            background-color: #dc3545; /* 赤色 */
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+    </style>
 </head>
 
 <body>
@@ -49,9 +95,15 @@
 
     <nav class="sp-menu">
         <div class="sp-menu__header">
-            <div class="sp-menu__login" onclick="location.href='login.php'" style="cursor:pointer;">
-                <i class="fas fa-user-circle"></i> ログイン
-            </div>
+            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
+                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
+                    <i class="fas fa-user-circle"></i> ログアウト
+                </a>
+            <?php else: ?>
+                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
+                    <i class="fas fa-user-circle"></i> ログイン
+                </a>
+            <?php endif; ?>
         </div>
         <div class="sp-menu__search">
             <input type="text" placeholder="検索...">
