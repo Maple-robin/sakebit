@@ -1,33 +1,14 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file signup.php
+@brief 新規登録ページと処理
 @copyright Copyright (c) 2024 Your Name.
 */
 
 // セッションを開始 (HTML出力の前に置く)
 session_start();
 
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
-// require_once __DIR__ . '/common/contents_db.php';
-
-// ここにトップページ固有のPHPロジックがあれば記述
-?>
-<?php
-/*!
-@file signup.php
-@brief 新規登録ページと処理
-@copyright Copyright (c) 2024 Your Name.
-*/
-
-// 必要に応じて、エラー表示設定やセッション開始などを行う
-// ini_set('display_errors', 1);
-// error_reporting(E_ALL);
-// session_start();
-
 // contents_db.php をインクルード
-// crecord と cutil クラスがこのファイル内で定義されているか、
-// または別途インクルードされていることを確認してください。
 require_once __DIR__ . '/common/contents_db.php';
 
 $debug_mode = false; // デバッグモードのオン/オフ
@@ -89,11 +70,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = $user_db->insert_user($debug_mode, $username, $email, $hashed_password, $dob);
 
         if ($result) {
+            // ★ここから追加・変更★
+            // 登録成功後、ユーザー情報を取得してセッションに保存し、自動ログイン状態にする
+            $new_user_data = $user_db->get_user_by_email_for_login($debug_mode, $email);
+            if ($new_user_data) {
+                $_SESSION['user_id'] = $new_user_data['user_id'];
+                $_SESSION['user_name'] = $new_user_data['user_name'];
+                $_SESSION['user_email'] = $new_user_data['user_email'];
+                // 必要に応じて他の情報もセッションに保存
+            }
+            // ★ここまで追加・変更★
+
             $signup_success = true;
             // 登録成功後、index.php へリダイレクト
-            // JavaScriptでのメッセージ表示後、リダイレクトするように変更したため、PHPでの即時リダイレクトはコメントアウト
-            // header('Location: index.php?registered=true');
-            // exit();
+            // PHPで即座にリダイレクト。registered=true はメッセージ表示用。
+            header('Location: index.php?registered=true');
+            exit();
         } else {
             $signup_error_message = 'ユーザー登録に失敗しました。再度お試しください。';
         }
@@ -308,6 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script>
         // DOMContentLoadedは、HTMLの読み込みが完了したときに実行されます。
+        // これがないと、HTML要素がまだ存在しない状態でJavaScriptがそれらを操作しようとしてエラーになる可能性があります。
         document.addEventListener('DOMContentLoaded', function() {
             // 新規登録フォームの処理
             const signupForm = document.querySelector('.signup-form');
@@ -320,11 +313,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             document.body.appendChild(phpMessageDiv);
 
             // PHPからの登録結果メッセージを表示
+            // signup_success は PHP で既にセッションがセットされているため、メッセージのみ表示
             <?php if ($signup_success): ?>
                 displayMessage('登録が完了しました！', 'success');
                 setTimeout(function() {
-                    window.location.href = 'index.php?registered=true'; // index.phpへリダイレクト
-                }, 1000); // ★3秒から1秒に短縮しました★
+                    // 自動ログインされているため、リダイレクトはPHP側で行われているはず
+                    // JavaScriptでのリダイレクトはここでは不要
+                }, 1000); // 1秒後にメッセージが消える
             <?php elseif (!empty($signup_error_message)): ?>
                 displayMessage('<?= htmlspecialchars($signup_error_message) ?>', 'error');
             <?php endif; ?>
@@ -409,6 +404,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     </script>
     <!-- js/script.js も引き続き必要に応じてインクルードしてください -->
-    <script src="js/script.js"></script>
+    <!-- <script src="js/script.js"></script> -->
 </body>
+
 </html>
