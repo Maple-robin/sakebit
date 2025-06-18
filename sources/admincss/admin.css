@@ -8,15 +8,15 @@ html {
 }
 
 body {
+    display: flex;
+    flex-direction: column; /* コンテンツを縦に並べる */
+    min-height: 100vh; /* 画面全体の高さを確保 */
+    margin: 0; /* 余白をリセット */
+    padding: 0; /* 余白をリセット */
     font-family: 'Noto Sans JP', sans-serif;
     line-height: 1.5;
     color: #333;
     background-color: #f4f7f6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-size: 1.8rem; /* 基本フォントサイズを大きく調整 */
-    min-height: 100vh; /* 画面の高さを最低限確保 */
-    /* height: 100%; display: flex; flex-direction: column; は削除 */
 }
 
 *,
@@ -172,9 +172,9 @@ ul {
  * ----------------------------------------
  */
 .admin-main {
+    flex-grow: 1; /* メインコンテンツが余白を埋めるように設定 */
     padding: 100px 0 80px; /* 上下パディングを調整 */
     margin-top: 70px; /* ヘッダー固定分のマージンを調整 */
-    flex-grow: 1;
 }
 
 /* Summary Cards */
@@ -265,9 +265,10 @@ ul {
  */
 .admin-footer {
     background-color: #eeeeee;
-    padding: 20px 0; /* 上下パディングを調整 */
+    padding: 20px 0;
     text-align: center;
-    flex-shrink: 0;
+    flex-shrink: 0; /* フッターが縮まないように設定 */
+    width: 100%; /* フッターをページ全体の幅に広げる */
 }
 
 .admin-footer__copyright {
