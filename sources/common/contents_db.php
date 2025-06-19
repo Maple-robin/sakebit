@@ -414,10 +414,89 @@ class cposts extends crecord {
         return $this->fetch_assoc();
     }
 
+    /**
+     * 新しい投稿をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id 投稿ユーザーのID
+     * @param string $post_title 投稿タイトル
+     * @param string $post_content 投稿内容
+     * @return int|false 挿入されたpost_id、または失敗した場合はfalse
+     */
+    public function insert_post($debug, $user_id, $post_title, $post_content) {
+        $query = "INSERT INTO posts (user_id, post_title, post_content) VALUES (:user_id, :post_title, :post_content)";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':post_title' => $post_title,
+            ':post_content' => $post_content
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された post_id を返す
+        }
+        return false;
+    }
+
+
     public function __destruct() {
         parent::__destruct();
     }
 }
+
+//--------------------------------------------------------------------------------------
+/// 投稿画像クラス (新規追加)
+//--------------------------------------------------------------------------------------
+class cpost_images extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * 新しい投稿画像をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 関連する投稿のID
+     * @param string $image_path 画像ファイルのパス
+     * @param int $display_order 画像の表示順序
+     * @return int|false 挿入されたimage_id、または失敗した場合はfalse
+     */
+    public function insert_image($debug, $post_id, $image_path, $display_order) {
+        $query = "INSERT INTO post_images (post_id, image_path, display_order) VALUES (:post_id, :image_path, :display_order)";
+        $prep_arr = array(
+            ':post_id' => (int)$post_id,
+            ':image_path' => $image_path,
+            ':display_order' => (int)$display_order
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された image_id を返す
+        }
+        return false;
+    }
+
+    /**
+     * 特定の投稿IDに紐づく全ての画像を取得するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 投稿のID
+     * @return array 投稿画像情報の配列、または見つからない場合は空の配列
+     */
+    public function get_images_by_post_id($debug, $post_id) {
+        if (!cutil::is_number($post_id) || $post_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "SELECT * FROM post_images WHERE post_id = :post_id ORDER BY display_order ASC, image_id ASC";
+        $prep_arr = array(':post_id' => (int)$post_id);
+        $this->select_query($debug, $query, $prep_arr);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
 
 //--------------------------------------------------------------------------------------
 /// 問い合わせクラス
