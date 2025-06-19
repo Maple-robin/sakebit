@@ -137,6 +137,15 @@ session_start();
                         <textarea id="post-content" name="post_content" placeholder="こちらに投稿内容を入力してください"
                             required></textarea>
                     </div>
+                    <!-- 投稿フォーム内に追加 -->
+                    <div class="form-group">
+                        <label for="post-images" class="image-upload-label">
+                            <span class="image-upload-icon">＋</span>
+                            画像を追加（最大4枚）
+                        </label>
+                        <input type="file" id="post-images" name="post_images" accept="image/*" multiple style="display:none;">
+                        <div id="image-preview" class="image-preview-simple"></div>
+                    </div>
                     <div class="form-actions">
                         <button type="button" class="cancel-btn">キャンセル</button>
                         <button type="submit" class="submit-btn">投稿する</button>
@@ -179,8 +188,9 @@ session_start();
             <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
         </div>
     </footer>
-    <script src="js/script.js"></script>
+
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <script src="js/script.js"></script>
     <script src="js/post.js"></script>
 </body>
 

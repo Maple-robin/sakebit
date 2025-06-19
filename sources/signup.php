@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // フォームデータの取得とサニタイズ
     $username = $_POST['username'] ?? '';
     $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
+    $password = $_POST['password'] ?? ''; // パスワードも取得
     $confirm_password = $_POST['confirm-password'] ?? '';
-    $dob = $_POST['dob'] ?? ''; // YYYY-MM-DD形式
+    $dob = $_POST['dob'] ?? ''; //YYYY-MM-DD形式
 
     // サーバーサイドでのバリデーション
     $isValid = true;
@@ -67,10 +67,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
         $user_db = new cuser_info();
-        $result = $user_db->insert_user($debug_mode, $username, $email, $hashed_password, $dob);
+        $new_user_id = $user_db->insert_user($debug_mode, $username, $email, $hashed_password, $dob);
 
-        if ($result) {
+        if ($new_user_id) {
             // ★ここから追加・変更★
+            // user_profiles テーブルにデフォルトのプロフィール情報を挿入
+            $profile_db = new cuser_profiles();
+            $default_icon_url = 'https://placehold.co/100x100/FFD700/000000?text=USER';
+            $default_profile_text = 'お酒と美味しい料理をこよなく愛する' . htmlspecialchars($username) . 'です。\n特に日本酒の奥深さに魅了されており、週末は新しい銘柄を探しに出かけるのが趣味です。\n皆さんとお酒に関する情報交換ができたら嬉しいです！';
+
+            $profile_insert_result = $profile_db->insert_profile($debug_mode, $new_user_id, $default_icon_url, $default_profile_text);
+
+            if (!$profile_insert_result) {
+                // プロフィール登録失敗のログ（致命的ではないが記録すべき）
+                error_log("Failed to insert default user profile for user_id: " . $new_user_id);
+                // ユーザーには成功として扱うが、管理者には通知すべき問題
+            }
+
             // 登録成功後、ユーザー情報を取得してセッションに保存し、自動ログイン状態にする
             $new_user_data = $user_db->get_user_by_email_for_login($debug_mode, $email);
             if ($new_user_data) {
@@ -312,6 +325,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             phpMessageDiv.id = 'php-message-box';
             document.body.appendChild(phpMessageDiv);
 
+            // カスタムメッセージボックスを表示する関数
+            function displayMessage(message, type) {
+                const messageBox = document.createElement('div');
+                messageBox.classList.add('custom-message-box');
+                if (type === 'success') {
+                    messageBox.classList.add('success');
+                } else if (type === 'error') {
+                    messageBox.classList.add('error');
+                }
+                messageBox.textContent = message;
+
+                // 既存のメッセージボックスがあれば削除
+                const existingMessageBox = document.querySelector('.custom-message-box');
+                if (existingMessageBox) {
+                    existingMessageBox.remove();
+                }
+
+                document.body.appendChild(messageBox);
+
+                // メッセージボックスを数秒後に非表示にする
+                setTimeout(() => {
+                    messageBox.remove();
+                }, 3000); // 3秒後に消える
+            }
+
             // PHPからの登録結果メッセージを表示
             // signup_success は PHP で既にセッションがセットされているため、メッセージのみ表示
             <?php if ($signup_success): ?>
@@ -339,7 +377,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // 入力値の取得
                     const password = document.getElementById('password').value;
                     const confirmPassword = document.getElementById('confirm-password').value;
-                    const dob = document.getElementById('dob').value; // YYYY-MM-DD形式
+                    const dob = document.getElementById('dob').value; //YYYY-MM-DD形式
 
                     let isValidClient = true; // クライアントサイドのバリデーション状態
 
@@ -376,35 +414,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // クライアントサイドバリデーションが成功した場合は、フォームはそのまま送信される
                 });
             }
-
-            // カスタムメッセージボックスを表示する関数
-            function displayMessage(message, type) {
-                const messageBox = document.createElement('div');
-                messageBox.classList.add('custom-message-box');
-                if (type === 'success') {
-                    messageBox.classList.add('success');
-                } else if (type === 'error') {
-                    messageBox.classList.add('error');
-                }
-                messageBox.textContent = message;
-
-                // 既存のメッセージボックスがあれば削除
-                const existingMessageBox = document.querySelector('.custom-message-box');
-                if (existingMessageBox) {
-                    existingMessageBox.remove();
-                }
-
-                document.body.appendChild(messageBox);
-
-                // メッセージボックスを数秒後に非表示にする
-                setTimeout(() => {
-                    messageBox.remove();
-                }, 3000); // 3秒後に消える
-            }
         });
     </script>
     <!-- js/script.js も引き続き必要に応じてインクルードしてください -->
-    <!-- <script src="js/script.js"></script> -->
+    <script src="js/script.js"></script>
 </body>
 
 </html>

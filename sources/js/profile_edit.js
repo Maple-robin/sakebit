@@ -1,4 +1,3 @@
-// ProfileEdit.js
 document.addEventListener('DOMContentLoaded', () => {
     // アイコン変更処理
     const userIconInput = document.getElementById('user-icon');
@@ -8,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userIconInput && profileIconPreview && btnChangeIcon) {
         // ボタンクリックでファイル選択をトリガー
         btnChangeIcon.addEventListener('click', (e) => {
-            e.preventDefault();
+            e.preventDefault(); // デフォルトのフォーム送信を防ぐ
             userIconInput.click();
         });
 
@@ -36,10 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (currentLength > MAX_BIO_LENGTH) {
                 bioCurrentChar.style.color = 'red';
-                // 必要であれば、保存ボタンを無効にする処理などを追加
+                // 保存ボタンを無効にするなどの処理を追加する場合はここに記述
+                // 例: document.querySelector('.btn-save-profile').disabled = true;
             } else {
                 bioCurrentChar.style.color = '#888';
-                // 無効にしたボタンを有効に戻す処理など
+                // 無効にしたボタンを有効に戻すなどの処理を追加する場合はここに記述
+                // 例: document.querySelector('.btn-save-profile').disabled = false;
             }
         }
 
@@ -48,22 +49,63 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCharCount();
     }
 
-    // 保存ボタンのクリックイベント (ここではダミー。実際はサーバーサイドに送信)
-    const btnSaveProfile = document.querySelector('.btn-save-profile');
-    if (btnSaveProfile) {
-        btnSaveProfile.addEventListener('click', () => {
-            alert('プロフィールを保存しました！ (この機能はまだ実装されていません)');
-            // 実際の保存処理（Fetch APIなどを使ってサーバーへデータ送信）
-            // 保存成功後、マイページトップへ遷移するなど
-            // window.location.href = 'mypage.html';
+    // カスタムメッセージボックスを表示する関数 (MyPage.jsと共通)
+    function displayMessage(message, type) {
+        const messageBox = document.createElement('div');
+        messageBox.classList.add('custom-message-box');
+        if (type === 'success') {
+            messageBox.classList.add('success');
+        } else if (type === 'error') {
+            messageBox.classList.add('error');
+        }
+        messageBox.textContent = message;
+
+        const existingMessageBox = document.querySelector('.custom-message-box');
+        if (existingMessageBox) {
+            existingMessageBox.remove();
+        }
+
+        document.body.appendChild(messageBox);
+
+        setTimeout(() => {
+            messageBox.remove();
+        }, 3000); // 3秒後に消える
+    }
+
+    // URLパラメータからメッセージを取得して表示
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('profile_updated') && urlParams.get('profile_updated') === 'true') {
+        displayMessage('プロフィールを更新しました！', 'success');
+        history.replaceState(null, '', window.location.pathname); // URLからパラメータを削除
+    } else if (urlParams.has('profile_update_error')) {
+        const errorMessage = urlParams.get('profile_update_error');
+        displayMessage(`更新エラー: ${decodeURIComponent(errorMessage)}`, 'error');
+        history.replaceState(null, '', window.location.pathname); // URLからパラメータを削除
+    }
+
+    // bodyのno-scrollクラスを制御（ハンバーガーメニュー用）
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
+    const spMenu = document.querySelector('.sp-menu');
+    if (hamburgerMenu && spMenu) {
+        hamburgerMenu.addEventListener('click', function () {
+            hamburgerMenu.classList.toggle('is-active');
+            spMenu.classList.toggle('is-active');
+            document.body.classList.toggle('no-scroll', spMenu.classList.contains('is-active'));
         });
     }
 
-    // キャンセルボタンのクリックイベント (HTMLでonclick="history.back()"を設定済み)
-    // const btnCancelProfile = document.querySelector('.btn-cancel-profile');
-    // if (btnCancelProfile) {
-    //     btnCancelProfile.addEventListener('click', () => {
-    //         history.back(); // 前のページに戻る
-    //     });
-    // }
+    // 複数カテゴリトグル対応（スマホメニュー用）
+    const spCategoryToggles = document.querySelectorAll('.sp-menu__category-toggle');
+    spCategoryToggles.forEach(toggle => {
+        toggle.addEventListener('click', function () {
+            this.classList.toggle('is-open');
+            const subList = this.querySelector('.sp-menu__sub-list');
+            if (subList) {
+                subList.classList.toggle('is-open');
+                if (!subList.classList.contains('is-open')) {
+                    subList.scrollTop = 0;
+                }
+            }
+        });
+    });
 });

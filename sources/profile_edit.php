@@ -1,17 +1,166 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file profile_edit.php
+@brief プロフィール編集ページと処理
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// セッションを開始 (HTML出力の前に置く)
+// ★★★ デバッグ用の設定はここから削除してください。本番環境では不要です。 ★★★
+// ini_set('display_errors', 1);
+// error_reporting(E_ALL);
+// ★★★ ここまで削除 ★★★
+
+// セッションを開始
 session_start();
 
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
-// require_once __DIR__ . '/common/contents_db.php';
+// contents_db.php をインクルード
+require_once __DIR__ . '/common/contents_db.php';
 
-// ここにトップページ固有のPHPロジックがあれば記述
+$debug_mode = false; // デバッグモードのオン/オフ
+
+// ログインしていない場合はログインページへリダイレクト
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$current_user_id = $_SESSION['user_id'];
+$user_db = new cuser_info();
+$profile_db = new cuser_profiles();
+
+// 現在のユーザー情報とプロフィール情報を取得
+$user_data = $user_db->get_tgt($debug_mode, $current_user_id);
+$user_profile = $profile_db->get_profile_by_user_id($debug_mode, $current_user_id);
+
+// プロフィール情報が存在しない場合のデフォルト値設定
+if (!$user_profile) {
+    $user_profile = [
+        'profile_icon_url' => 'img/profile_icons/default_user.png', // デフォルトアイコンのパス
+        'profile_text' => 'お酒と美味しい料理をこよなく愛する' . htmlspecialchars($user_data['user_name'] ?? 'サンプル太郎') . 'です。' . "\n" .
+                          '特に日本酒の奥深さに魅了されており、週末は新しい銘柄を探しに出かけるのが趣味です。' . "\n" .
+                          '皆さんとお酒に関する情報交換ができたら嬉しいです！'
+    ];
+    // 新規登録時に挿入されるはずなので、基本的にはここには来ないが、念のため挿入も試みる
+    $profile_db->insert_profile($debug_mode, $current_user_id, $user_profile['profile_icon_url'], $user_profile['profile_text']);
+}
+
+$update_success = false;
+$error_message = '';
+
+// フォーム送信時の処理
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 送信されたデータを取得
+    $new_username = $_POST['username'] ?? '';
+    $new_bio = $_POST['bio'] ?? '';
+    $new_icon_url = $user_profile['profile_icon_url']; // デフォルトは現在のアイコンURL
+
+    // バリデーション
+    if (empty($new_username)) {
+        $error_message = 'ユーザー名を入力してください。';
+    } elseif (mb_strlen($new_username, 'UTF-8') > 50) { // ユーザー名の最大文字数を設定 (例: 50文字)
+        $error_message = 'ユーザー名は50文字以内で入力してください。';
+    } elseif (mb_strlen($new_bio, 'UTF-8') > 200) { // 自己紹介の最大文字数を設定 (例: 200文字)
+        $error_message = '自己紹介は200文字以内で入力してください。';
+    }
+
+    // アイコン画像のアップロード処理
+    // ファイルが選択され、かつエラーがない場合のみ処理
+    if (empty($error_message) && isset($_FILES['user_icon']) && $_FILES['user_icon']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = __DIR__ . '/img/profile_icons/'; // プロフィールアイコンの保存先ディレクトリ
+        // mkdirの権限は適切に設定済みであることを前提としますが、念のため再確認を推奨
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0777, true); // ディレクトリが存在しない場合は作成
+        }
+
+        $file_tmp_name = $_FILES['user_icon']['tmp_name'];
+        $file_name = $_FILES['user_icon']['name'];
+        $file_size = $_FILES['user_icon']['size'];
+        $file_type = $_FILES['user_icon']['type'];
+        $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+        // 許可するファイル拡張子
+        $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
+        // 許可するMIMEタイプ
+        $allowed_mime = ['image/jpeg', 'image/png', 'image/gif'];
+        // 最大ファイルサイズ (例: 5MB)
+        $max_file_size = 5 * 1024 * 1024;
+
+        if (!in_array($file_ext, $allowed_ext) || !in_array($file_type, $allowed_mime)) {
+            $error_message = '許可されていないファイル形式です。JPEG, PNG, GIFのみアップロードできます。';
+        } elseif ($file_size > $max_file_size) {
+            $error_message = 'ファイルサイズが大きすぎます。5MB以下にしてください。';
+        } else {
+            // ユニークなファイル名を生成
+            $unique_file_name = uniqid('icon_', true) . '.' . $file_ext;
+            $destination_path = $upload_dir . $unique_file_name;
+            $relative_path = 'img/profile_icons/' . $unique_file_name; // データベースに保存する相対パス
+
+            if (move_uploaded_file($file_tmp_name, $destination_path)) {
+                $new_icon_url = $relative_path; // 新しいアイコンのURLを設定
+            } else {
+                // ファイル移動が失敗した場合の具体的なエラーメッセージ
+                error_log("Failed to move uploaded file: " . $file_tmp_name . " to " . $destination_path . " - Last error: " . (error_get_last()['message'] ?? 'Unknown error'));
+                $error_message = 'ファイルのアップロードに失敗しました。(サーバーエラー)';
+            }
+        }
+    } else if (isset($_FILES['user_icon']) && $_FILES['user_icon']['error'] !== UPLOAD_ERR_NO_FILE) {
+        // UPLOAD_ERR_NO_FILE (ファイルが選択されていない) 以外のPHPエラーがあった場合
+        switch ($_FILES['user_icon']['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                $error_message = 'アップロードされたファイルが大きすぎます。';
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $error_message = 'ファイルの一部しかアップロードされませんでした。';
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $error_message = '一時フォルダがありません。';
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $error_message = 'ディスクへの書き込みに失敗しました。'; // パーミッション関連のエラーの可能性が高い
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $error_message = 'PHP拡張モジュールによってアップロードが中断されました。';
+                break;
+            default:
+                $error_message = '不明なファイルアップロードエラーが発生しました。';
+                break;
+        }
+    }
+
+
+    if (empty($error_message)) {
+        // ユーザー名 (user_infoテーブル) の更新
+        $username_updated = $user_db->update_user_name($debug_mode, $current_user_id, $new_username);
+
+        // プロフィール情報 (user_profilesテーブル) の更新
+        $profile_updated = $profile_db->update_profile($debug_mode, $current_user_id, $new_icon_url, $new_bio);
+
+        if ($username_updated && $profile_updated) {
+            // セッションのユーザー名も更新
+            $_SESSION['user_name'] = $new_username;
+            $update_success = true;
+        } else {
+            $error_message = 'プロフィールの更新に失敗しました。';
+        }
+    }
+
+    // 更新後のリダイレクト
+    if ($update_success) {
+        header('Location: MyPage.php?profile_updated=true');
+        exit();
+    } else {
+        // エラーがある場合は、エラーメッセージをGETパラメータとして渡し、現在のページに留まる
+        header('Location: profile_edit.php?profile_update_error=' . urlencode($error_message));
+        exit();
+    }
+}
+
+// フォームに表示するデータ
+$display_username = htmlspecialchars($user_data['user_name'] ?? '');
+$display_profile_icon_url = htmlspecialchars($user_profile['profile_icon_url'] ?? 'img/profile_icons/default_user.png');
+$display_profile_text = htmlspecialchars(str_replace('\n', "\n", $user_profile['profile_text'] ?? ''));
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -29,6 +178,43 @@ session_start();
     <link rel="stylesheet" href="css/profile_edit.css">
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* カスタムメッセージボックスのスタイル (MyPage.phpと連携) */
+        .custom-message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.6rem;
+            color: #fff;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            min-width: 300px;
+            text-align: center;
+        }
+        .custom-message-box.success {
+            background-color: #28a745;
+        }
+        .custom-message-box.error {
+            background-color: #dc3545;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+        .error-message { /* PHP側でバリデーションエラーがあった場合 */
+            color: #dc3545;
+            font-size: 0.9em;
+            margin-top: 5px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
@@ -124,34 +310,47 @@ session_start();
                 <span class="ja">( プロフィール編集 )</span>
             </h1>
 
-            <div class="profile-edit-inner">
-                <div class="profile-edit-item profile-edit-icon">
-                    <label for="user-icon">
-                        <img src="https://placehold.co/150x150/FFD700/000000?text=USER" alt="ユーザーアイコン"
-                            class="profile-icon-preview">
-                        <input type="file" id="user-icon" accept="image/*" style="display: none;">
-                        <button type="button" class="btn-change-icon">アイコンを変更</button>
-                    </label>
-                    <p class="icon-guidance">推奨サイズ: 150x150px / JPEG, PNG</p>
-                </div>
+            <?php if (!empty($error_message)): ?>
+                <p class="error-message"><?= htmlspecialchars($error_message) ?></p>
+            <?php endif; ?>
 
-                <div class="profile-edit-item">
-                    <label for="birthday" class="edit-label">誕生日</label>
-                    <input type="date" id="birthday" class="edit-input" value="1990-01-01">
-                </div>
+            <form class="profile-edit-form" method="post" action="profile_edit.php" enctype="multipart/form-data">
+                <div class="profile-edit-inner">
+                    <div class="profile-edit-item profile-edit-icon">
+                        <label for="user-icon">
+                            <img src="<?= $display_profile_icon_url ?>" alt="ユーザーアイコン"
+                                class="profile-icon-preview">
+                            <input type="file" id="user-icon" name="user_icon" accept="image/*" style="display: none;">
+                            <button type="button" class="btn-change-icon">アイコンを変更</button>
+                        </label>
+                        <p class="icon-guidance">推奨サイズ: 150x150px / JPEG, PNG, GIF</p>
+                    </div>
 
-                <div class="profile-edit-item">
-                    <label for="bio" class="edit-label">自己紹介</label>
-                    <textarea id="bio" class="edit-textarea" rows="5"
-                        placeholder="自己紹介を入力してください。">お酒と美味しい料理をこよなく愛するサンプル太郎です。特に日本酒の奥深さに魅了されており、週末は新しい銘柄を探しに出かけるのが趣味です。皆さんとお酒に関する情報交換ができたら嬉しいです！</textarea>
-                    <p class="char-count"><span id="bio-current-char"></span> / 200文字</p>
-                </div>
+                    <div class="profile-edit-item">
+                        <label for="username" class="edit-label">ユーザー名</label>
+                        <!-- ユーザー名はここでは編集可とする -->
+                        <input type="text" id="username" name="username" class="edit-input" value="<?= $display_username ?>" required>
+                    </div>
 
-                <div class="profile-edit-actions">
-                    <button type="submit" class="btn-save-profile">変更を保存</button>
-                    <button type="button" class="btn-cancel-profile" onclick="history.back()">キャンセル</button>
+                    <!-- 誕生日フィールドは削除 -->
+                    <!-- <div class="profile-edit-item">
+                        <label for="birthday" class="edit-label">誕生日</label>
+                        <input type="date" id="birthday" name="birthday" class="edit-input" value="<?= $display_birthday ?>">
+                    </div> -->
+
+                    <div class="profile-edit-item">
+                        <label for="bio" class="edit-label">自己紹介</label>
+                        <textarea id="bio" name="bio" class="edit-textarea" rows="5"
+                            placeholder="自己紹介を入力してください。"><?= $display_profile_text ?></textarea>
+                        <p class="char-count"><span id="bio-current-char"></span> / 200文字</p>
+                    </div>
+
+                    <div class="profile-edit-actions">
+                        <button type="submit" class="btn-save-profile">変更を保存</button>
+                        <button type="button" class="btn-cancel-profile" onclick="history.back()">キャンセル</button>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </main>
 
@@ -190,7 +389,6 @@ session_start();
     </footer>
 
     <script src="js/script.js"></script>
-    <script src="js/MyPage.js"></script>
     <script src="js/profile_edit.js"></script>
 </body>
 

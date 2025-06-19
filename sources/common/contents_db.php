@@ -70,6 +70,11 @@ class crecord {
         return false;
     }
 
+    // 最後に挿入されたIDを取得するメソッド (AUTO_INCREMENTカラムがある場合)
+    public function last_insert_id() {
+        return $this->pdo->lastInsertId();
+    }
+
     public function __destruct() {
         $this->stmt = null;
         $this->pdo = null;
@@ -127,6 +132,7 @@ class cuser_info extends crecord {
     }
 
     // 新しいユーザーをデータベースに挿入するメソッド
+    // user_id が AUTO_INCREMENT なので、挿入後に lastInsertId() でIDを取得する必要がある
     public function insert_user($debug, $user_name, $user_email, $user_pass_hashed, $user_age) {
         $query = "INSERT INTO user_info (user_name, user_email, user_pass, user_age) VALUES (:user_name, :user_email, :user_pass, :user_age)";
         $prep_arr = array(
@@ -135,7 +141,11 @@ class cuser_info extends crecord {
             ':user_pass' => $user_pass_hashed, // ハッシュ化されたパスワード
             ':user_age' => $user_age // DATE型に合う 'YYYY-MM-DD' 形式
         );
-        return $this->execute_query($debug, $query, $prep_arr);
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された user_id を返す
+        }
+        return false;
     }
 
     // メールアドレスでユーザーを検索するメソッド（登録済みかどうかのチェック用）
@@ -146,12 +156,35 @@ class cuser_info extends crecord {
         return $this->fetch_assoc();
     }
 
-    // ★追加: メールアドレスでユーザー情報を取得するメソッド（ログイン用）
+    // メールアドレスでユーザー情報を取得するメソッド（ログイン用）
     public function get_user_by_email_for_login($debug, $email) {
         $query = "SELECT user_id, user_name, user_email, user_pass, user_age FROM user_info WHERE user_email = :user_email";
         $prep_arr = array(':user_email' => $email);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
+    }
+    
+    // ユーザーを削除するメソッド (admin_users.php で使用予定)
+    public function delete_user($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM user_info WHERE user_id = :user_id";
+        $prep_arr = array(':user_id' => (int)$user_id);
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
+    // ユーザー名を更新するメソッド
+    public function update_user_name($debug, $user_id, $user_name) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return false;
+        }
+        $query = "UPDATE user_info SET user_name = :user_name WHERE user_id = :user_id";
+        $prep_arr = array(
+            ':user_name' => $user_name,
+            ':user_id' => (int)$user_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
 
@@ -159,6 +192,56 @@ class cuser_info extends crecord {
         parent::__destruct();
     }
 }
+
+//--------------------------------------------------------------------------------------
+/// ユーザープロフィールクラス
+//--------------------------------------------------------------------------------------
+class cuser_profiles extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    // プロフィール情報を挿入
+    public function insert_profile($debug, $user_id, $profile_icon_url, $profile_text) {
+        $query = "INSERT INTO user_profiles (user_id, profile_icon_url, profile_text) VALUES (:user_id, :profile_icon_url, :profile_text)";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':profile_icon_url' => $profile_icon_url,
+            ':profile_text' => $profile_text
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
+    // プロフィール情報をユーザーIDで取得
+    public function get_profile_by_user_id($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return false;
+        }
+        $query = "SELECT * FROM user_profiles WHERE user_id = :user_id";
+        $prep_arr = array(':user_id' => (int)$user_id);
+        $this->select_query($debug, $query, $prep_arr);
+        return $this->fetch_assoc();
+    }
+
+    // プロフィール情報を更新 (アイコンURLと自己紹介文)
+    public function update_profile($debug, $user_id, $profile_icon_url, $profile_text) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return false;
+        }
+        $query = "UPDATE user_profiles SET profile_icon_url = :profile_icon_url, profile_text = :profile_text WHERE user_id = :user_id";
+        $prep_arr = array(
+            ':profile_icon_url' => $profile_icon_url,
+            ':profile_text' => $profile_text,
+            ':user_id' => (int)$user_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
 
 //--------------------------------------------------------------------------------------
 /// 商品情報クラス
@@ -1060,4 +1143,52 @@ class corder_items extends crecord {
         parent::__destruct();
     }
 }
+
+//--------------------------------------------------------------------------------------
+/// 管理者ユーザー情報クラス
+//--------------------------------------------------------------------------------------
+class cadmin_user_info extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * 新しい管理者ユーザーをデータベースに挿入するメソッド
+     * admin_user_id は AUTO_INCREMENT なので、挿入後に lastInsertId() でIDを取得する必要がある
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param string $admin_user_name 管理者ユーザー名
+     * @param string $admin_user_pass_hashed ハッシュ化された管理者パスワード
+     * @return int|false 挿入されたadmin_user_id、または失敗した場合はfalse
+     */
+    public function insert_admin_user($debug, $admin_user_name, $admin_user_pass_hashed) {
+        $query = "INSERT INTO admin_user_info (admin_user_name, admin_user_pass) VALUES (:admin_user_name, :admin_user_pass)";
+        $prep_arr = array(
+            ':admin_user_name' => $admin_user_name,
+            ':admin_user_pass' => $admin_user_pass_hashed // ハッシュ化されたパスワード
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された admin_user_id を返す
+        }
+        return false;
+    }
+
+    /**
+     * 管理者ユーザー名で管理者ユーザー情報を取得するメソッド（ログイン認証用）
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param string $admin_user_name 検索する管理者ユーザー名
+     * @return array|false ユーザー情報（連想配列）、または見つからない場合はfalse
+     */
+    public function get_admin_user_by_name($debug, $admin_user_name) {
+        $query = "SELECT admin_user_id, admin_user_name, admin_user_pass FROM admin_user_info WHERE admin_user_name = :admin_user_name";
+        $prep_arr = array(':admin_user_name' => $admin_user_name);
+        $this->select_query($debug, $query, $prep_arr);
+        return $this->fetch_assoc();
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
 ?>

@@ -1,17 +1,131 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file MyPage.php
+@brief マイページ
 @copyright Copyright (c) 2024 Your Name.
 */
 
 // セッションを開始 (HTML出力の前に置く)
 session_start();
 
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
-// require_once __DIR__ . '/common/contents_db.php';
+// contents_db.php をインクルード
+require_once __DIR__ . '/common/contents_db.php';
 
-// ここにトップページ固有のPHPロジックがあれば記述
+$debug_mode = false; // デバッグモードのオン/オフ
+
+// ログインしていない場合はログインページへリダイレクト
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$current_user_id = $_SESSION['user_id'];
+$user_db = new cuser_info();
+$profile_db = new cuser_profiles(); // プロフィール情報取得のために追加
+// $posts_db = new cposts(); // 投稿機能未実装のためコメントアウト
+// $good_db = new cgood(); // 投稿機能未実装のためコメントアウト
+
+// ユーザープロフィール情報と基本情報を取得
+$user_data = $user_db->get_tgt($debug_mode, $current_user_id);
+$user_profile = $profile_db->get_profile_by_user_id($debug_mode, $current_user_id);
+
+// プロフィール情報が存在しない場合のデフォルト値設定
+if (!$user_profile) {
+    // user_profiles テーブルにデータがない場合、デフォルト値を設定
+    $user_profile = [
+        'profile_icon_url' => 'img/profile_icons/default_user.png', // デフォルトアイコンのパス
+        'profile_text' => 'お酒と美味しい料理をこよなく愛する' . htmlspecialchars($user_data['user_name'] ?? 'サンプル太郎') . 'です。' . "\n" .
+                          '特に日本酒の奥深さに魅了されており、週末は新しい銘柄を探しに出かけるのが趣味です。' . "\n" .
+                          '皆さんとお酒に関する情報交換ができたら嬉しいです！'
+    ];
+    // 新規ユーザーのためにデフォルトプロフィールを挿入（profile_edit.phpでも行われるが念のため）
+    $profile_db->insert_profile($debug_mode, $current_user_id, $user_profile['profile_icon_url'], $user_profile['profile_text']);
+}
+
+// ユーザーの誕生日から年齢を計算するヘルパー関数 (表示しないが、必要であれば残す)
+function calculateAge($dob) {
+    if (empty($dob) || $dob === '0000-00-00') {
+        return '不明';
+    }
+    try {
+        $birthDate = new DateTime($dob);
+        $today = new DateTime();
+        $age = $birthDate->diff($today)->y;
+        return $age;
+    } catch (Exception $e) {
+        return 'エラー';
+    }
+}
+
+// 投稿機能が未実装のため、投稿関連のデータは空とする
+$my_posts_for_js = [];
+$liked_posts_for_js = [];
+
+/*
+// ユーザー自身の投稿を取得 (投稿機能未実装のためコメントアウト)
+$my_posts_raw = $posts_db->get_posts_by_author_id($debug_mode, $current_user_id);
+// いいねした投稿を取得 (投稿機能未実装のためコメントアウト)
+$liked_posts_raw = $posts_db->get_liked_posts_by_user_id($debug_mode, $current_user_id);
+
+// JavaScriptに渡すための投稿データを整形 (投稿機能未実装のためコメントアウト)
+$my_posts_for_js = [];
+foreach ($my_posts_raw as $post) {
+    $reaction_counts = $good_db->get_post_reaction_counts($debug_mode, $post['post_id']);
+    $user_reaction = $good_db->get_user_reaction_to_post($debug_mode, $current_user_id, $post['post_id']);
+
+    $my_posts_for_js[] = [
+        'id' => $post['post_id'],
+        'title' => $post['post_title'],
+        'content' => $post['post_content'],
+        'goods' => $reaction_counts['goods_count'],
+        'bads' => $reaction_counts['bads_count'],
+        'is_mine' => true,
+        'liked' => ($user_reaction === 'good'),
+        'baddened' => ($user_reaction === 'bad')
+    ];
+}
+
+$liked_posts_for_js = [];
+foreach ($liked_posts_raw as $post) {
+    $reaction_counts = [
+        'goods_count' => $post['goods_count'] ?? 0,
+        'bads_count' => $post['bads_count'] ?? 0
+    ];
+    $user_reaction = $good_db->get_user_reaction_to_post($debug_mode, $current_user_id, $post['post_id']);
+
+    $liked_posts_for_js[] = [
+        'id' => $post['post_id'],
+        'title' => $post['post_title'],
+        'content' => $post['post_content'],
+        'goods' => $reaction_counts['goods_count'],
+        'bads' => $reaction_counts['bads_count'],
+        'is_mine' => ($post['user_id'] == $current_user_id),
+        'liked' => ($user_reaction === 'good'),
+        'baddened' => ($user_reaction === 'bad')
+    ];
+}
+*/
+
+// PHPからのメッセージング (投稿関連のエラーメッセージは一時的に無効化)
+$message = '';
+$message_type = '';
+/*
+if (isset($_GET['post_deleted']) && $_GET['post_deleted'] === 'true') {
+    $message = '投稿を削除しました。';
+    $message_type = 'success';
+} elseif (isset($_GET['post_delete_error']) && $_GET['post_delete_error'] === 'true') {
+    $message = '投稿の削除に失敗しました。';
+    $message_type = 'error';
+}
+*/
+// プロフィール更新時のメッセージ
+if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
+    $message = 'プロフィールを更新しました！';
+    $message_type = 'success';
+} elseif (isset($_GET['profile_update_error'])) {
+    $message = '更新エラー: ' . urldecode($_GET['profile_update_error']);
+    $message_type = 'error';
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -28,6 +142,97 @@ session_start();
     <link rel="stylesheet" href="css/MyPage.css">
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* カスタムメッセージボックスのスタイル */
+        .custom-message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.6rem;
+            color: #fff;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            min-width: 300px; /* メッセージボックスの最小幅 */
+            text-align: center;
+        }
+        .custom-message-box.success {
+            background-color: #28a745; /* 緑色 */
+        }
+        .custom-message-box.error {
+            background-color: #dc3545; /* 赤色 */
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+
+        /* カスタム確認モーダル */
+        .custom-modal-overlay {
+            display: none; /* 初期状態では非表示 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 10001; /* custom-message-boxより上 */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            z-index: 10002;
+        }
+
+        .custom-modal-content p {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .custom-modal-buttons button {
+            margin: 0 10px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.6rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-modal-buttons .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .custom-modal-buttons .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .custom-modal-buttons .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .custom-modal-buttons .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+    </style>
 </head>
 
 <body>
@@ -128,13 +333,23 @@ session_start();
             </h1>
 
             <section class="profile-section">
-                <img src="https://placehold.co/100x100/FFD700/000000?text=USER" alt="ユーザーアイコン" class="profile-icon">
-                <h2 class="profile-username">ユーザー名：サンプル太郎</h2>
-                <p class="profile-birthday">誕生日：1990年1月1日</p>
+                <img src="<?= htmlspecialchars($user_profile['profile_icon_url']) ?>" alt="ユーザーアイコン" class="profile-icon">
+                <h2 class="profile-username">ユーザー名：<?= htmlspecialchars($user_data['user_name'] ?? 'ゲスト') ?></h2>
+                <!-- メールアドレスと年齢は表示しない -->
+                <p class="profile-birthday">誕生日：<?= htmlspecialchars($user_data['user_age'] ?? '不明') ?></p>
                 <p class="profile-bio">
-                    お酒と美味しい料理をこよなく愛するサンプル太郎です。
-                    特に日本酒の奥深さに魅了されており、週末は新しい銘柄を探しに出かけるのが趣味です。
-                    皆さんとお酒に関する情報交換ができたら嬉しいです！
+                    <?php
+                    // データベースから取得したテキスト
+                    $raw_profile_text = $user_profile['profile_text'];
+
+                    // もしデータベースに '\n' (バックスラッシュとnの文字) として保存されている場合、
+                    // それを実際の改行文字に変換します。
+                    $text_with_actual_newlines = str_replace('\n', "\n", $raw_profile_text);
+
+                    // その後、XSS対策のためにHTML特殊文字をエスケープし、
+                    // 実際の改行文字をHTMLの<br>タグに変換して出力します。
+                    echo nl2br(htmlspecialchars($text_with_actual_newlines));
+                    ?>
                 </p>
                 <button class="edit-profile-button">プロフィールを編集</button>
                 <!-- 購入履歴ページへのリンクボタン -->
@@ -148,10 +363,12 @@ session_start();
                 </div>
                 <div id="my-posts-content" class="tab-content active">
                     <div class="posts-list">
+                        <!-- ここにJavaScriptで動的に自分の投稿が挿入されます -->
                     </div>
                 </div>
                 <div id="liked-posts-content" class="tab-content">
                     <div class="posts-list">
+                        <!-- ここにJavaScriptで動的にいいねした投稿が挿入されます -->
                     </div>
                 </div>
             </section>
@@ -192,13 +409,30 @@ session_start();
         </div>
     </footer>
 
+    <!-- Custom Confirmation Modal HTML -->
+    <div id="custom-confirm-modal" class="custom-modal-overlay">
+        <div class="custom-modal-content">
+            <p id="confirm-message"></p>
+            <div class="custom-modal-buttons">
+                <button id="confirm-yes" class="btn btn-danger">はい</button>
+                <button id="confirm-no" class="btn btn-secondary">いいえ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PHPから渡されたユーザーIDと投稿データ
+        const currentUserId = <?= json_encode($current_user_id) ?>;
+        // 投稿機能未実装のため、空の配列を渡す
+        const myPostsData = [];
+        const likedPostsData = [];
+
+        // PHPからのメッセージング (ページロード時に表示)
+        const phpMessage = <?= json_encode($message) ?>;
+        const phpMessageType = <?= json_encode($message_type) ?>;
+    </script>
     <script src="js/script.js"></script>
     <script src="js/MyPage.js"></script>
-    <script>
-        document.querySelector('.edit-profile-button').addEventListener('click', function () {
-            window.location.href = 'profile_edit.php';
-        });
-    </script>
 </body>
 
 </html>

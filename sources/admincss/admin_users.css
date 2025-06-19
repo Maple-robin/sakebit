@@ -12,19 +12,9 @@ html {
 
 body {
     font-family: 'Noto Sans JP', sans-serif;
-    line-height: 1.5; /* admin.cssに合わせる */
+    line-height: 1.5;
     color: #333;
-    background-color: #f4f7f6; /* admin.cssに合わせる */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    font-size: 1.8rem; /* admin.cssに合わせる */
-    height: 100%; /* admin.cssに合わせる */
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    /* display: flex; を削除 */
-    /* flex-direction: column; を削除 */
-    min-height: 100vh; /* admin.cssに合わせる */
+    background-color: #f4f7f6;
 }
 
 *, *:before, *:after {
