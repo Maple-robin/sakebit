@@ -145,19 +145,19 @@ ul {
     height: 100vh;
     background-color: rgba(255, 255, 255, 0.95);
     z-index: 990;
-    display: none; /* 初期状態で非表示 */
+    display: flex; /* ← display: none; を消してflexに */
     flex-direction: column;
     align-items: center;
     visibility: hidden;
     opacity: 0;
     transition: all 0.4s ease;
-    transform: translateX(100%);
+    transform: translateX(-100%); /* ← 100%→-100%に */
     padding: 110px 0 20px;
 }
 
 /* メニューのアクティブ状態 */
 .sp-menu.is-active {
-    display: flex; /* メニューを表示 */
+    display: flex;
     visibility: visible;
     opacity: 1;
     transform: translateX(0);
@@ -448,24 +448,23 @@ body.no-scroll {
 }
 
 .tab-button {
-    background-color: transparent;
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 14px 0;
+    font-size: 1.1rem;
+    background: none;
     border: none;
-    padding: 15px 25px;
-    font-size: 1.8rem;
-    font-weight: 500;
-    color: #777;
+    border-bottom: 2px solid transparent;
     cursor: pointer;
-    transition: color 0.3s, border-bottom 0.3s;
-    border-bottom: 3px solid transparent;
+    transition: border-color 0.2s, color 0.2s;
+    text-align: center;
 }
 
 .tab-button.active {
-    color: #A0522D;
-    border-bottom: 3px solid #A0522D;
-}
-
-.tab-button:hover:not(.active) {
-    color: #333;
+    border-bottom: 2px solid #007bff;
+    color: #007bff;
+    font-weight: bold;
+    background: #f8f8f8;
 }
 
 .tab-content {

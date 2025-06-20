@@ -40,16 +40,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // すべてのタブボタンとコンテンツからactiveクラスを削除
             tabButtons.forEach(btn => btn.classList.remove('active'));
             tabContents.forEach(content => content.classList.remove('active'));
-
-            // クリックされたボタンにactiveクラスを追加
             button.classList.add('active');
-
-            // 対応するコンテンツにactiveクラスを追加
             const targetTabId = button.dataset.tab;
-            document.getElementById(targetTabId).classList.add('active');
+            document.getElementById(targetTabId + '-content').classList.add('active');
         });
     });
 
@@ -139,7 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 初回レンダリング
     renderPosts(myPostsData, 'my-posts-content');
-    renderPosts(likedPostsData, 'liked-posts-content'); // 初期状態では非表示だが、データはロードしておく
+    renderPosts(likedPostsData, 'liked-posts-content');
+    renderPosts(bookmarkedPostsData, 'bookmarked-posts-content'); // 追加
 
     // カスタム確認モーダルを表示する関数
     function showCustomConfirm(message, onConfirm) {

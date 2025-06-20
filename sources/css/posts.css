@@ -432,13 +432,36 @@ main {
     background-color: #eee; /* デフォルトの背景 */
 }
 
+.post-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    flex: 1;
+}
+
+.post-user-name {
+    font-size: 1.3rem;
+    color: #888;
+    margin-bottom: 2px;
+    font-weight: 500;
+    word-break: break-all;
+    line-height: 1.2;
+    display: block;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .post-title {
     font-family: 'Noto Sans JP', sans-serif;
     font-size: 1.8rem;
     font-weight: 700;
     color: #333;
     margin: 0;
-    flex-grow: 1; /* タイトルが残りのスペースを埋める */
+    flex-grow: 1;
+    line-height: 1.3;
 }
 
 .post-content {

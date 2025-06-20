@@ -174,8 +174,8 @@ $display_profile_text = htmlspecialchars(str_replace('\n', "\n", $user_profile['
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="css/MyPage.css">
     <link rel="stylesheet" href="css/profile_edit.css">
+    <link rel="stylesheet" href="css/MyPage.css">
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -387,7 +387,6 @@ $display_profile_text = htmlspecialchars(str_replace('\n', "\n", $user_profile['
             <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
         </div>
     </footer>
-
     <script src="js/script.js"></script>
     <script src="js/profile_edit.js"></script>
 </body>

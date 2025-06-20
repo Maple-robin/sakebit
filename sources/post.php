@@ -174,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($all_images_saved) {
                 $_SESSION['post_message'] = ['text' => '投稿が完了しました！', 'type' => 'success'];
-                header('Location: index.php'); // 投稿成功後はトップページなどへリダイレクト
+                header('Location: posts.php'); // 投稿成功後はトップページなどへリダイレクト
                 exit();
             } else {
                 // 画像が一つも選択されていないが、投稿自体は成功した場合のメッセージ

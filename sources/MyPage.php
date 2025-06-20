@@ -360,6 +360,7 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
                 <div class="tabs">
                     <button class="tab-button active" data-tab="my-posts">自分の投稿</button>
                     <button class="tab-button" data-tab="liked-posts">いいねした投稿</button>
+                    <button class="tab-button" data-tab="bookmarked-posts">ブックマーク</button> <!-- 表示名を短く -->
                 </div>
                 <div id="my-posts-content" class="tab-content active">
                     <div class="posts-list">
@@ -369,6 +370,11 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
                 <div id="liked-posts-content" class="tab-content">
                     <div class="posts-list">
                         <!-- ここにJavaScriptで動的にいいねした投稿が挿入されます -->
+                    </div>
+                </div>
+                <div id="bookmarked-posts-content" class="tab-content">
+                    <div class="posts-list">
+                        <!-- ここにJavaScriptで動的にブックマークした投稿が挿入されます -->
                     </div>
                 </div>
             </section>
@@ -419,20 +425,19 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
             </div>
         </div>
     </div>
-
+    <script src="js/script.js"></script>
+    <script src="js/MyPage.js"></script>
     <script>
         // PHPから渡されたユーザーIDと投稿データ
         const currentUserId = <?= json_encode($current_user_id) ?>;
         // 投稿機能未実装のため、空の配列を渡す
         const myPostsData = [];
         const likedPostsData = [];
+        const bookmarkedPostsData = []; // 追加：PHPで配列を用意して渡す
 
         // PHPからのメッセージング (ページロード時に表示)
         const phpMessage = <?= json_encode($message) ?>;
         const phpMessageType = <?= json_encode($message_type) ?>;
     </script>
-    <script src="js/script.js"></script>
-    <script src="js/MyPage.js"></script>
 </body>
-
 </html>

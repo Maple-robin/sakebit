@@ -1,102 +1,113 @@
 // DOMContentLoadedは、HTMLの読み込みが完了したときに実行されます。
 document.addEventListener('DOMContentLoaded', function() {
-    // テスト用の投稿データ
-    const testPosts = [
-        {
-            userIcon: "https://placehold.co/40x40/FF5733/FFFFFF?text=A",
-            userName: "ユーザーA",
-            title: "画像1枚",
-            content: "これは画像1枚の投稿です。",
-            images: [
-                "https://placehold.co/600x320/87CEFA/000000?text=1"
-            ]
-        },
-        {
-            userIcon: "https://placehold.co/40x40/33A8FF/FFFFFF?text=B",
-            userName: "ユーザーB",
-            title: "画像2枚",
-            content: "これは画像2枚の投稿です。",
-            images: [
-                "https://placehold.co/300x200/F08080/000000?text=1",
-                "https://placehold.co/300x200/FFDAB9/000000?text=2"
-            ]
-        },
-        {
-            userIcon: "https://placehold.co/40x40/33FF57/FFFFFF?text=C",
-            userName: "ユーザーC",
-            title: "画像3枚",
-            content: "これは画像3枚の投稿です。",
-            images: [
-                "https://placehold.co/300x200/8B4513/FFFFFF?text=1",
-                "https://placehold.co/150x98/6A5ACD/FFFFFF?text=2",
-                "https://placehold.co/150x98/F5DEB3/000000?text=3"
-            ]
-        },
-        {
-            userIcon: "https://placehold.co/40x40/FF33CC/FFFFFF?text=D",
-            userName: "ユーザーD",
-            title: "画像4枚",
-            content: "これは画像4枚の投稿です。",
-            images: [
-                "https://placehold.co/150x98/8B0000/FFFFFF?text=1",
-                "https://placehold.co/150x98/87CEFA/000000?text=2",
-                "https://placehold.co/150x98/FFDAB9/000000?text=3",
-                "https://placehold.co/150x98/F08080/000000?text=4"
-            ]
-        },
-        {
-            userIcon: "https://placehold.co/40x40/AAAAAA/FFFFFF?text=E",
-            userName: "ユーザーE",
-            title: "画像なし",
-            content: "これは画像なしの投稿です。",
-            images: []
-        }
-    ];
+    // PHPから渡された投稿データと現在のユーザーIDを使用
+    // postsData: [{id, userIcon, userName, title, content, images, likes, hearts, isLiked, isHearted}, ...]
+    // currentUserId: 現在ログインしているユーザーのID (nullの場合もあり)
 
-    // 投稿カードを生成して表示
-    const postsContainer = document.getElementById('posts-container');
-    if (postsContainer) {
-        postsContainer.innerHTML = testPosts.map(renderPost).join('');
+    // カスタムメッセージボックスを表示する関数
+    function displayMessage(message, type = 'info') {
+        const messageBox = document.createElement('div');
+        messageBox.classList.add('custom-message-box');
+        if (type === 'success') {
+            messageBox.classList.add('success');
+        } else if (type === 'error') {
+            messageBox.classList.add('error');
+        }
+        messageBox.textContent = message;
+
+        const existingMessageBox = document.querySelector('.custom-message-box');
+        if (existingMessageBox) {
+            existingMessageBox.remove();
+        }
+
+        document.body.appendChild(messageBox);
+
+        setTimeout(() => {
+            messageBox.remove();
+        }, 3000); // 3秒後に消える
     }
 
-    // 投稿データを元にカードを作成し表示する関数
+    // 投稿カードを生成して表示する関数
     function renderPosts() {
-        postsList.innerHTML = ''; // 既存の投稿をクリア
-        postsData.forEach(post => {
-            const postCard = document.createElement('div');
-            postCard.classList.add('post-card');
-            postCard.dataset.postId = post.id; // 投稿IDをデータ属性として保持
+        const postsContainer = document.getElementById('posts-container');
+        if (!postsContainer) {
+            console.error('Error: posts-container element not found.');
+            return;
+        }
+        
+        postsContainer.innerHTML = ''; // 既存の投稿をクリア
 
-            postCard.innerHTML = `
-                <div class="post-header">
-                    <img src="${post.icon}" alt="ユーザーアイコン" class="post-user-icon">
-                    <h2 class="post-title">${post.title}</h2>
-                    <button class="menu-button">⋮</button>
-                    <div class="menu-dropdown">
-                        <ul>
-                            <li><a href="" class="report-action" data-post-id="${post.id}">通報する</a></li>
-                            <li><a href="#">シェア</a></li>
-                        </ul>
+        if (postsData && postsData.length > 0) {
+            postsData.forEach(post => {
+                let imagesHtml = '';
+                const imgs = post.images || []; // 画像がない場合は空配列
+                
+                // 画像の枚数に応じたHTML構造を生成
+                if (imgs.length === 1) {
+                    imagesHtml = `<div class="post-images one"><img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/600x320/87CEFA/000000?text=No+Image';"></div>`;
+                } else if (imgs.length === 2) {
+                    imagesHtml = `
+                        <div class="post-images two">
+                            <img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/F08080/000000?text=No+Image';">
+                            <img src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/FFDAB9/000000?text=No+Image';">
+                        </div>`;
+                } else if (imgs.length === 3) {
+                    imagesHtml = `
+                        <div class="post-images three">
+                            <div><img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/8B4513/FFFFFF?text=No+Image';"></div>
+                            <div>
+                                <img src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/6A5ACD/FFFFFF?text=No+Image';">
+                                <img src="${post.images[2]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/F5DEB3/000000?text=No+Image';">
+                            </div>
+                        </div>`;
+                } else if (imgs.length === 4) {
+                    imagesHtml = `
+                        <div class="post-images four">
+                            <img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/8B0000/FFFFFF?text=No+Image';">
+                            <img src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/87CEFA/000000?text=No+Image';">
+                            <img src="${post.images[2]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/FFDAB9/000000?text=No+Image';">
+                            <img src="${post.images[3]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/F08080/000000?text=No+Image';">
+                        </div>`;
+                }
+
+                // いいねとハートボタンのアクティブ状態を初期化
+                const goodActiveClass = post.isLiked ? ' active' : '';
+                const heartActiveClass = post.isHearted ? ' active' : '';
+
+                const postCardHtml = `
+                    <div class="post-card" id="post-${post.id}">
+                        <div class="post-header">
+                            <img src="${post.userIcon}" alt="${post.userName}のアイコン" class="post-user-icon">
+                            <div class="post-info">
+                                <span class="post-user-name">${post.userName}</span>
+                                <h4 class="post-title">${post.title}</h4>
+                            </div>
+                            <button class="menu-button" data-post-id="${post.id}">⋮</button>
+                            <div class="menu-dropdown">
+                                <ul>
+                                    <li><a href="#" class="report-action" data-post-id="${post.id}">通報する</a></li>
+                                    <li><a href="#">シェア</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="post-content">${post.content}</div>
+                        ${imagesHtml}
+                        <div class="post-actions">
+                            <button class="reaction-button good${goodActiveClass}" data-reaction="good" data-post-id="${post.id}">
+                                👍 <span class="like-count">${post.likes}</span>
+                            </button>
+                            <button class="reaction-button heart${heartActiveClass}" data-reaction="heart" data-post-id="${post.id}">
+                                ❤️ <span class="heart-count">${post.hearts}</span>
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <p class="post-content">${post.content}</p>
-                <div class="post-images">
-                    ${post.images.map(img => `<img src="${img}" alt="投稿画像" class="post-image">`).join('')}
-                </div>
-                <div class="post-actions">
-                    <button class="reaction-button good" data-reaction="good">
-                        👍 <span class="like-count">${post.likes}</span>
-                    </button>
-                    <button class="reaction-button heart" data-reaction="heart">
-                        ❤️ <span class="heart-count">${post.hearts}</span>
-                    </button>
-                </div>
-            `;
-            postsList.appendChild(postCard);
-        });
-
-        // 動的に追加された要素にイベントリスナーを設定
-        attachEventListeners();
+                `;
+                postsContainer.insertAdjacentHTML('beforeend', postCardHtml);
+            });
+            attachEventListeners(); // イベントリスナーをアタッチ
+        } else {
+            postsContainer.innerHTML = '<p style="text-align: center; margin-top: 50px; font-size: 1.8rem; color: #555;">まだ投稿がありません。</p>';
+        }
     }
 
     // イベントリスナーをアタッチする関数
@@ -125,7 +136,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-
         // 「通報する」アクションの処理
         document.querySelectorAll('.report-action').forEach(item => {
             item.addEventListener('click', function(event) {
@@ -136,60 +146,80 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // リアクションボタンの処理
+        // リアクションボタンの処理 (likes, hearts はDBから取得して初期表示、更新はJS+DB連携)
         document.querySelectorAll('.reaction-button').forEach(button => {
             button.addEventListener('click', function() {
-                const postCard = this.closest('.post-card');
-                const postId = parseInt(postCard.dataset.postId);
-                const reactionType = this.dataset.reaction; // 'good' または 'bad'
-
-                // 該当する投稿データを取得
-                const post = postsData.find(p => p.id === postId);
-                if (!post) return;
-
-                // 同じ投稿内のGood/Badボタンを全て取得
-                const goodButton = postCard.querySelector('.reaction-button.good');
-                const heartButton = postCard.querySelector('.reaction-button.heart');
-                const likeCountSpan = postCard.querySelector('.like-count');
-                const heartCountSpan = postCard.querySelector('.heart-count');
-
-                if (reactionType === 'good') {
-                    if (this.classList.contains('active')) {
-                        // 既に「いいね」済みなら取り消し
-                        post.likes--;
-                        this.classList.remove('active');
-                    } else {
-                        // 「いいね」
-                        post.likes++;
-                        this.classList.add('active');
-                        // もし「よくないね」済みなら取り消し
-                        if (heartButton.classList.contains('active')) {
-                            post.hearts--;
-                            heartButton.classList.remove('active');
-                        }
-                    }
-                } else if (reactionType === 'heart') {
-                    if (this.classList.contains('active')) {
-                        // 既に「よくないね」済みなら取り消し
-                        post.hearts--;
-                        this.classList.remove('active');
-                    } else {
-                        // 「よくないね」
-                        post.hearts++;
-                        this.classList.add('active');
-                        // もし「いいね」済みなら取り消し
-                        if (goodButton.classList.contains('active')) {
-                            post.likes--;
-                            goodButton.classList.remove('active');
-                        }
-                    }
+                // ログインしているかチェック
+                if (currentUserId === null || currentUserId === undefined) {
+                    displayMessage('リアクションするにはログインが必要です。', 'error');
+                    return;
                 }
 
-                // カウントを更新
-                likeCountSpan.textContent = post.likes;
-                heartCountSpan.textContent = post.hearts;
+                const postId = parseInt(this.dataset.postId);
+                const reactionType = this.dataset.reaction; // 'good' または 'heart'
+                const likeCountSpan = this.closest('.post-actions').querySelector('.like-count');
+                const heartCountSpan = this.closest('.post-actions').querySelector('.heart-count');
 
-                // 実際のアプリケーションでは、ここでサーバーサイドにリアクションを送信
+                // AJAXリクエストを送信
+                fetch('api/reaction_process.php', { // 新しく作成するPHPエンドポイント
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        postId: postId, 
+                        reactionType: reactionType,
+                        userId: currentUserId // ログインユーザーIDを送信
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        // HTTPエラーレスポンス (例: 404, 500)
+                        return response.text().then(text => { // エラーレスポンスの本文を読み込む
+                            console.error('HTTPエラー本文:', text);
+                            throw new Error(`HTTP error! status: ${response.status}. Server response: ${text.substring(0, 100)}...`);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        likeCountSpan.textContent = data.newLikes;
+                        heartCountSpan.textContent = data.newHearts;
+                        // クラスのトグルもサーバーからのis_reacted情報に基づいて行う
+                        if (reactionType === 'good') {
+                            if (data.isLiked) {
+                                this.classList.add('active');
+                            } else {
+                                this.classList.remove('active');
+                            }
+                            // ハートボタンがもしアクティブなら非アクティブにする（一方しか押せない場合）
+                            if (data.isHearted === false && heartCountSpan.closest('.reaction-button.heart').classList.contains('active')) {
+                                heartCountSpan.closest('.reaction-button.heart').classList.remove('active');
+                                heartCountSpan.textContent = data.newHearts; // ハート数も更新
+                            }
+                        } else if (reactionType === 'heart') {
+                            if (data.isHearted) {
+                                this.classList.add('active');
+                            } else {
+                                this.classList.remove('active');
+                            }
+                            // いいねボタンがもしアクティブなら非アクティブにする（一方しか押せない場合）
+                            if (data.isLiked === false && likeCountSpan.closest('.reaction-button.good').classList.contains('active')) {
+                                likeCountSpan.closest('.reaction-button.good').classList.remove('active');
+                                likeCountSpan.textContent = data.newLikes; // いいね数も更新
+                            }
+                        }
+                        displayMessage('リアクションが更新されました！', 'success'); // 成功メッセージ
+                    } else {
+                        console.error('リアクション処理に失敗しました:', data.message);
+                        displayMessage('リアクション処理中にエラーが発生しました: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetchエラー:', error);
+                    displayMessage('通信エラーが発生しました。しばらくしてから再度お試しください。', 'error');
+                });
             });
         });
     }
@@ -197,114 +227,5 @@ document.addEventListener('DOMContentLoaded', function() {
     // ページ読み込み時に投稿をレンダリング
     renderPosts();
 
-
-    // カスタムメッセージボックスを表示する関数 (signup.jsから流用)
-    function displayMessage(message, type) {
-        const messageBox = document.createElement('div');
-        messageBox.classList.add('custom-message-box');
-        if (type === 'success') {
-            messageBox.classList.add('success');
-        } else if (type === 'error') {
-            messageBox.classList.add('error');
-        } else if (type === 'info') { // 情報メッセージ用
-            messageBox.classList.add('info');
-        }
-        messageBox.textContent = message;
-
-        document.body.appendChild(messageBox);
-
-        // メッセージボックスを数秒後に非表示にする
-        setTimeout(() => {
-            messageBox.remove();
-        }, 3000); // 3秒後に消える
-    }
-
-    // カスタムメッセージボックスのスタイルを動的に追加 (signup.jsから流用)
-    // このスタイルは一度だけ追加すれば良いので、重複しないように注意
-    if (!document.head.querySelector('style#custom-message-style')) {
-        const style = document.createElement('style');
-        style.id = 'custom-message-style'; // 重複防止用のID
-        style.textContent = `
-            .custom-message-box {
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                padding: 15px 25px;
-                border-radius: 8px;
-                font-size: 1.6rem;
-                color: #fff;
-                z-index: 10000;
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-                opacity: 0;
-                animation: fadeInOut 3s forwards;
-            }
-            .custom-message-box.success {
-                background-color: #28a745; /* 緑色 */
-            }
-            .custom-message-box.error {
-                background-color: #dc3545; /* 赤色 */
-            }
-            .custom-message-box.info { /* 情報メッセージ用 */
-                background-color: #007bff; /* 青色 */
-            }
-            @keyframes fadeInOut {
-                0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-                10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-                90% { opacity: 1; transform: translateX(-50%) translateY(0); }
-                100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    function renderPost(post) {
-        let imagesHtml = '';
-        const imgs = post.images || [];
-        if (imgs.length === 1) {
-            imagesHtml = `<div class="post-images one"><img src="${imgs[0]}" alt=""></div>`;
-        } else if (imgs.length === 2) {
-            imagesHtml = `
-      <div class="post-images two">
-        <img src="${imgs[0]}" alt="">
-        <img src="${imgs[1]}" alt="">
-      </div>`;
-        } else if (imgs.length === 3) {
-            imagesHtml = `
-      <div class="post-images three">
-        <div><img src="${imgs[0]}" alt=""></div>
-        <div>
-          <img src="${imgs[1]}" alt="">
-          <img src="${imgs[2]}" alt="">
-        </div>
-      </div>`;
-        } else if (imgs.length === 4) {
-            imagesHtml = `
-      <div class="post-images four">
-        <img src="${imgs[0]}" alt="">
-        <img src="${imgs[1]}" alt="">
-        <img src="${imgs[2]}" alt="">
-        <img src="${imgs[3]}" alt="">
-      </div>`;
-        }
-        return `
-    <div class="post-card">
-      <div class="post-header">
-        <img src="${post.userIcon}" alt="${post.userName}" class="post-user-icon">
-        <h3 class="post-title">${post.title}</h3>
-      </div>
-      <div class="post-content">${post.content}</div>
-      ${imagesHtml}
-      <div class="post-actions">
-        <!-- いいね等のボタン -->
-      </div>
-    </div>
-  `;
-    }
-
-    function updateReaction(post) {
-        const postElement = document.querySelector(`#post-${post.id}`);
-        postElement.querySelector('.islike-count').textContent = post.likes;
-        postElement.querySelector('.isheart-count').textContent = post.hearts; // dislikes → hearts
-    }
+    // カスタムメッセージボックスのスタイルはposts.phpに直接記述されているため不要
 });

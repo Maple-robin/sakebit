@@ -75,6 +75,11 @@ class crecord {
         return $this->pdo->lastInsertId();
     }
 
+    // PDOインスタンスを返すメソッド (トランザクション処理用)
+    public function get_pdo() {
+        return $this->pdo;
+    }
+
     public function __destruct() {
         $this->stmt = null;
         $this->pdo = null;
@@ -101,11 +106,11 @@ class cuser_info extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM user_info WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM user_info WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -252,11 +257,11 @@ class cproduct_info extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM product_info WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM product_info WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -296,11 +301,11 @@ class ccategories extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM categories WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -340,11 +345,11 @@ class ctags extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM tags WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM tags WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -384,11 +389,11 @@ class cposts extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM posts WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM posts WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -507,11 +512,11 @@ class ccontacts extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM contacts WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM contacts WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -551,11 +556,11 @@ class cfaqs extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM faqs WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM faqs WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -595,11 +600,11 @@ class cfaq_categories extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM faq_categories WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM faq_categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -639,11 +644,11 @@ class cMypage extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM Mypage WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM Mypage WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -683,11 +688,11 @@ class creport_info extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM report_info WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM report_info WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -726,35 +731,76 @@ class cgood extends crecord {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM good WHERE 1";
-        $prep_arr = array();
-        $this->select_query($debug, $query, $prep_arr);
-        if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
-        }
-        return 0;
+    /**
+     * ユーザーが良いねした投稿を登録する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id いいねしたユーザーID
+     * @param int $post_id いいねされた投稿ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function insert_good($debug, $user_id, $post_id) {
+        $query = "INSERT INTO good (user_id, post_id) VALUES (:user_id, :post_id)";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':post_id' => (int)$post_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function get_all($debug, $from, $limit) {
-        $arr = array();
-        $query = "SELECT * FROM good WHERE 1 ORDER BY good_id ASC LIMIT :from, :limit";
-        $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
-        $this->select_query($debug, $query, $prep_arr);
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row;
-        }
-        return $arr;
+    /**
+     * ユーザーが良いねした投稿を削除する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id いいねを取り消すユーザーID
+     * @param int $post_id いいねを取り消される投稿ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_good($debug, $user_id, $post_id) {
+        $query = "DELETE FROM good WHERE user_id = :user_id AND post_id = :post_id";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':post_id' => (int)$post_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function get_tgt($debug, $id) {
-        if (!cutil::is_number($id) || $id < 1) {
+    /**
+     * 特定の投稿の良いね数を取得する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 投稿ID
+     * @return int いいね数
+     */
+    public function count_good_by_post_id($debug, $post_id) {
+        if (!cutil::is_number($post_id) || $post_id < 1) {
+            return 0;
+        }
+        $query = "SELECT COUNT(*) AS good_count FROM good WHERE post_id = :post_id";
+        $prep_arr = array(':post_id' => (int)$post_id);
+        $this->select_query($debug, $query, $prep_arr);
+        $row = $this->fetch_assoc();
+        return $row ? (int)$row['good_count'] : 0;
+    }
+
+    /**
+     * 特定のユーザーが特定の投稿に良いねしているかチェックする
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id ユーザーID
+     * @param int $post_id 投稿ID
+     * @return bool いいねしている場合はtrue、していない場合はfalse
+     */
+    public function is_good_by_user($debug, $user_id, $post_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
-        $query = "SELECT * FROM good WHERE good_id = :good_id";
-        $prep_arr = array(':good_id' => (int)$id);
+        // ここを修正: COUNT(*) にエイリアスを追加
+        $query = "SELECT COUNT(*) AS count_result FROM good WHERE user_id = :user_id AND post_id = :post_id";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':post_id' => (int)$post_id
+        );
         $this->select_query($debug, $query, $prep_arr);
-        return $this->fetch_assoc();
+        $row = $this->fetch_assoc();
+        // ここを修正: エイリアスで参照
+        return $row && $row['count_result'] > 0;
     }
 
     public function __destruct() {
@@ -770,35 +816,76 @@ class cheart extends crecord {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM heart WHERE 1";
-        $prep_arr = array();
-        $this->select_query($debug, $query, $prep_arr);
-        if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
-        }
-        return 0;
+    /**
+     * ユーザーがハート（ブックマーク）した投稿を登録する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id ハートしたユーザーID
+     * @param int $post_id ハートされた投稿ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function insert_heart($debug, $user_id, $post_id) {
+        $query = "INSERT INTO heart (user_id, post_id) VALUES (:user_id, :post_id)";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':post_id' => (int)$post_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function get_all($debug, $from, $limit) {
-        $arr = array();
-        $query = "SELECT * FROM heart WHERE 1 ORDER BY heart_id ASC LIMIT :from, :limit";
-        $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
-        $this->select_query($debug, $query, $prep_arr);
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row;
-        }
-        return $arr;
+    /**
+     * ユーザーがハート（ブックマーク）した投稿を削除する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id ハートを取り消すユーザーID
+     * @param int $post_id ハートを取り消される投稿ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_heart($debug, $user_id, $post_id) {
+        $query = "DELETE FROM heart WHERE user_id = :user_id AND post_id = :post_id";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':post_id' => (int)$post_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function get_tgt($debug, $id) {
-        if (!cutil::is_number($id) || $id < 1) {
+    /**
+     * 特定の投稿のハート数を取得する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 投稿ID
+     * @return int ハート数
+     */
+    public function count_heart_by_post_id($debug, $post_id) {
+        if (!cutil::is_number($post_id) || $post_id < 1) {
+            return 0;
+        }
+        $query = "SELECT COUNT(*) AS heart_count FROM heart WHERE post_id = :post_id";
+        $prep_arr = array(':post_id' => (int)$post_id);
+        $this->select_query($debug, $query, $prep_arr);
+        $row = $this->fetch_assoc();
+        return $row ? (int)$row['heart_count'] : 0;
+    }
+
+    /**
+     * 特定のユーザーが特定の投稿にハートしているかチェックする
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id ユーザーID
+     * @param int $post_id 投稿ID
+     * @return bool ハートしている場合はtrue、していない場合はfalse
+     */
+    public function is_heart_by_user($debug, $user_id, $post_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
-        $query = "SELECT * FROM heart WHERE heart_id = :heart_id";
-        $prep_arr = array(':heart_id' => (int)$id);
+        // ここを修正: COUNT(*) にエイリアスを追加
+        $query = "SELECT COUNT(*) AS count_result FROM heart WHERE user_id = :user_id AND post_id = :post_id";
+        $prep_arr = array(
+            ':user_id' => (int)$user_id,
+            ':post_id' => (int)$post_id
+        );
         $this->select_query($debug, $query, $prep_arr);
-        return $this->fetch_assoc();
+        $row = $this->fetch_assoc();
+        // ここを修正: エイリアスで参照
+        return $row && $row['count_result'] > 0;
     }
 
     public function __destruct() {
@@ -815,11 +902,11 @@ class ccontacts_reply extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM contacts_reply WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM contacts_reply WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -859,11 +946,11 @@ class cotumami_categories extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM otumami_categories WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM otumami_categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -903,11 +990,11 @@ class cotumami_tags extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM otumami_tags WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM otumami_tags WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -947,11 +1034,11 @@ class cotumami extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM otumami WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM otumami WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -991,11 +1078,11 @@ class cotumami_otumami_tags extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM otumami_otumami_tags WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM otumami_otumami_tags WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -1056,11 +1143,11 @@ class ccarts extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM carts WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM carts WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -1100,11 +1187,11 @@ class ccart_items extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM cart_items WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM cart_items WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -1144,11 +1231,11 @@ class corders extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM orders WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM orders WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -1188,11 +1275,11 @@ class corder_items extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) FROM order_items WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM order_items WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
-            return $row['count(*)'];
+            return $row['total_count'];
         }
         return 0;
     }
@@ -1260,7 +1347,7 @@ class cadmin_user_info extends crecord {
      */
     public function get_admin_user_by_name($debug, $admin_user_name) {
         $query = "SELECT admin_user_id, admin_user_name, admin_user_pass FROM admin_user_info WHERE admin_user_name = :admin_user_name";
-        $prep_arr = array(':admin_user_name' => $admin_user_name);
+        $prep_arr = array(':admin_user_name' => (string)$admin_user_name);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
@@ -1269,5 +1356,4 @@ class cadmin_user_info extends crecord {
         parent::__destruct();
     }
 }
-
 ?>

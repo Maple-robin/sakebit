@@ -1,17 +1,92 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file posts.php
+@brief 投稿一覧ページ
 @copyright Copyright (c) 2024 Your Name.
 */
 
 // セッションを開始 (HTML出力の前に置く)
 session_start();
 
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
-// require_once __DIR__ . '/common/contents_db.php';
+// エラー表示設定 (開発中のみ)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// ここにトップページ固有のPHPロジックがあれば記述
+// contents_db.php と config.php をインクルード
+require_once __DIR__ . '/common/contents_db.php';
+require_once __DIR__ . '/common/config.php'; // config.phpもインクルード
+
+// DEBUG_MODE が config.php で定義されていない場合はここで定義
+if (!defined('DEBUG_MODE')) {
+    define('DEBUG_MODE', false); // 本番環境ではfalseに設定
+}
+
+$posts_data = []; // 投稿データを格納する配列
+$current_user_id = $_SESSION['user_id'] ?? null; // 現在ログインしているユーザーのID
+
+try {
+    $posts_db = new cposts();
+    $post_images_db = new cpost_images(); // 投稿画像クラスのインスタンス
+    $user_info_db = new cuser_info(); // ユーザー情報クラスのインスタンス
+    $user_profiles_db = new cuser_profiles(); // ユーザープロフィールクラスのインスタンスを追加！
+    $good_db = new cgood(); // いいねクラスのインスタンス
+    $heart_db = new cheart(); // ハートクラスのインスタンス
+
+    // すべての投稿を取得 (ページネーションが必要な場合はここにロジックを追加)
+    $all_posts = $posts_db->get_all(DEBUG_MODE, 0, 9999); // 最初の9999件を取得 (仮)
+
+    foreach ($all_posts as $post) {
+        // 投稿に紐づく画像を全て取得
+        $images = $post_images_db->get_images_by_post_id(DEBUG_MODE, $post['post_id']);
+        $image_paths = [];
+        foreach ($images as $img) {
+            $image_paths[] = $img['image_path'];
+        }
+
+        // 投稿ユーザーの情報を取得
+        $user = $user_info_db->get_tgt(DEBUG_MODE, $post['user_id']);
+        $user_name = $user ? htmlspecialchars($user['user_name']) : '名無しユーザー'; // ユーザー名が取得できなければ「名無しユーザー」
+        
+        // ユーザープロフィールからアイコンURLを取得
+        $user_profile = $user_profiles_db->get_profile_by_user_id(DEBUG_MODE, $post['user_id']);
+        $user_icon_url = 'https://placehold.co/40x40/5CB85C/FFFFFF?text=' . strtoupper(mb_substr($user_name, 0, 1, 'UTF-8')); // デフォルトアイコン (マルチバイト対応)
+        if ($user_profile && !empty($user_profile['profile_icon_url'])) {
+            $user_icon_url = htmlspecialchars($user_profile['profile_icon_url']);
+        }
+
+        // いいね数とハート数を取得
+        $likes_count = $good_db->count_good_by_post_id(DEBUG_MODE, $post['post_id']);
+        $hearts_count = $heart_db->count_heart_by_post_id(DEBUG_MODE, $post['post_id']);
+
+        // 現在のユーザーが良いね・ハートしているかチェック
+        $is_liked_by_current_user = false;
+        $is_hearted_by_current_user = false;
+        if ($current_user_id) {
+            $is_liked_by_current_user = $good_db->is_good_by_user(DEBUG_MODE, $current_user_id, $post['post_id']);
+            $is_hearted_by_current_user = $heart_db->is_heart_by_user(DEBUG_MODE, $current_user_id, $post['post_id']);
+        }
+
+        $posts_data[] = [
+            'id' => $post['post_id'],
+            'userIcon' => $user_icon_url, // ユーザープロフィールから取得したアイコンURL
+            'userName' => $user_name, // ユーザー名
+            'title' => htmlspecialchars($post['post_title']),
+            'content' => htmlspecialchars($post['post_content']),
+            'images' => $image_paths, // 画像パスの配列
+            'likes' => $likes_count, // いいね数
+            'hearts' => $hearts_count, // ハート数
+            'isLiked' => $is_liked_by_current_user, // 現在のユーザーが良いねしているか
+            'isHearted' => $is_hearted_by_current_user, // 現在のユーザーがハートしているか
+        ];
+    }
+} catch (Exception $e) {
+    error_log("Failed to fetch posts: " . $e->getMessage());
+    $posts_data = []; // エラー発生時は空の配列を渡す
+}
+
+// JavaScriptに渡すためにJSONエンコード
+$json_posts_data = json_encode($posts_data);
+$json_current_user_id = json_encode($current_user_id); // ユーザーIDもJSに渡す
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -28,6 +103,37 @@ session_start();
     <link rel="stylesheet" href="css/posts.css">
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* カスタムメッセージボックスのスタイル */
+        .custom-message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.6rem;
+            color: #fff;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            min-width: 300px;
+            text-align: center;
+        }
+        .custom-message-box.success {
+            background-color: #28a745; /* 緑色 */
+        }
+        .custom-message-box.error {
+            background-color: #dc3545; /* 赤色 */
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        }
+    </style>
 </head>
 
 <body>
@@ -95,7 +201,6 @@ session_start();
                     <li><a href="products_list.php?category=ビール">ビール</a></li>
                 </ul>
             </li>
-            <!-- ↓ここから追加 -->
             <li class="sp-menu__category-toggle">
                 商品タグ <i class="fas fa-chevron-down category-icon"></i>
                 <ul class="sp-menu__sub-list">
@@ -106,7 +211,6 @@ session_start();
                     <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
                 </ul>
             </li>
-            <!-- ↑ここまで追加 -->
             <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
             <li class="sp-menu__item"><a href="MyPage.php">マイページ</a></li>
         </ul>
@@ -166,6 +270,11 @@ session_start();
         </div>
     </footer>
     <script src="js/script.js"></script>
+    <script>
+        // PHPから投稿データをJavaScriptに渡す
+        const postsData = <?php echo $json_posts_data; ?>;
+        const currentUserId = <?php echo $json_current_user_id; ?>; // ログインユーザーIDもJSに渡す
+    </script>
     <script src="js/posts.js"></script>
 </body>
 

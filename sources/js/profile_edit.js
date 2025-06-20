@@ -83,17 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
         history.replaceState(null, '', window.location.pathname); // URLからパラメータを削除
     }
 
-    // bodyのno-scrollクラスを制御（ハンバーガーメニュー用）
-    const hamburgerMenu = document.querySelector('.hamburger-menu');
-    const spMenu = document.querySelector('.sp-menu');
-    if (hamburgerMenu && spMenu) {
-        hamburgerMenu.addEventListener('click', function () {
-            hamburgerMenu.classList.toggle('is-active');
-            spMenu.classList.toggle('is-active');
-            document.body.classList.toggle('no-scroll', spMenu.classList.contains('is-active'));
-        });
-    }
-
     // 複数カテゴリトグル対応（スマホメニュー用）
     const spCategoryToggles = document.querySelectorAll('.sp-menu__category-toggle');
     spCategoryToggles.forEach(toggle => {
