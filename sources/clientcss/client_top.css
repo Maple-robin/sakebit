@@ -1,0 +1,163 @@
+/*----------------------------------------
+  client_top.css - 商品一覧ページ (client_top.php) 固有のスタイル
+----------------------------------------*/
+
+/* ツールバー（ボタンと検索バー） */
+.admin-toolbar {
+    display: flex;
+    justify-content: space-between; /* ボタンと検索バーを両端に配置 */
+    align-items: center;
+    margin-bottom: 30px; /* ツールバー下に余白を追加 */
+    flex-wrap: wrap; /* 小さな画面で折り返す */
+    gap: 15px; /* アイテム間の隙間 */
+}
+
+/* 検索バー */
+.admin-search {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #fcfcfc;
+}
+
+.admin-search input {
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    font-size: 1.5rem;
+    flex-grow: 1;
+    color: #333;
+    width: 250px; /* 検索バーの幅を設定 */
+}
+
+.admin-search button {
+    background-color: #eee; /* client.cssの検索ボタン色に合わせる */
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: #555; /* client.cssの検索ボタン色に合わせる */
+    font-size: 1.6rem;
+}
+
+.admin-search button:hover {
+    background-color: #ddd;
+}
+
+/* テーブル */
+.admin-table-wrapper {
+    border: 1px solid #ddd; /* テーブル全体を囲む枠線 */
+    border-radius: 5px; /* 枠線の角を丸くする */
+    overflow-x: auto; /* 横スクロールを許可 */
+    margin-bottom: 30px; /* テーブル下に余白を追加 */
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse; /* テーブルの枠線を統合 */
+    background-color: #fff; /* テーブル自体の背景色 */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.03); /* テーブルに軽い影 */
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd; /* 行間に枠線を追加 */
+    font-size: 1.4rem; /* テーブルの文字サイズ */
+    white-space: nowrap; /* テーブルセル内のテキストが改行されないように */
+}
+
+/* テーブル内の文章を改行するスタイル */
+.admin-table td {
+    word-wrap: break-word; /* 単語を折り返す */
+    white-space: normal; /* 改行を許可 */
+    max-width: 300px; /* 最大幅を設定 */
+}
+
+.admin-table th {
+    background-color: #f5f5f5; /* ヘッダーの背景色 */
+    font-weight: 600; /* 太さ調整 */
+    color: #333;
+}
+
+.admin-table tbody tr:nth-child(even) {
+    background-color: #fafafa; /* 偶数行の背景色 */
+}
+
+/* ホバー時の背景色を偶数行と奇数行に合わせる */
+.admin-table tbody tr:hover {
+    background-color: initial; /* デフォルトの背景色を維持 */
+}
+
+/* 偶数行と奇数行の背景色をホバー時に維持 */
+.admin-table tbody tr:nth-child(even):hover {
+    background-color: #fafafa; /* 偶数行の背景色を維持 */
+}
+
+.admin-table tbody tr:nth-child(odd):hover {
+    background-color: #fff; /* 奇数行の背景色を維持 */
+}
+
+.admin-table__img {
+    width: 80px; /* 画像の幅を拡大 */
+    height: 80px; /* 正方形にする */
+    object-fit: cover; /* 画像がはみ出さないように */
+    border-radius: 5px; /* 画像の角を丸くする */
+    display: block; /* 余白除去 */
+}
+
+/* ページネーション */
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* 各リンク間に余白を追加 */
+    margin-top: 40px; /* テーブルとの間隔 */
+}
+
+.page-link {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 1.6rem;
+    color: #333;
+    transition: background-color 0.3s ease;
+}
+
+.page-link.active {
+    background-color: #A0522D; /* 現在のページを強調 */
+    color: #fff;
+    border-color: #A0522D;
+}
+
+.page-link:hover {
+    background-color: #f8f8f8; /* ホバー時の背景色変更 */
+}
+
+/* 管理者ページのボタン - Primary (client_top固有で定義) */
+.admin-button--primary {
+    /* display: inline-block; は admin-buttonで定義済み */
+    /* padding, border-radius, font-size, font-weight, text-align, cursor, transition は admin-buttonで定義済み */
+    background-color: #A0522D; /* ブランドカラー */
+    color: #fff;
+    border: 1px solid #A0522D; /* ボーダーを追加 */
+}
+
+.admin-button--primary:hover {
+    background-color: #8B4513; /* ホバー時の色変更 */
+    border-color: #8B4513;
+}
+
+/* ボタンの幅をプレビューに合わせる */
+.admin-action-button {
+    display: inline-block;
+    width: 120px; /* プレビューに合わせた幅 */
+    text-align: center;
+    padding: 10px 15px; /* ボタン内の余白を調整 */
+    font-size: 1.4rem; /* ボタンの文字サイズ */
+    border-radius: 5px; /* ボタンの角を丸くする */
+    transition: background-color 0.3s ease; /* ホバー時のエフェクト */
+}
+
