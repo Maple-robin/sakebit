@@ -441,6 +441,71 @@ class cposts extends crecord {
         return false;
     }
 
+    /**
+     * 特定のユーザーの投稿を全て取得するメソッド (マイページ用)
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id ユーザーID
+     * @return array 投稿データの配列
+     */
+    public function get_posts_by_user_id($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "SELECT * FROM posts WHERE user_id = :user_id ORDER BY post_id DESC";
+        $prep_arr = array(':user_id' => (int)$user_id);
+        $this->select_query($debug, $query, $prep_arr);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+
+    /**
+     * 複数の投稿IDに基づいて投稿データを取得するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param array $post_ids 取得したい投稿IDの配列
+     * @return array 投稿データの配列
+     */
+    public function get_posts_by_ids($debug, $post_ids) {
+        if (empty($post_ids)) {
+            return [];
+        }
+        // IN句のプレースホルダーを動的に生成
+        $placeholders = implode(',', array_fill(0, count($post_ids), '?'));
+        $query = "SELECT * FROM posts WHERE post_id IN ($placeholders) ORDER BY post_id DESC";
+        
+        // すべてのIDを整数に変換してプリペアドステートメントに渡す
+        $prep_arr = array_map('intval', $post_ids); 
+        
+        $this->select_query($debug, $query, $prep_arr);
+
+        $arr = [];
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+
+    /**
+     * 特定の投稿を削除するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 投稿ID
+     * @param int $user_id ユーザーID (所有者であるか確認用)
+     * @return bool 削除が成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_post($debug, $post_id, $user_id) {
+        if (!cutil::is_number($post_id) || $post_id < 1 || !cutil::is_number($user_id) || $user_id < 1) {
+            return false;
+        }
+        // ユーザーが投稿の所有者であることも確認
+        $query = "DELETE FROM posts WHERE post_id = :post_id AND user_id = :user_id";
+        $prep_arr = array(
+            ':post_id' => (int)$post_id,
+            ':user_id' => (int)$user_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
 
     public function __destruct() {
         parent::__destruct();
@@ -495,6 +560,21 @@ class cpost_images extends crecord {
             $arr[] = $row;
         }
         return $arr;
+    }
+
+    /**
+     * 特定の投稿に紐づく画像を全て削除するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 投稿ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_images_by_post_id($debug, $post_id) {
+        if (!cutil::is_number($post_id) || $post_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM post_images WHERE post_id = :post_id";
+        $prep_arr = array(':post_id' => (int)$post_id);
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
     public function __destruct() {
@@ -803,6 +883,41 @@ class cgood extends crecord {
         return $row && $row['count_result'] > 0;
     }
 
+    /**
+     * 特定のユーザーが良いねした投稿のIDリストを取得する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id ユーザーID
+     * @return array いいねした投稿のIDの配列
+     */
+    public function get_liked_post_ids_by_user_id($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "SELECT post_id FROM good WHERE user_id = :user_id ORDER BY good_id DESC";
+        $prep_arr = array(':user_id' => (int)$user_id);
+        $this->select_query($debug, $query, $prep_arr);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row['post_id'];
+        }
+        return $arr;
+    }
+
+    /**
+     * 特定の投稿IDに関連する全てのいいねを削除するメソッド (delete_post.php用)
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 投稿ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_all_goods_by_post_id($debug, $post_id) {
+        if (!cutil::is_number($post_id) || $post_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM good WHERE post_id = :post_id";
+        $prep_arr = array(':post_id' => (int)$post_id);
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
     public function __destruct() {
         parent::__destruct();
     }
@@ -886,6 +1001,41 @@ class cheart extends crecord {
         $row = $this->fetch_assoc();
         // ここを修正: エイリアスで参照
         return $row && $row['count_result'] > 0;
+    }
+
+    /**
+     * 特定のユーザーがハートした投稿のIDリストを取得する
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $user_id ユーザーID
+     * @return array ハートした投稿のIDの配列
+     */
+    public function get_hearted_post_ids_by_user_id($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "SELECT post_id FROM heart WHERE user_id = :user_id ORDER BY heart_id DESC";
+        $prep_arr = array(':user_id' => (int)$user_id);
+        $this->select_query($debug, $query, $prep_arr);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row['post_id'];
+        }
+        return $arr;
+    }
+
+    /**
+     * 特定の投稿IDに関連する全てのハートを削除するメソッド (delete_post.php用)
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $post_id 投稿ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_all_hearts_by_post_id($debug, $post_id) {
+        if (!cutil::is_number($post_id) || $post_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM heart WHERE post_id = :post_id";
+        $prep_arr = array(':post_id' => (int)$post_id);
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
     public function __destruct() {
