@@ -63,7 +63,7 @@ class crecord {
             // それ以外のクエリ（INSERT/UPDATE/DELETEなど）の場合、実行結果（true/false）を返す
             return $result;
         } catch (PDOException $e) {
-            // エラーログへの出力
+            // エラーログへの出力 (本番環境でもログには出力する)
             $error_message_log = "Database Error: " . $e->getMessage() . 
                                  " SQLSTATE: " . ($e->errorInfo[0] ?? 'N/A') . 
                                  " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') . 
@@ -72,15 +72,12 @@ class crecord {
                                  " Params: " . json_encode($prep_arr);
             error_log($error_message_log);
 
-            // debugがtrueの場合は詳細エラーを画面に出力し、PDOExceptionを再スロー
+            // ★変更点: debugがtrueの場合でも、CRITICAL DB ERRORの画面出力はしない (本番運用向け)
+            // デバッグ時には、process_add_otsumami.phpのcatchブロックで詳細エラーを表示します。
             if ($debug) {
-                echo "<pre style='color: red; background-color: #ffe0e0; border: 1px solid red; padding: 10px;'>";
-                echo "<strong>CRITICAL DB ERROR IN contents_db.php:</strong><br>";
-                echo htmlspecialchars($error_message_log);
-                echo "</pre>";
-                throw $e; 
+                // throw $e; // process_add_otsumami.phpのcatchで詳細を拾うため、これは残す
             }
-            return false; // debugがfalseの場合はfalseを返す（ログのみ）
+            return false; // debugがfalseの場合、または画面出力不要な場合はfalseを返す
         }
     }
 
