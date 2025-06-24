@@ -1,3 +1,23 @@
+<?php
+// PHPスクリプトの冒頭でセッションを開始
+session_start();
+
+// ログイン状態のチェック (必要であればコメントアウトを解除して使用)
+// if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
+//     header('Location: login.php'); // ログインページのパスに修正
+//     exit();
+// }
+
+// 必要に応じてcontents_db.phpなどを読み込む
+// require_once '../common/contents_db.php';
+
+// セッションからメッセージとエラーを取得し、表示後にセッションから削除
+$messages = $_SESSION['message'] ?? '';
+$errors = $_SESSION['errors'] ?? [];
+
+unset($_SESSION['message']);
+unset($_SESSION['errors']);
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -26,6 +46,7 @@
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php">FAQ登録</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
+                    <li><a href="admin_logout.php">ログアウト</a></li>
                 </ul>
             </nav>
         </div>
@@ -33,6 +54,23 @@
 
     <main class="admin-main">
         <div class="admin-main__inner">
+            <!-- ★★★ ここにメッセージ表示エリアを追加 ★★★ -->
+            <?php if (!empty($messages)): ?>
+                <div style="color: green; background-color: #e6ffe6; padding: 15px; border: 1px solid #00cc00; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+                    <?php echo htmlspecialchars($messages); ?>
+                </div>
+            <?php endif; ?>
+            <?php if (!empty($errors)): ?>
+                <div style="color: red; background-color: #ffe6e6; padding: 15px; border: 1px solid #cc0000; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+                    <ul>
+                        <?php foreach ($errors as $error): ?>
+                            <li><?php echo htmlspecialchars($error); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endif; ?>
+            <!-- ★★★ メッセージ表示エリアここまで ★★★ -->
+
             <h2 class="admin-page-title">
                 <span class="en">SNACK MANAGEMENT</span>
                 <span class="ja">( おつまみ管理 )</span>

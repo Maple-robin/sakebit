@@ -63,11 +63,24 @@ class crecord {
             // それ以外のクエリ（INSERT/UPDATE/DELETEなど）の場合、実行結果（true/false）を返す
             return $result;
         } catch (PDOException $e) {
-            error_log("Database Error: " . $e->getMessage() . " SQL: " . $query . " Params: " . json_encode($prep_arr));
+            // エラーログへの出力
+            $error_message_log = "Database Error: " . $e->getMessage() . 
+                                 " SQLSTATE: " . ($e->errorInfo[0] ?? 'N/A') . 
+                                 " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') . 
+                                 " Driver Message: " . ($e->errorInfo[2] ?? 'N/A') . 
+                                 " Query: " . $query . 
+                                 " Params: " . json_encode($prep_arr);
+            error_log($error_message_log);
+
+            // debugがtrueの場合は詳細エラーを画面に出力し、PDOExceptionを再スロー
             if ($debug) {
-                echo "<pre>Error: " . htmlspecialchars($e->getMessage()) . "</pre>";
+                echo "<pre style='color: red; background-color: #ffe0e0; border: 1px solid red; padding: 10px;'>";
+                echo "<strong>CRITICAL DB ERROR IN contents_db.php:</strong><br>";
+                echo htmlspecialchars($error_message_log);
+                echo "</pre>";
+                throw $e; 
             }
-            return false;
+            return false; // debugがfalseの場合はfalseを返す（ログのみ）
         }
     }
 
@@ -461,8 +474,7 @@ class cposts extends crecord {
         }
         $arr = [];
         $query = "SELECT * FROM posts WHERE user_id = :user_id ORDER BY post_id DESC";
-        $prep_arr = array(':user_id' => (int)$user_id);
-        $this->select_query($debug, $query, $prep_arr);
+        $this->select_query($debug, $query, array(':user_id' => (int)$user_id));
         while ($row = $this->fetch_assoc()) {
             $arr[] = $row;
         }
@@ -1096,14 +1108,16 @@ class cotumami_categories extends crecord {
         parent::__construct();
     }
 
-    // ここは今回追加した get_all_categories() メソッドと機能的に同じですが、
-    // ページネーションを考慮しない全件取得メソッドとして定義します。
-    // 必要に応じて get_all() や get_all_count() と統合しても良いでしょう。
+    /**
+     * 全てのカテゴリー情報を取得するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @return array|false カテゴリー情報の配列、または失敗した場合はfalse
+     */
     public function get_all_categories($debug) {
         $query = "SELECT * FROM otumami_categories ORDER BY category_id ASC";
-        $stmt = $this->execute_query($debug, $query); // execute_query はPDOStatementを返すように修正
+        $stmt = $this->execute_query($debug, $query);
         if ($stmt) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // fetchAll を使用して全件取得
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         return false;
     }
@@ -1152,14 +1166,16 @@ class cotumami_tags extends crecord {
         parent::__construct();
     }
 
-    // ここは今回追加した get_all_tags() メソッドと機能的に同じですが、
-    // ページネーションを考慮しない全件取得メソッドとして定義します。
-    // 必要に応じて get_all() や get_all_count() と統合しても良いでしょう。
+    /**
+     * 全てのタグ情報を取得するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @return array|false タグ情報の配列、または失敗した場合はfalse
+     */
     public function get_all_tags($debug) {
         $query = "SELECT * FROM otumami_tags ORDER BY tag_id ASC";
-        $stmt = $this->execute_query($debug, $query); // execute_query はPDOStatementを返すように修正
+        $stmt = $this->execute_query($debug, $query);
         if ($stmt) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // fetchAll を使用して全件取得
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         return false;
     }
@@ -1208,6 +1224,34 @@ class cotumami extends crecord {
         parent::__construct();
     }
 
+    /**
+     * 新しいおつまみ情報をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $combi_category_id 合うお酒のカテゴリーID
+     * @param string $otumami_name おつまみ名
+     * @param float $otumami_price 値段
+     * @param string $otumami_description おつまみの説明1
+     * @param string $otumami_discription おつまみの説明2 (スペルミスは元のDB定義に合わせる)
+     * @param int $otumami_stock 在庫数
+     * @return int|false 挿入されたotumami_id、または失敗した場合はfalse
+     */
+    public function insert_otumami($debug, $combi_category_id, $otumami_name, $otumami_price, $otumami_description, $otumami_discription, $otumami_stock) {
+        $query = "INSERT INTO otumami (combi_category_id, otumami_name, otumami_price, otumami_description, otumami_discription, otumami_stock) VALUES (:combi_category_id, :otumami_name, :otumami_price, :otumami_description, :otumami_discription, :otumami_stock)";
+        $prep_arr = array(
+            ':combi_category_id' => (int)$combi_category_id,
+            ':otumami_name' => $otumami_name,
+            ':otumami_price' => (float)$otumami_price,
+            ':otumami_description' => $otumami_description,
+            ':otumami_discription' => $otumami_discription, // スキルのミスを保持
+            ':otumami_stock' => (int)$otumami_stock
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された otumami_id を返す
+        }
+        return false;
+    }
+
     public function get_all_count($debug) {
         $query = "SELECT COUNT(*) AS total_count FROM otumami WHERE 1";
         $prep_arr = array();
@@ -1245,11 +1289,84 @@ class cotumami extends crecord {
 }
 
 //--------------------------------------------------------------------------------------
+/// おつまみ画像クラス (新規追加)
+//--------------------------------------------------------------------------------------
+class cotumami_images extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * 新しいおつまみ画像をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $otumami_id 関連するおつまみのID
+     * @param string $image_path 画像ファイルのパス
+     * @param string $image_type 画像の種類 ('main' または 'sub')
+     * @param int $display_order 画像の表示順序
+     * @return int|false 挿入されたimage_id、または失敗した場合はfalse
+     */
+    public function insert_image($debug, $otumami_id, $image_path, $image_type, $display_order) {
+        $query = "INSERT INTO otumami_images (otumami_id, image_path, image_type, display_order) VALUES (:otumami_id, :image_path, :image_type, :display_order)";
+        $prep_arr = array(
+            ':otumami_id' => (int)$otumami_id,
+            ':image_path' => $image_path,
+            ':image_type' => $image_type,
+            ':display_order' => (int)$display_order
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された image_id を返す
+        }
+        return false;
+    }
+
+    /**
+     * 特定のおつまみIDに紐づく全ての画像を取得するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $otumami_id おつまみのID
+     * @return array 投稿画像情報の配列、または見つからない場合は空の配列
+     */
+    public function get_images_by_otumami_id($debug, $otumami_id) {
+        if (!cutil::is_number($otumami_id) || $otumami_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "SELECT * FROM otumami_images WHERE otumami_id = :otumami_id ORDER BY display_order ASC, image_id ASC";
+        $stmt = $this->execute_query($debug, $query, array(':otumami_id' => (int)$otumami_id));
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
+
+//--------------------------------------------------------------------------------------
 /// おつまみとタグの関連付けクラス (中間テーブル)
 //--------------------------------------------------------------------------------------
 class cotumami_otumami_tags extends crecord {
     public function __construct() {
         parent::__construct();
+    }
+
+    /**
+     * おつまみとタグの関連情報をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $otumami_id おつまみID
+     * @param int $tag_id タグID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function insert_otumami_tag_relation($debug, $otumami_id, $tag_id) {
+        $query = "INSERT INTO otumami_otumami_tags (otumami_id, tag_id) VALUES (:otumami_id, :tag_id)";
+        $prep_arr = array(
+            ':otumami_id' => (int)$otumami_id,
+            ':tag_id' => (int)$tag_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
     public function get_all_count($debug) {
@@ -1280,12 +1397,12 @@ class cotumami_otumami_tags extends crecord {
             return false;
         }
         $arr = array();
-        $query = "SELECT * FROM otumami_otumami_tags WHERE otumami_id = :otumami_id ORDER BY tag_id ASC";
-        $this->select_query($debug, $query, array(':otumami_id' => (int)$otumami_id));
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row;
+        $query = "SELECT tag_id FROM otumami_otumami_tags WHERE otumami_id = :otumami_id ORDER BY tag_id ASC"; // タグIDのみを取得
+        $stmt = $this->execute_query($debug, $query, array(':otumami_id' => (int)$otumami_id));
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-        return $arr;
+        return [];
     }
 
     // 例: 特定のタグに紐づくすべてのおつまみを取得
@@ -1294,12 +1411,12 @@ class cotumami_otumami_tags extends crecord {
             return false;
         }
         $arr = array();
-        $query = "SELECT * FROM otumami_otumami_tags WHERE tag_id = :tag_id ORDER BY otumami_id ASC";
-        $this->select_query($debug, $query, array(':tag_id' => (int)$tag_id));
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row;
+        $query = "SELECT otumami_id FROM otumami_otumami_tags WHERE tag_id = :tag_id ORDER BY otumami_id ASC"; // otumami_idのみを取得
+        $stmt = $this->execute_query($debug, $query, array(':tag_id' => (int)$tag_id));
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-        return $arr;
+        return [];
     }
 
     public function __destruct() {
@@ -1485,7 +1602,7 @@ class corder_items extends crecord {
 
 //--------------------------------------------------------------------------------------
 /// 管理者ユーザー情報クラス
-//--------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class cadmin_user_info extends crecord {
     public function __construct() {
         parent::__construct();
