@@ -45,7 +45,8 @@ class crecord {
         $this->stmt->execute($prep_arr);
     }
 
-    // INSERT, UPDATE, DELETEなどの書き込み操作を実行するメソッド
+    // INSERT, UPDATE, DELETEなどの書き込み操作、および結果セットを返さないSELECT操作を実行するメソッド
+    // SELECT文で結果セットを返す場合は、PDOStatementオブジェクトを返すように変更
     protected function execute_query($debug, $query, $prep_arr = array()) {
         if ($debug) {
             echo "<pre>Debug SQL: " . htmlspecialchars($query) . "</pre>";
@@ -53,7 +54,14 @@ class crecord {
         }
         try {
             $stmt = $this->pdo->prepare($query);
-            return $stmt->execute($prep_arr);
+            $result = $stmt->execute($prep_arr);
+
+            // SELECT文の場合、PDOStatementオブジェクトをそのまま返す
+            if (preg_match('/^\s*SELECT/i', $query)) {
+                return $stmt;
+            }
+            // それ以外のクエリ（INSERT/UPDATE/DELETEなど）の場合、実行結果（true/false）を返す
+            return $result;
         } catch (PDOException $e) {
             error_log("Database Error: " . $e->getMessage() . " SQL: " . $query . " Params: " . json_encode($prep_arr));
             if ($debug) {
@@ -168,7 +176,7 @@ class cuser_info extends crecord {
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
-    
+
     // ユーザーを削除するメソッド (admin_users.php で使用予定)
     public function delete_user($debug, $user_id) {
         if (!cutil::is_number($user_id) || $user_id < 1) {
@@ -474,10 +482,10 @@ class cposts extends crecord {
         // IN句のプレースホルダーを動的に生成
         $placeholders = implode(',', array_fill(0, count($post_ids), '?'));
         $query = "SELECT * FROM posts WHERE post_id IN ($placeholders) ORDER BY post_id DESC";
-        
+
         // すべてのIDを整数に変換してプリペアドステートメントに渡す
-        $prep_arr = array_map('intval', $post_ids); 
-        
+        $prep_arr = array_map('intval', $post_ids);
+
         $this->select_query($debug, $query, $prep_arr);
 
         $arr = [];
@@ -554,12 +562,11 @@ class cpost_images extends crecord {
         }
         $arr = [];
         $query = "SELECT * FROM post_images WHERE post_id = :post_id ORDER BY display_order ASC, image_id ASC";
-        $prep_arr = array(':post_id' => (int)$post_id);
-        $this->select_query($debug, $query, $prep_arr);
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row;
+        $stmt = $this->execute_query($debug, $query, array(':post_id' => (int)$post_id)); // execute_query の戻り値を PDOStatement として受け取る
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // fetchAll を使用して全件取得
         }
-        return $arr;
+        return [];
     }
 
     /**
@@ -854,8 +861,7 @@ class cgood extends crecord {
             return 0;
         }
         $query = "SELECT COUNT(*) AS good_count FROM good WHERE post_id = :post_id";
-        $prep_arr = array(':post_id' => (int)$post_id);
-        $this->select_query($debug, $query, $prep_arr);
+        $this->select_query($debug, $query, array(':post_id' => (int)$post_id));
         $row = $this->fetch_assoc();
         return $row ? (int)$row['good_count'] : 0;
     }
@@ -873,11 +879,10 @@ class cgood extends crecord {
         }
         // ここを修正: COUNT(*) にエイリアスを追加
         $query = "SELECT COUNT(*) AS count_result FROM good WHERE user_id = :user_id AND post_id = :post_id";
-        $prep_arr = array(
+        $this->select_query($debug, $query, array(
             ':user_id' => (int)$user_id,
             ':post_id' => (int)$post_id
-        );
-        $this->select_query($debug, $query, $prep_arr);
+        ));
         $row = $this->fetch_assoc();
         // ここを修正: エイリアスで参照
         return $row && $row['count_result'] > 0;
@@ -895,8 +900,7 @@ class cgood extends crecord {
         }
         $arr = [];
         $query = "SELECT post_id FROM good WHERE user_id = :user_id ORDER BY good_id DESC";
-        $prep_arr = array(':user_id' => (int)$user_id);
-        $this->select_query($debug, $query, $prep_arr);
+        $this->select_query($debug, $query, array(':user_id' => (int)$user_id));
         while ($row = $this->fetch_assoc()) {
             $arr[] = $row['post_id'];
         }
@@ -974,8 +978,7 @@ class cheart extends crecord {
             return 0;
         }
         $query = "SELECT COUNT(*) AS heart_count FROM heart WHERE post_id = :post_id";
-        $prep_arr = array(':post_id' => (int)$post_id);
-        $this->select_query($debug, $query, $prep_arr);
+        $this->select_query($debug, $query, array(':post_id' => (int)$post_id));
         $row = $this->fetch_assoc();
         return $row ? (int)$row['heart_count'] : 0;
     }
@@ -993,11 +996,10 @@ class cheart extends crecord {
         }
         // ここを修正: COUNT(*) にエイリアスを追加
         $query = "SELECT COUNT(*) AS count_result FROM heart WHERE user_id = :user_id AND post_id = :post_id";
-        $prep_arr = array(
+        $this->select_query($debug, $query, array(
             ':user_id' => (int)$user_id,
             ':post_id' => (int)$post_id
-        );
-        $this->select_query($debug, $query, $prep_arr);
+        ));
         $row = $this->fetch_assoc();
         // ここを修正: エイリアスで参照
         return $row && $row['count_result'] > 0;
@@ -1015,8 +1017,7 @@ class cheart extends crecord {
         }
         $arr = [];
         $query = "SELECT post_id FROM heart WHERE user_id = :user_id ORDER BY heart_id DESC";
-        $prep_arr = array(':user_id' => (int)$user_id);
-        $this->select_query($debug, $query, $prep_arr);
+        $this->select_query($debug, $query, array(':user_id' => (int)$user_id));
         while ($row = $this->fetch_assoc()) {
             $arr[] = $row['post_id'];
         }
@@ -1095,6 +1096,18 @@ class cotumami_categories extends crecord {
         parent::__construct();
     }
 
+    // ここは今回追加した get_all_categories() メソッドと機能的に同じですが、
+    // ページネーションを考慮しない全件取得メソッドとして定義します。
+    // 必要に応じて get_all() や get_all_count() と統合しても良いでしょう。
+    public function get_all_categories($debug) {
+        $query = "SELECT * FROM otumami_categories ORDER BY category_id ASC";
+        $stmt = $this->execute_query($debug, $query); // execute_query はPDOStatementを返すように修正
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // fetchAll を使用して全件取得
+        }
+        return false;
+    }
+
     public function get_all_count($debug) {
         $query = "SELECT COUNT(*) AS total_count FROM otumami_categories WHERE 1";
         $prep_arr = array();
@@ -1137,6 +1150,18 @@ class cotumami_categories extends crecord {
 class cotumami_tags extends crecord {
     public function __construct() {
         parent::__construct();
+    }
+
+    // ここは今回追加した get_all_tags() メソッドと機能的に同じですが、
+    // ページネーションを考慮しない全件取得メソッドとして定義します。
+    // 必要に応じて get_all() や get_all_count() と統合しても良いでしょう。
+    public function get_all_tags($debug) {
+        $query = "SELECT * FROM otumami_tags ORDER BY tag_id ASC";
+        $stmt = $this->execute_query($debug, $query); // execute_query はPDOStatementを返すように修正
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC); // fetchAll を使用して全件取得
+        }
+        return false;
     }
 
     public function get_all_count($debug) {
@@ -1256,8 +1281,7 @@ class cotumami_otumami_tags extends crecord {
         }
         $arr = array();
         $query = "SELECT * FROM otumami_otumami_tags WHERE otumami_id = :otumami_id ORDER BY tag_id ASC";
-        $prep_arr = array(':otumami_id' => (int)$otumami_id);
-        $this->select_query($debug, $query, $prep_arr);
+        $this->select_query($debug, $query, array(':otumami_id' => (int)$otumami_id));
         while ($row = $this->fetch_assoc()) {
             $arr[] = $row;
         }
@@ -1271,8 +1295,7 @@ class cotumami_otumami_tags extends crecord {
         }
         $arr = array();
         $query = "SELECT * FROM otumami_otumami_tags WHERE tag_id = :tag_id ORDER BY otumami_id ASC";
-        $prep_arr = array(':tag_id' => (int)$tag_id);
-        $this->select_query($debug, $query, $prep_arr);
+        $this->select_query($debug, $query, array(':tag_id' => (int)$tag_id));
         while ($row = $this->fetch_assoc()) {
             $arr[] = $row;
         }

@@ -12,6 +12,33 @@
 </head>
 <body>
 
+    <?php
+    // contents_db.php を読み込む
+    // /home/j2025g/public_html/admin/admin_otsumami_add.php から見て
+    // /home/j2025g/public_html/common/contents_db.php への相対パス
+    require_once '../common/contents_db.php';
+
+    $debug = false; // デバッグモードをオンにするかどうか。開発中はtrue、本番環境ではfalseにすることを推奨。
+
+    // cotumami_categories および cotumami_tags クラスのインスタンスを生成
+    $db_categories = new cotumami_categories();
+    $db_tags = new cotumami_tags();
+
+    // カテゴリーデータを取得
+    $categories = $db_categories->get_all_categories($debug);
+    if ($categories === false) {
+        $categories = []; // 取得失敗時は空の配列を設定
+        error_log("Failed to fetch categories."); // エラーログに出力
+    }
+
+    // タグデータを取得
+    $tags = $db_tags->get_all_tags($debug);
+    if ($tags === false) {
+        $tags = []; // 取得失敗時は空の配列を設定
+        error_log("Failed to fetch tags."); // エラーログに出力
+    }
+    ?>
+
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
@@ -56,18 +83,38 @@
                         <label for="category">おつまみカテゴリー <span class="required-tag">必須</span></label>
                         <select id="category" name="category" required>
                             <option value="">選択してください</option>
+                            <?php foreach ($categories as $category): // ここに動的なカテゴリーオプションを挿入 ?>
+                                <option value="<?php echo htmlspecialchars($category['category_id']); ?>">
+                                    <?php echo htmlspecialchars($category['category_name']); ?>
+                                </option>
+                            <?php endforeach; ?>
+                            <!-- 元の静的なオプションは削除またはコメントアウトしてください -->
+                            <!--
                             <option value="和食">和食</option>
                             <option value="洋食">洋食</option>
                             <option value="中華">中華</option>
                             <option value="エスニック">エスニック</option>
                             <option value="スイーツ">スイーツ</option>
                             <option value="その他">その他</option>
+                            -->
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label>おつまみタグ</label>
                         <div class="checkbox-group">
+                            <?php if (!empty($tags)): // ここに動的なタグチェックボックスを挿入 ?>
+                                <?php foreach ($tags as $tag): ?>
+                                    <label>
+                                        <input type="checkbox" name="tags[]" value="<?php echo htmlspecialchars($tag['tag_id']); ?>">
+                                        <?php echo htmlspecialchars($tag['tag_name']); ?>
+                                    </label>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>利用可能なタグがありません。</p>
+                            <?php endif; ?>
+                            <!-- 元の静的なチェックボックスは削除またはコメントアウトしてください -->
+                            <!--
                             <label><input type="checkbox" name="tags[]" value="簡単">簡単</label>
                             <label><input type="checkbox" name="tags[]" value="時短">時短</label>
                             <label><input type="checkbox" name="tags[]" value="おしゃれ">おしゃれ</label>
@@ -75,6 +122,7 @@
                             <label><input type="checkbox" name="tags[]" value="おつまみ定番">おつまみ定番</label>
                             <label><input type="checkbox" name="tags[]" value="子供向け">子供向け</label>
                             <label><input type="checkbox" name="tags[]" value="大人向け">大人向け</label>
+                            -->
                         </div>
                     </div>
 
@@ -128,12 +176,14 @@ document.getElementById('images').addEventListener('change', function(e) {
         reader.onload = function(evt) {
             const img = document.createElement('img');
             img.src = evt.target.result;
+            // 元のCSSがimgタグに適用されるように、クラスは追加しません。
+            // もし必要であれば、img.classList.add('thumbnail'); を追加してください。
             preview.appendChild(img);
         };
         reader.readAsDataURL(file);
     });
 });
-</script>
+    </script>
 
 </body>
 </html>
