@@ -134,6 +134,67 @@
 }
 
 
+/* 画像アップロードの注意書き */
+.form-note {
+    display: block;
+    font-size: 1.3rem;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* タグのチェックボックスを1行5つ・大きめに */
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 0;
+    margin-top: 10px;
+}
+
+.checkbox-group label {
+    width: 20%;
+    min-width: 120px;
+    font-size: 1.8rem;
+    font-weight: 500;
+    margin-right: 0;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+    width: 22px;
+    height: 22px;
+}
+
+/* 画像プレビュー用 */
+.image-preview {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.image-preview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fafafa;
+}
+
+/* 価格・在庫数もおつまみ名と同じ大きさ・形に統一 */
+.form-group input[type="number"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1.7rem;
+    color: #555;
+    background-color: #fcfcfc;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 1024px) {
     .admin-form {

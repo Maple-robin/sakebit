@@ -46,60 +46,54 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="main_image">メイン画像 <span class="required-tag">必須</span></label>
-                        <input type="file" id="main_image" name="main_image" accept="image/*" required>
+                        <label>おつまみ画像 <span class="required-tag">最低1枚必須・最大4枚</span></label>
+                        <input type="file" id="images" name="images[]" accept="image/*" multiple required>
+                        <small class="form-note">1枚以上4枚まで選択してください。</small>
+                        <div id="image-preview" class="image-preview"></div>
                     </div>
 
                     <div class="form-group">
-                        <label for="sub_image1">サブ画像1</label>
-                        <input type="file" id="sub_image1" name="sub_image1" accept="image/*">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sub_image2">サブ画像2</label>
-                        <input type="file" id="sub_image2" name="sub_image2" accept="image/*">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sub_image3">サブ画像3</label>
-                        <input type="file" id="sub_image3" name="sub_image3" accept="image/*">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="combi_type">合うお酒の種類 <span class="required-tag">必須</span></label>
-                        <select id="combi_type" name="combi_type" required>
+                        <label for="category">おつまみカテゴリー <span class="required-tag">必須</span></label>
+                        <select id="category" name="category" required>
                             <option value="">選択してください</option>
-                            <option value="ビール">ビール</option>
-                            <option value="日本酒">日本酒</option>
-                            <option value="ワイン">ワイン</option>
-                            <option value="ウイスキー">ウイスキー</option>
-                            <option value="焼酎">焼酎</option>
+                            <option value="和食">和食</option>
+                            <option value="洋食">洋食</option>
+                            <option value="中華">中華</option>
+                            <option value="エスニック">エスニック</option>
+                            <option value="スイーツ">スイーツ</option>
                             <option value="その他">その他</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label for="combi_category">合うお酒のカテゴリ <span class="required-tag">必須</span></label>
-                        <select id="combi_category" name="combi_category" required>
-                            <option value="">選択してください</option>
-                            <option value="甘口">甘口</option>
-                            <option value="辛口">辛口</option>
-                            <option value="さっぱり">さっぱり</option>
-                            <option value="濃厚">濃厚</option>
-                            <option value="スパイシー">スパイシー</option>
-                            <option value="ヘルシー">ヘルシー</option>
-                            <option value="定番">定番</option>
-                        </select>
+                        <label>おつまみタグ</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="tags[]" value="簡単">簡単</label>
+                            <label><input type="checkbox" name="tags[]" value="時短">時短</label>
+                            <label><input type="checkbox" name="tags[]" value="おしゃれ">おしゃれ</label>
+                            <label><input type="checkbox" name="tags[]" value="ヘルシー">ヘルシー</label>
+                            <label><input type="checkbox" name="tags[]" value="おつまみ定番">おつまみ定番</label>
+                            <label><input type="checkbox" name="tags[]" value="子供向け">子供向け</label>
+                            <label><input type="checkbox" name="tags[]" value="大人向け">大人向け</label>
+                        </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="otsumami_text">おつまみレシピ／説明 <span class="required-tag">必須</span></label>
-                        <textarea id="otsumami_text" name="otsumami_text" rows="6" required maxlength="200"></textarea>
+                        <label for="desc1">おつまみ説明1 <span class="required-tag">必須</span></label>
+                        <textarea id="desc1" name="desc1" rows="4" required maxlength="200"></textarea>
                     </div>
-                    
                     <div class="form-group">
-                        <label for="liquor_name">お酒名 <span class="required-tag">必須</span></label>
-                        <input type="text" id="liquor_name" name="liquor_name" required maxlength="128" placeholder="関連するお酒の名称を入力してください（任意）">
+                        <label for="desc2">おつまみ説明2</label>
+                        <textarea id="desc2" name="desc2" rows="4" maxlength="200"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="price">価格 <span class="required-tag">必須</span></label>
+                        <input type="number" id="price" name="price" required min="0" step="1">
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">在庫数 <span class="required-tag">必須</span></label>
+                        <input type="number" id="stock" name="stock" required min="0" step="1">
                     </div>
 
                     <div class="form-actions">
@@ -122,6 +116,24 @@
             <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
         </div>
     </footer>
+
+    <script>
+document.getElementById('images').addEventListener('change', function(e) {
+    const preview = document.getElementById('image-preview');
+    preview.innerHTML = '';
+    const files = Array.from(e.target.files).slice(0, 4); // 最大4枚
+    files.forEach(file => {
+        if (!file.type.startsWith('image/')) return;
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            const img = document.createElement('img');
+            img.src = evt.target.result;
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    });
+});
+</script>
 
 </body>
 </html>
