@@ -49,9 +49,9 @@ ul {
 .admin-main__inner,
 .admin-footer__inner {
     width: 100%;
-    max-width: 1600px;
+    max-width: 1900px; /* ヘッダーと合わせる */
     margin: 0 auto;
-    padding: 0 20px; /* 左右の余白を調整 */
+    padding: 0 30px; /* 左右の余白を調整 */
 }
 
 .admin-page-title {
@@ -109,15 +109,15 @@ ul {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 70px; /* ヘッダーの高さを調整 */
+    height: 80px; /* ヘッダーの高さを少し大きく */
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 20px; /* 左右パディングを調整 */
+    padding: 0 30px; /* 左右パディングを広げる */
 }
 
 .admin-header__logo a {
     font-family: 'Zen Old Mincho', serif;
-    font-size: 2.8rem; /* ロゴのフォントサイズを大きく */
+    font-size: 2.4rem; /* ロゴのフォントサイズを少し小さく */
     font-weight: bold;
     color: #333;
     white-space: nowrap;
@@ -125,22 +125,24 @@ ul {
 
 .admin-header__nav {
     flex-grow: 1;
-    margin-left: 40px; /* 間隔を調整 */
+    margin-left: 50px; /* 間隔を広げる */
 }
 
 .admin-nav__list {
     display: flex;
     justify-content: flex-end;
-    gap: 25px; /* メニュー間隔を調整 */
+    gap: 25px; /* メニュー間隔を広げる */
+    flex-wrap: nowrap; /* 改行を防ぐ */
 }
 
 .admin-nav__list li a {
-    font-size: 1.7rem; /* メニューのフォントサイズを大きく */
+    font-size: 1.8rem; /* メニューのフォントサイズをさらに大きく */
     font-weight: 500;
     color: #555;
     padding: 10px 0; /* パディングを調整 */
     position: relative;
     transition: color 0.3s ease;
+    white-space: nowrap; /* テキストの改行を防ぐ */
 }
 
 .admin-nav__list li a::after {
@@ -174,7 +176,7 @@ ul {
 .admin-main {
     flex: 1;
     padding: 100px 0 80px; /* 上下パディングを調整 */
-    margin-top: 70px; /* ヘッダー固定分のマージンを調整 */
+    margin-top: 80px; /* ヘッダー固定分のマージンを調整 */
 }
 
 /* Summary Cards */

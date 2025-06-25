@@ -11,8 +11,7 @@
     <link rel="stylesheet" href="../admincss/admin.css">
     <link rel="stylesheet" href="../admincss/admin_client_users.css"> </head>
 <body>
-    <header class="admin-header">
-        <div class="admin-header__inner">
+    <header class="admin-header">        <div class="admin-header__inner">
             <h1 class="admin-header__logo">
                 <a href="admin.php">OUR BRAND 管理者ページ</a>
             </h1>
@@ -24,6 +23,7 @@
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php">FAQ登録</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
+                    <li><a href="login.php">ログイン</a></li>
                 </ul>
             </nav>
         </div>

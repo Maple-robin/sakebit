@@ -16,8 +16,7 @@
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
                 <a href="admin.php">OUR BRAND 管理者ページ</a>
-            </h1>
-            <nav class="admin-header__nav">
+            </h1>            <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
                     <li><a href="admin_products.php" class="is-current">お酒管理</a></li>
                     <li><a href="admin_otsumami.php">おつまみ管理</a></li>
@@ -27,6 +26,7 @@
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php">FAQ管理</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
+                    <li><a href="login.php">ログイン</a></li>
                 </ul>
             </nav>
         </div>
