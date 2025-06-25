@@ -1,7 +1,131 @@
 /*
  * admin_client_users.css
  * 企業ユーザー管理一覧ページ固有のスタイル
+ * ----------------------------------------
  */
+
+/* base - admin.cssの定義に合わせる */
+html {
+    font-size: 62.5%; /* 1rem = 10px */
+    height: 100%; /* admin.cssに合わせる */
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    line-height: 1.5;
+    color: #333;
+    background-color: #f4f7f6;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+input {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1.6rem;
+}
+
+button {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* 共通変数 */
+:root {
+    /* カラーパレット */
+    --primary-color: #A0522D; /* メインカラー (登録ボタンなど) */
+    --primary-dark-color: #8B4513; /* メインカラーの濃い色 (登録ボタンのボーダーなど) */
+    --edit-button-color: #5bc0de; /* 編集ボタンの水色 */
+    --delete-button-color: #d9534f; /* 削除ボタンの赤色 */
+    --text-color-dark: #333;
+    --text-color-light: #fff;
+    --border-color-light: #eee;
+    --background-color-light: #f5f5f5;
+    --background-color-hover: #f9f9f9;
+    --white: #fff;
+
+    /* フォントサイズ */
+    --font-size-base: 1.6rem;
+    --font-size-button-sm: 1.4rem;
+    --font-size-button-lg: 2.6rem;
+    --font-size-icon-lg: 3.5rem;
+}
+
+/* ヘッダーの現在のページ表示 */
+/* このスタイルはadmin_client_users.cssに置いておくのが適切です */
+.admin-nav__list li a.is-current {
+    color: var(--primary-color); /* 現在のページの色 */
+}
+
+/* メインコンテンツ調整 */
+.admin-main {
+    /* admin.cssのmargin-top: 70px; に合わせる */
+    margin-top: 70px; /* admin.cssのPC時のメインコンテンツマージンに合わせる */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px; /* admin.cssにはpadding: 100px 0 80px; があるため、ここで調整 */
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.admin-main__inner {
+    width: 100%;
+    max-width: 1000px; /* Wider for admin table */
+    margin: 20px auto;
+    padding: 0 10px;
+}
+
+/* 管理ページタイトル */
+.admin-page-title {
+    text-align: center;
+    margin-bottom: 80px; /* PC時のタイトル下マージン */
+    font-family: 'Zen Old Mincho', serif;
+    font-weight: 500;
+}
+
+.admin-page-title .en {
+    display: block;
+    font-size: 4.8rem; /* PC時の英語タイトルサイズ */
+    color: #000;
+    letter-spacing: 0.1em;
+    margin-bottom: 5px;
+}
+
+.admin-page-title .ja {
+    display: block;
+    font-size: 2.2rem; /* PC時の日本語タイトルサイズ */
+    color: #555;
+    letter-spacing: 0.05em;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.admin-page-title .ja::after {
+    content: '';
+    display: block;
+    width: 60px; /* PC時の下線幅 */
+    height: 1px;
+    background-color: #C0C0C0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 0;
+}
 
 /* データテーブルセクション */
 .admin-table-section {
@@ -16,7 +140,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    min-width: 600px;
+    min-width: 600px; /* テーブルが横にはみ出る場合にスクロール可能に */
 }
 
 .data-table th,
@@ -24,15 +148,15 @@
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid var(--border-color-light);
-    font-size: var(--font-size-base);
-    vertical-align: middle;
+    font-size: var(--font-size-base); /* 1.4remは共通のフォントサイズと異なるため調整 */
+    vertical-align: middle; /* セルの内容を中央に */
 }
 
 .data-table th {
     background-color: var(--background-color-light);
     font-weight: 600;
     color: var(--text-color-dark);
-    white-space: nowrap;
+    white-space: nowrap; /* Prevent wrapping of table headers */
 }
 
 .data-table tbody tr:hover {
@@ -40,18 +164,19 @@
 }
 
 .data-table tbody tr:last-child td {
-    border-bottom: none;
+    border-bottom: none; /* 最後の行の下線はなし */
 }
 
-/* 操作ボタン */
+/* 操作ボタンをFlexboxで横並びにするためのスタイル */
 .action-buttons {
     display: flex;
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
-    white-space: nowrap;
+    gap: 8px; /* ボタン間のスペース */
+    justify-content: center; /* ボタンを中央寄せ */
+    align-items: center; /* 垂直方向も中央寄せ */
+    white-space: nowrap; /* ボタンが折り返さないようにする */
 }
 
+/* テーブル内のボタン */
 .btn-sm {
     display: inline-block;
     padding: 8px 15px;
@@ -60,15 +185,144 @@
     border-radius: 5px;
     cursor: pointer;
     white-space: nowrap;
-    text-decoration: none;
+    text-decoration: none; /* リンクボタンの下線を除去 */
+}
+
+.btn-edit {
+    background-color: var(--edit-button-color); /* 水色 */
+    color: var(--text-color-light);
 }
 
 .btn-delete {
-    background-color: var(--delete-button-color);
+    background-color: var(--delete-button-color); /* 赤色 */
     color: var(--text-color-light);
+}
+
+/* 投稿管理(admin_posts.css)の削除ボタンと同じ見た目にする */
+.btn.btn-sm.btn-delete,
+button.btn.btn-sm.btn-delete {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    padding: 8px 12px !important;
+    border: none !important;
+    border-radius: 5px !important;
+    font-size: 1.3rem !important;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
 }
 
 .btn.btn-sm.btn-delete:hover,
 button.btn.btn-sm.btn-delete:hover {
     background-color: #c82333 !important;
+}
+
+/* フッター共通スタイル */
+.admin-footer {
+    background-color: #eeeeee;
+    padding: 50px 0 30px; /* この値はおつまみ側で調整済みなので維持 */
+}
+
+.admin-footer__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.admin-footer__copyright {
+    font-size: 1.2rem;
+    color: #666;
+    width: 100%;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+    .admin-main {
+        margin-top: 70px; /* PCと同じマージンを維持、admin.cssに倣う */
+    }
+    .admin-page-title {
+        margin-bottom: 60px;
+    }
+    .admin-page-title .en {
+        font-size: 4rem;
+    }
+    .admin-page-title .ja {
+        font-size: 2rem;
+    }
+    .admin-table-section {
+        padding: 15px;
+    }
+    .data-table th,
+    .data-table td {
+        padding: 10px 12px;
+        font-size: 1.5rem;
+    }
+    .data-table {
+        min-width: 500px;
+    }
+    .btn-sm {
+        padding: 7px 12px;
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-main {
+        margin-top: 0; /* admin.cssのスマホ時のマージンに合わせる */
+    }
+    .admin-page-title {
+        margin-bottom: 40px;
+    }
+    .admin-page-title .en {
+        font-size: 3.2rem;
+    }
+    .admin-page-title .ja {
+        font-size: 1.8rem;
+    }
+    .admin-page-title .ja::after {
+        width: 50px;
+    }
+    .admin-table-section {
+        padding: 10px;
+    }
+    .data-table th,
+    .data-table td {
+        padding: 8px 10px;
+        font-size: 1.4rem;
+    }
+    .data-table {
+        min-width: 400px;
+    }
+    .btn-sm {
+        padding: 6px 10px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-main {
+        margin-top: 0; /* admin.cssのスマホ時のマージンに合わせる */
+    }
+    .admin-page-title .en {
+        font-size: 2.8rem;
+    }
+    .admin-page-title .ja {
+        font-size: 1.6rem;
+    }
+    .data-table {
+        min-width: 350px;
+    }
+    .data-table th,
+    .data-table td {
+        padding: 6px 8px;
+        font-size: 1.3rem;
+    }
+    .btn-sm {
+        padding: 5px 8px;
+        font-size: 1.1rem;
+    }
 }
