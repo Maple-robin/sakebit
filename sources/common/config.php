@@ -25,4 +25,5 @@ define('PHP_CHARSET','UTF-8');
 //暗号化のキー
 define('MY_AES_KEY','phpbase_key');
 
-
+// デバッグモードの定義 (この行を追加)
+define('DEBUG', true); // 開発中は true, 本番環境では false に変更してください

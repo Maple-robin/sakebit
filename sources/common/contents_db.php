@@ -1,8 +1,4 @@
 <?php
-// === デバッグ用: この行がブラウザに出力されるか確認してください ===
-// echo "contents_db.php is being included.<br>";
-// ==========================================================
-
 /*!
 @file contents_db.php
 @brief データベース操作クラス群
@@ -11,7 +7,7 @@
 
 // config.phpをインクルードしてDB接続定数を読み込む
 // contents_db.phpとconfig.phpは同じディレクトリにあるはずなので、このパスで正しいです。
-require_once __DIR__ . '/config.php'; // この行はそのまま
+require_once __DIR__ . '/config.php'; 
 
 // 仮の基底クラスとユーティリティクラスの定義（実際には別途定義されているものと想定）
 // --------------------------------------------------------------------------------------
@@ -36,15 +32,18 @@ class crecord {
             }
 
         } catch (PDOException $e) {
-            echo "DB接続エラー: " . $e->getMessage();
+            // 本番環境ではブラウザに詳細を表示せず、ログにのみ記録
+            error_log("DB Connection Error: " . $e->getMessage()); 
+            // ユーザーには一般的なエラーメッセージを表示するか、エラーページにリダイレクト
+            echo "データベース接続エラーが発生しました。しばらくしてから再度お試しください。";
             exit();
         }
     }
 
     protected function select_query($debug, $query, $prep_arr) {
         if ($debug) {
-            echo "<pre>Debug SQL: " . htmlspecialchars($query) . "</pre>";
-            echo "<pre>Debug Params: " . htmlspecialchars(print_r($prep_arr, true)) . "</pre>";
+            error_log("Debug SQL (select_query): " . $query);
+            error_log("Debug Params (select_query): " . print_r($prep_arr, true));
         }
         $this->stmt = $this->pdo->prepare($query);
         $this->stmt->execute($prep_arr);
@@ -54,8 +53,8 @@ class crecord {
     // SELECT文で結果セットを返す場合は、PDOStatementオブジェクトを返すように変更
     protected function execute_query($debug, $query, $prep_arr = array()) {
         if ($debug) {
-            echo "<pre>Debug SQL: " . htmlspecialchars($query) . "</pre>";
-            echo "<pre>Debug Params: " . htmlspecialchars(print_r($prep_arr, true)) . "</pre>";
+            error_log("Debug SQL (execute_query): " . $query);
+            error_log("Debug Params (execute_query): " . print_r($prep_arr, true));
         }
         try {
             $stmt = $this->pdo->prepare($query);
@@ -77,12 +76,9 @@ class crecord {
                                  " Params: " . json_encode($prep_arr);
             error_log($error_message_log);
 
-            // debugがtrueの場合でも、CRITICAL DB ERRORの画面出力はしない (本番運用向け)
-            // デバッグ時には、process_add_otsumami.phpのcatchブロックで詳細エラーを表示します。
-            if ($debug) {
-                // throw $e; // process_add_otsumami.phpのcatchで詳細を拾うため、これは残す
-            }
-            return false; // debugがfalseの場合、または画面出力不要な場合はfalseを返す
+            // 本番環境ではブラウザに詳細を表示しない
+            // $debugがfalseの場合も考慮
+            return false;
         }
     }
 
@@ -270,6 +266,19 @@ class cclient_user_info extends crecord {
         return $this->fetch_assoc();
     }
 
+    /**
+     * メールアドレスでクライアントユーザー情報を取得するメソッド（ログイン認証用）
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param string $email 検索するメールアドレス
+     * @return array|false ユーザー情報（連想配列、password_hashを含む）、または見つからない場合はfalse
+     */
+    public function get_client_user_by_email_for_login($debug, $email) {
+        $query = "SELECT client_id, company_name, representative_name, email, phone, address, password_hash FROM client_user_info WHERE email = :email";
+        $prep_arr = array(':email' => $email);
+        $this->select_query($debug, $query, $prep_arr);
+        return $this->fetch_assoc();
+    }
+
     public function __destruct() {
         parent::__destruct();
     }
@@ -332,6 +341,40 @@ class cuser_profiles extends crecord {
 class cproduct_info extends crecord {
     public function __construct() {
         parent::__construct();
+    }
+
+    /**
+     * 新しい商品情報をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param string $product_name 商品名
+     * @param float $product_price 価格
+     * @param string $product_category カテゴリーIDを指す文字列（例: '1'、外部結合で名前を取得）
+     * @param string $product_description 商品説明1
+     * @param string $product_discription 商品説明2 (スペルミスは元のDB定義に合わせる)
+     * @param string $product_How 使い方
+     * @param string $product_Contents 内容物
+     * @param int $product_stock 在庫数
+     * @param float $product_degree アルコール度数
+     * @return int|false 挿入されたproduct_id、または失敗した場合はfalse
+     */
+    public function insert_product($debug, $product_name, $product_price, $product_category, $product_description, $product_discription, $product_How, $product_Contents, $product_stock, $product_degree) {
+        $query = "INSERT INTO product_info (product_name, product_price, product_category, product_description, product_discription, product_How, product_Contents, product_stock, product_degree) VALUES (:product_name, :product_price, :product_category, :product_description, :product_discription, :product_How, :product_Contents, :product_stock, :product_degree)";
+        $prep_arr = array(
+            ':product_name' => $product_name,
+            ':product_price' => (float)$product_price,
+            ':product_category' => $product_category, // カテゴリーIDを直接渡す
+            ':product_description' => $product_description,
+            ':product_discription' => $product_discription,
+            ':product_How' => $product_How,
+            ':product_Contents' => $product_Contents,
+            ':product_stock' => (int)$product_stock,
+            ':product_degree' => (float)$product_degree
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された product_id を返す
+        }
+        return false;
     }
 
     public function get_all_count($debug) {
@@ -695,11 +738,9 @@ class cposts extends crecord {
         if (empty($post_ids)) {
             return [];
         }
-        // IN句のプレースホルダーを動的に生成
         $placeholders = implode(',', array_fill(0, count($post_ids), '?'));
         $query = "SELECT * FROM posts WHERE post_id IN ($placeholders) ORDER BY post_id DESC";
 
-        // すべてのIDを整数に変換してプリペアドステートメントに渡す
         $prep_arr = array_map('intval', $post_ids);
 
         $this->select_query($debug, $query, $prep_arr);
@@ -722,7 +763,6 @@ class cposts extends crecord {
         if (!cutil::is_number($post_id) || $post_id < 1 || !cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
-        // ユーザーが投稿の所有者であることも確認
         $query = "DELETE FROM posts WHERE post_id = :post_id AND user_id = :user_id";
         $prep_arr = array(
             ':post_id' => (int)$post_id,
@@ -737,66 +777,64 @@ class cposts extends crecord {
 }
 
 //--------------------------------------------------------------------------------------
-/// 投稿画像クラス (新規追加)
+/// 商品画像クラス
 //--------------------------------------------------------------------------------------
-class cpost_images extends crecord {
+class cproduct_images extends crecord {
     public function __construct() {
         parent::__construct();
     }
 
     /**
-     * 新しい投稿画像をデータベースに挿入するメソッド
+     * 新しい商品画像をデータベースに挿入するメソッド
      * @param bool $debug デバッグモードのオン/オフ
-     * @param int $post_id 関連する投稿のID
+     * @param int $product_id 関連する商品のID
      * @param string $image_path 画像ファイルのパス
+     * @param string $image_type 画像の種類 ('main' または 'sub')
      * @param int $display_order 画像の表示順序
      * @return int|false 挿入されたimage_id、または失敗した場合はfalse
      */
-    public function insert_image($debug, $post_id, $image_path, $display_order) {
-        $query = "INSERT INTO post_images (post_id, image_path, display_order) VALUES (:post_id, :image_path, :display_order)";
+    public function insert_image($debug, $product_id, $image_path, $image_type, $display_order) {
+        $query = "INSERT INTO product_images (product_id, image_path, image_type, display_order) VALUES (:product_id, :image_path, :image_type, :display_order)";
         $prep_arr = array(
-            ':post_id' => (int)$post_id,
+            ':product_id' => (int)$product_id,
             ':image_path' => $image_path,
+            ':image_type' => $image_type,
             ':display_order' => (int)$display_order
         );
-        $result = $this->execute_query($debug, $query, $prep_arr);
-        if ($result) {
-            return $this->last_insert_id(); // 挿入された image_id を返す
-        }
-        return false;
+        return $this->execute_query($debug, $query, $prep_arr);
     }
 
     /**
-     * 特定の投稿IDに紐づく全ての画像を取得するメソッド
+     * 特定の商品IDに紐づく全ての画像を取得するメソッド
      * @param bool $debug デバッグモードのオン/オフ
-     * @param int $post_id 投稿のID
+     * @param int $product_id 商品のID
      * @return array 投稿画像情報の配列、または見つからない場合は空の配列
      */
-    public function get_images_by_post_id($debug, $post_id) {
-        if (!cutil::is_number($post_id) || $post_id < 1) {
+    public function get_images_by_product_id($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
             return [];
         }
         $arr = [];
-        $query = "SELECT * FROM post_images WHERE post_id = :post_id ORDER BY display_order ASC, image_id ASC";
-        $stmt = $this->execute_query($debug, $query, array(':post_id' => (int)$post_id)); // execute_query の戻り値を PDOStatement として受け取る
+        $query = "SELECT * FROM product_images WHERE product_id = :product_id ORDER BY display_order ASC, image_id ASC";
+        $stmt = $this->execute_query($debug, $query, array(':product_id' => (int)$product_id));
         if ($stmt) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // fetchAll を使用して全件取得
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         return [];
     }
 
     /**
-     * 特定の投稿に紐づく画像を全て削除するメソッド
+     * 特定の商品に紐づく画像を全て削除するメソッド
      * @param bool $debug デバッグモードのオン/オフ
-     * @param int $post_id 投稿ID
+     * @param int $product_id 商品ID
      * @return bool 成功した場合はtrue、失敗した場合はfalse
      */
-    public function delete_images_by_post_id($debug, $post_id) {
-        if (!cutil::is_number($post_id) || $post_id < 1) {
+    public function delete_images_by_product_id($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
             return false;
         }
-        $query = "DELETE FROM post_images WHERE post_id = :post_id";
-        $prep_arr = array(':post_id' => (int)$post_id);
+        $query = "DELETE FROM product_images WHERE product_id = :product_id";
+        $prep_arr = array(':product_id' => (int)$product_id);
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
@@ -932,6 +970,7 @@ class cfaq_categories extends crecord {
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
+
 
     public function __destruct() {
         parent::__destruct();
@@ -1093,14 +1132,12 @@ class cgood extends crecord {
         if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
-        // ここを修正: COUNT(*) にエイリアスを追加
         $query = "SELECT COUNT(*) AS count_result FROM good WHERE user_id = :user_id AND post_id = :post_id";
         $this->select_query($debug, $query, array(
             ':user_id' => (int)$user_id,
             ':post_id' => (int)$post_id
         ));
         $row = $this->fetch_assoc();
-        // ここを修正: エイリアスで参照
         return $row && $row['count_result'] > 0;
     }
 
@@ -1210,14 +1247,12 @@ class cheart extends crecord {
         if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
-        // ここを修正: COUNT(*) にエイリアスを追加
         $query = "SELECT COUNT(*) AS count_result FROM heart WHERE user_id = :user_id AND post_id = :post_id";
         $this->select_query($debug, $query, array(
             ':user_id' => (int)$user_id,
             ':post_id' => (int)$post_id
         ));
         $row = $this->fetch_assoc();
-        // ここを修正: エイリアスで参照
         return $row && $row['count_result'] > 0;
     }
 

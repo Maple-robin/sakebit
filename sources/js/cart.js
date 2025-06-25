@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 共通のハンバーガーメニューとSPメニューのJSがscript.jsにあるため、
-    // cart.htmlでscript.jsを読み込むことで動作します。
+    // cart.phpでscript.jsを読み込むことで動作します。
     // ここではcart.js固有のロジックのみを記述します。
 });
 document.addEventListener('DOMContentLoaded', function() {
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            window.location.href = 'checkout.html';
+            window.location.href = 'checkout.php';
         });
     }
 });
