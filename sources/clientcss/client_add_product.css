@@ -3,7 +3,7 @@
 ----------------------------------------*/
 
 .add-product-form {
-    max-width: 800px; /* フォーム全体の最大幅を制限 */
+    max-width: 1000px; /* フォーム自体を広げる */
     margin: 0 auto; /* フォームを中央に配置 */
     padding: 20px 0;
 }
@@ -79,10 +79,214 @@
     min-width: 150px; /* ボタンの最小幅を確保 */
 }
 
-/* 小さな画面向けの調整（PC用ですが、念のため） */
+/* ファイルアップロード関連のスタイル */
+.custom-file-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.custom-file-btn {
+    background: #A0522D;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 22px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+.custom-file-btn:hover {
+    background: #7a3a1d;
+}
+
+.file-names {
+    font-size: 1.3rem;
+    color: #555;
+    min-width: 120px;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.image-preview {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    min-height: 0;
+}
+.image-preview img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s;
+}
+.image-preview img:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+/* ★タグカテゴリーごとの表示スタイル */
+.tag-categories-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.tag-category-group {
+    display: flex;
+    align-items: center; /* ←中央揃えに変更 */
+    margin-bottom: 15px;
+}
+
+.tag-category-group:last-child {
+    margin-bottom: 0; /* 最後のグループの下マージンは不要 */
+}
+
+.tag-category-name {
+    flex-shrink: 0;
+    font-weight: bold;
+    color: #555;
+    margin-right: 8px; /* ← 25pxから10pxに変更 */
+    font-size: 1.3rem;
+    min-width: 110px;  /* カテゴリー名の幅を最小限に */
+    max-width: 120px;
+    text-align: right;
+    line-height: 1.5;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    word-break: keep-all;
+    white-space: nowrap;
+}
+
+.tag-checkbox-row {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: center; /* ←追加 */
+}
+
+.tag-checkbox-label {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    cursor: pointer;
+    font-size: 0.98rem;      /* 文字をさらに小さく */
+    color: #333;
+    white-space: nowrap;     /* 折り返し禁止 */
+    flex: 0 0 22.5%;         /* 1行4つで幅を最大化（余白も考慮） */
+    max-width: 22.5%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+    min-height: 28px;
+    padding-right: 0;
+    margin-right: 0;
+    text-align: left;
+    overflow: visible;       /* 省略しない */
+    text-overflow: unset;    /* 省略しない */
+}
+
+.tag-checkbox-label input[type="checkbox"] {
+    margin-right: 6px;
+    width: 18px;             /* チェックボックスも小さく */
+    height: 18px;
+    flex-shrink: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 2px solid #A0522D;
+    border-radius: 4px;
+    outline: none;
+    background: #fff;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+    box-sizing: border-box;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.tag-checkbox-label input[type="checkbox"]:checked {
+    background-color: #A0522D;
+    border-color: #A0522D;
+}
+
+.tag-checkbox-label input[type="checkbox"]:checked::before {
+    content: '\2713';
+    display: block;
+    color: #fff;
+    font-size: 1.1rem;
+    text-align: center;
+    line-height: 1.2;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    pointer-events: none;
+}
+
+/* レスポンシブデザインの調整 */
 @media (max-width: 900px) {
     .add-product-form {
         max-width: 95%; /* 画面幅に合わせて少し広げる */
         padding: 15px;
+    }
+    .tag-category-group {
+        flex-direction: column; /* 小さい画面では縦積みにする */
+        align-items: flex-start;
+    }
+    .tag-category-name {
+        margin-bottom: 10px;
+        margin-right: 0;
+        text-align: left; /* 縦積みの場合は左揃えに戻す */
+    }
+    .tag-checkbox-label {
+        flex: 0 0 calc(33.33% - 13.33px); /* 3列表示 */
+        margin-right: 20px;
+    }
+    .tag-checkbox-label:nth-child(4n) { /* 4nのスタイルをリセット */
+        margin-right: 20px;
+    }
+    .tag-checkbox-label:nth-child(3n) { /* 3nの要素の右マージンをリセット */
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .tag-checkbox-label {
+        flex: 0 0 calc(50% - 10px); /* 2列表示 */
+        margin-right: 20px;
+    }
+    .tag-checkbox-label:nth-child(3n) { /* 3nのスタイルをリセット */
+        margin-right: 20px;
+    }
+    .tag-checkbox-label:nth-child(2n) { /* 2nの要素の右マージンをリセット */
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .tag-category-name {
+        font-size: 1.3rem;
+    }
+    .tag-checkbox-label {
+        font-size: 1.4rem;
+        flex: 0 0 100%; /* 1列表示 */
+        margin-right: 0;
+    }
+    .tag-checkbox-label:nth-child(2n) { /* 2nのスタイルをリセット */
+        margin-right: 0;
     }
 }

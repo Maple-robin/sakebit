@@ -72,7 +72,7 @@ class crecord {
                                  " Params: " . json_encode($prep_arr);
             error_log($error_message_log);
 
-            // ★変更点: debugがtrueの場合でも、CRITICAL DB ERRORの画面出力はしない (本番運用向け)
+            // debugがtrueの場合でも、CRITICAL DB ERRORの画面出力はしない (本番運用向け)
             // デバッグ時には、process_add_otsumami.phpのcatchブロックで詳細エラーを表示します。
             if ($debug) {
                 // throw $e; // process_add_otsumami.phpのcatchで詳細を拾うため、これは残す
@@ -355,11 +355,30 @@ class ccategories extends crecord {
 }
 
 //--------------------------------------------------------------------------------------
-/// タグクラス
+/// タグクラス (product_info のタグ)
 //--------------------------------------------------------------------------------------
-class ctags extends crecord {
+// ctags クラスは既存の otumami_tags とは別に、product_info 用として再定義します。
+// 今回の要件に合わせて、tag_category_id を持つタグの情報を扱います。
+class ctags_for_products extends crecord {
     public function __construct() {
         parent::__construct();
+    }
+
+    /**
+     * 全てのタグ情報を取得するメソッド (タグカテゴリーIDを含む)
+     * @param bool $debug デバッグモードのオン/オフ
+     * @return array|false タグ情報の配列、または失敗した場合はfalse
+     */
+    public function get_all_tags_with_category($debug) {
+        $query = "SELECT t.tag_id, t.tag_category_id, t.tag_name, tc.tag_category_name 
+                  FROM tags t
+                  JOIN tag_categories tc ON t.tag_category_id = tc.tag_category_id
+                  ORDER BY tc.tag_category_id ASC, t.tag_id ASC";
+        $stmt = $this->execute_query($debug, $query);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return false;
     }
 
     public function get_all_count($debug) {
@@ -397,6 +416,134 @@ class ctags extends crecord {
         parent::__destruct();
     }
 }
+
+//--------------------------------------------------------------------------------------
+/// タグカテゴリークラス (product_info のタグカテゴリー)
+//--------------------------------------------------------------------------------------
+class ctag_categories_for_products extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * 全てのタグカテゴリー情報を取得するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @return array|false タグカテゴリー情報の配列、または失敗した場合はfalse
+     */
+    public function get_all_tag_categories($debug) {
+        $query = "SELECT * FROM tag_categories ORDER BY tag_category_id ASC";
+        $stmt = $this->execute_query($debug, $query);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return false;
+    }
+    
+    public function get_all_count($debug) {
+        $query = "SELECT COUNT(*) AS total_count FROM tag_categories WHERE 1";
+        $prep_arr = array();
+        $this->select_query($debug, $query, $prep_arr);
+        if ($row = $this->fetch_assoc()) {
+            return $row['total_count'];
+        }
+        return 0;
+    }
+
+    public function get_all($debug, $from, $limit) {
+        $arr = array();
+        $query = "SELECT * FROM tag_categories WHERE 1 ORDER BY tag_category_id ASC LIMIT :from, :limit";
+        $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
+        $this->select_query($debug, $query, $prep_arr);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+
+    public function get_tgt($debug, $id) {
+        if (!cutil::is_number($id) || $id < 1) {
+            return false;
+        }
+        $query = "SELECT * FROM tag_categories WHERE tag_category_id = :tag_category_id";
+        $prep_arr = array(':tag_category_id' => (int)$id);
+        $this->select_query($debug, $query, $prep_arr);
+        return $this->fetch_assoc();
+    }
+
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
+//--------------------------------------------------------------------------------------
+/// 商品とタグの関連付けクラス (中間テーブル)
+//--------------------------------------------------------------------------------------
+class cproduct_tags_relation extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * 商品とタグの関連情報をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $product_id 商品ID
+     * @param int $tag_id タグID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function insert_product_tag_relation($debug, $product_id, $tag_id) {
+        $query = "INSERT INTO product_tags_relation (product_id, tag_id) VALUES (:product_id, :tag_id)";
+        $prep_arr = array(
+            ':product_id' => (int)$product_id,
+            ':tag_id' => (int)$tag_id
+        );
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
+    /**
+     * 特定の商品IDに紐づく全てのタグを取得するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $product_id 商品のID
+     * @return array タグ情報の配列、または見つからない場合は空の配列
+     */
+    public function get_tags_by_product_id($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            return [];
+        }
+        $arr = array();
+        $query = "SELECT ptr.tag_id, t.tag_name, tc.tag_category_name
+                  FROM product_tags_relation ptr
+                  JOIN tags t ON ptr.tag_id = t.tag_id
+                  JOIN tag_categories tc ON t.tag_category_id = tc.tag_category_id
+                  WHERE ptr.product_id = :product_id
+                  ORDER BY tc.tag_category_id ASC, t.tag_id ASC";
+        $stmt = $this->execute_query($debug, $query, array(':product_id' => (int)$product_id));
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+    /**
+     * 特定の商品IDに紐づく全てのタグ関連付けを削除するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $product_id 商品ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_product_tags_by_product_id($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM product_tags_relation WHERE product_id = :product_id";
+        $prep_arr = array(':product_id' => (int)$product_id);
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
 
 //--------------------------------------------------------------------------------------
 /// 投稿クラス
@@ -1599,7 +1746,7 @@ class corder_items extends crecord {
 
 //--------------------------------------------------------------------------------------
 /// 管理者ユーザー情報クラス
-//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
 class cadmin_user_info extends crecord {
     public function __construct() {
         parent::__construct();
