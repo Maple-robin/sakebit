@@ -1,4 +1,8 @@
 <?php
+// === デバッグ用: この行がブラウザに出力されるか確認してください ===
+// echo "contents_db.php is being included.<br>";
+// ==========================================================
+
 /*!
 @file contents_db.php
 @brief データベース操作クラス群
@@ -6,7 +10,8 @@
 */
 
 // config.phpをインクルードしてDB接続定数を読み込む
-require_once __DIR__ . '/config.php'; // config.phpのパスを適切に設定してください
+// contents_db.phpとconfig.phpは同じディレクトリにあるはずなので、このパスで正しいです。
+require_once __DIR__ . '/config.php'; // この行はそのまま
 
 // 仮の基底クラスとユーティリティクラスの定義（実際には別途定義されているものと想定）
 // --------------------------------------------------------------------------------------
@@ -64,11 +69,11 @@ class crecord {
             return $result;
         } catch (PDOException $e) {
             // エラーログへの出力 (本番環境でもログには出力する)
-            $error_message_log = "Database Error: " . $e->getMessage() . 
-                                 " SQLSTATE: " . ($e->errorInfo[0] ?? 'N/A') . 
-                                 " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') . 
-                                 " Driver Message: " . ($e->errorInfo[2] ?? 'N/A') . 
-                                 " Query: " . $query . 
+            $error_message_log = "Database Error: " . $e->getMessage() .
+                                 " SQLSTATE: " . ($e->errorInfo[0] ?? 'N/A') .
+                                 " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') .
+                                 " Driver Message: " . ($e->errorInfo[2] ?? 'N/A') .
+                                 " Query: " . $query .
                                  " Params: " . json_encode($prep_arr);
             error_log($error_message_log);
 
@@ -215,6 +220,61 @@ class cuser_info extends crecord {
         parent::__destruct();
     }
 }
+
+//--------------------------------------------------------------------------------------
+/// 新規追加: client_user_info テーブルを操作するクラス
+//--------------------------------------------------------------------------------------
+class cclient_user_info extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * 新しいクライアントユーザーをデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param string $company_name 会社名
+     * @param string $representative_name 代表者名
+     * @param string $email メールアドレス
+     * @param string $phone 電話番号
+     * @param string $address 住所
+     * @param string $password_hash ハッシュ化されたパスワード
+     * @return int|false 挿入されたclient_id、または失敗した場合はfalse
+     */
+    public function insert_client_user($debug, $company_name, $representative_name, $email, $phone, $address, $password_hash) {
+        $query = "INSERT INTO client_user_info (company_name, representative_name, email, phone, address, password_hash) VALUES (:company_name, :representative_name, :email, :phone, :address, :password_hash)";
+        $prep_arr = array(
+            ':company_name' => $company_name,
+            ':representative_name' => $representative_name,
+            ':email' => $email,
+            ':phone' => $phone,
+            ':address' => $address,
+            ':password_hash' => $password_hash
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された client_id を返す
+        }
+        return false;
+    }
+
+    /**
+     * メールアドレスでクライアントユーザーを検索するメソッド（登録済みかどうかのチェック用）
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param string $email 検索するメールアドレス
+     * @return array|false ユーザー情報（連想配列）、または見つからない場合はfalse
+     */
+    public function get_client_user_by_email($debug, $email) {
+        $query = "SELECT * FROM client_user_info WHERE email = :email";
+        $prep_arr = array(':email' => $email);
+        $this->select_query($debug, $query, $prep_arr);
+        return $this->fetch_assoc();
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
 
 //--------------------------------------------------------------------------------------
 /// ユーザープロフィールクラス
@@ -370,7 +430,7 @@ class ctags_for_products extends crecord {
      * @return array|false タグ情報の配列、または失敗した場合はfalse
      */
     public function get_all_tags_with_category($debug) {
-        $query = "SELECT t.tag_id, t.tag_category_id, t.tag_name, tc.tag_category_name 
+        $query = "SELECT t.tag_id, t.tag_category_id, t.tag_name, tc.tag_category_name
                   FROM tags t
                   JOIN tag_categories tc ON t.tag_category_id = tc.tag_category_id
                   ORDER BY tc.tag_category_id ASC, t.tag_id ASC";
@@ -438,7 +498,7 @@ class ctag_categories_for_products extends crecord {
         }
         return false;
     }
-    
+
     public function get_all_count($debug) {
         $query = "SELECT COUNT(*) AS total_count FROM tag_categories WHERE 1";
         $prep_arr = array();

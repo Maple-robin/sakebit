@@ -14,19 +14,44 @@
         <h1 class="login-title">
             OUR BRAND<br>管理者ログイン
         </h1>
-        <form action="client_top.php" method="post" class="login-form">
+
+        <?php
+        session_start(); // セッションを開始
+        // エラーメッセージの表示
+        if (isset($_SESSION['login_error']) && !empty($_SESSION['login_error'])) {
+            echo '<div class="error-messages">';
+            echo '<p>' . htmlspecialchars($_SESSION['login_error']) . '</p>';
+            echo '</div>';
+            unset($_SESSION['login_error']); // 表示後、セッションから削除
+        }
+        // 新規登録成功メッセージの表示 (signupからのリダイレクト時)
+        if (isset($_SESSION['registration_success_message']) && !empty($_SESSION['registration_success_message'])) {
+            echo '<div class="success-message">';
+            echo '<p>' . htmlspecialchars($_SESSION['registration_success_message']) . '</p>';
+            echo '</div>';
+            unset($_SESSION['registration_success_message']); // 表示後、セッションから削除
+        }
+
+        // 入力値の再表示用に旧データを取得
+        $old_username = $_SESSION['login_old_username'] ?? '';
+        unset($_SESSION['login_old_username']); // 表示後、セッションから削除
+        ?>
+
+        <form action="process_login.php" method="post" class="login-form">
             <div class="form-group">
                 <label for="username">メールアドレス</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($old_username); ?>">
             </div>
             <div class="form-group">
                 <label for="password">パスワード</label>
                 <input type="password" id="password" name="password" required>
             </div>
-            <button type="submit" class="login-button">ログイン</button>        </form>
+            <button type="submit" class="login-button">ログイン</button>
+        </form>
         <p class="login-footer-text">
             <a href="#">パスワードをお忘れですか？</a>
-        </p>        <p class="login-footer-text">
+        </p>
+        <p class="login-footer-text">
             <a href="signup.php">新規登録はこちら</a>
         </p>
     </div>

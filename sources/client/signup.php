@@ -14,25 +14,44 @@
         <h1 class="signup-title">
             OUR BRAND<br>新規登録
         </h1>
-        <form action="client_top.php" method="post" class="signup-form">
+
+        <?php
+        session_start(); // セッションを開始
+        // エラーメッセージの表示
+        if (isset($_SESSION['signup_errors']) && !empty($_SESSION['signup_errors'])) {
+            echo '<div class="error-messages">';
+            foreach ($_SESSION['signup_errors'] as $error) {
+                echo '<p>' . htmlspecialchars($error) . '</p>';
+            }
+            echo '</div>';
+            unset($_SESSION['signup_errors']); // 表示後、セッションから削除
+        }
+
+        // 入力値の再表示用に旧データを取得
+        $old_data = $_SESSION['signup_old_data'] ?? [];
+        unset($_SESSION['signup_old_data']); // 表示後、セッションから削除
+        ?>
+
+        <form action="process_signup.php" method="post" class="signup-form">
             <div class="form-group">
                 <label for="company-name">会社名</label>
-                <input type="text" id="company-name" name="company-name" required>
+                <input type="text" id="company-name" name="company-name" required value="<?php echo htmlspecialchars($old_data['company_name'] ?? ''); ?>">
             </div>
             <div class="form-group">
                 <label for="representative-name">代表者名</label>
-                <input type="text" id="representative-name" name="representative-name" required>
+                <input type="text" id="representative-name" name="representative-name" required value="<?php echo htmlspecialchars($old_data['representative_name'] ?? ''); ?>">
             </div>
             <div class="form-group">
                 <label for="email">メールアドレス</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" name="email" required value="<?php echo htmlspecialchars($old_data['email'] ?? ''); ?>">
             </div>
             <div class="form-group">
                 <label for="phone">電話番号</label>
-                <input type="tel" id="phone" name="phone" required>
-            </div>            <div class="form-group">
+                <input type="tel" id="phone" name="phone" required value="<?php echo htmlspecialchars($old_data['phone'] ?? ''); ?>">
+            </div>
+            <div class="form-group">
                 <label for="address">住所</label>
-                <input type="text" id="address" name="address" required>
+                <input type="text" id="address" name="address" required value="<?php echo htmlspecialchars($old_data['address'] ?? ''); ?>">
             </div>
             <div class="form-group">
                 <label for="password">パスワード</label>
@@ -43,7 +62,7 @@
                 <input type="password" id="password-confirm" name="password-confirm" required>
             </div>
             <div class="terms-group">
-                <input type="checkbox" id="terms" name="terms" required>
+                <input type="checkbox" id="terms" name="terms" required <?php echo (isset($old_data['terms']) && $old_data['terms'] == 'on') ? 'checked' : ''; ?>>
                 <label for="terms">利用規約に同意します</label>
             </div>
             <button type="submit" class="signup-button">アカウントを作成</button>
