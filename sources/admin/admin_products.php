@@ -21,10 +21,11 @@
                 <ul class="admin-nav__list">
                     <li><a href="admin_products.php" class="is-current">お酒管理</a></li>
                     <li><a href="admin_otsumami.php">おつまみ管理</a></li>
-                    <li><a href="admin_users.php">ユーザー管理</a></li>
+                    <li><a href="admin_users.php">一般ユーザー管理</a></li>
+                    <li><a href="admin_client_users.php">企業ユーザー管理</a></li>
                     <li><a href="admin_posts.php">投稿管理</a></li>
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
-                    <li><a href="admin_faq.php">FAQ登録</a></li>
+                    <li><a href="admin_faq.php">FAQ管理</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
                 </ul>
             </nav>
@@ -34,7 +35,7 @@
     <main class="admin-main">
         <div class="admin-main__inner">
             <h2 class="admin-page-title">
-                <span class="en">LIQUOR MANAGEMENT</span>
+                <span class="en">PRODUCTS MANAGEMENT</span>
                 <span class="ja">( お酒管理 )</span>
             </h2>
 
@@ -48,13 +49,12 @@
                                 <th>サブ画像1</th>
                                 <th>サブ画像2</th>
                                 <th>サブ画像3</th>
-                                <th>カテゴリ</th> <!-- 元: 種類 -->
-                                <th>タグ</th> <!-- 元: カテゴリ -->
+                                <th>カテゴリ</th>
+                                <th>タグ</th>
                                 <th>商品説明</th>
-                                <th>内容量</th> <!-- 新規追加 -->
+                                <th>内容量</th>
                                 <th>特徴</th>
                                 <th>おすすめ飲み方</th>
-                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,16 +64,12 @@
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub1" alt="スーパードライ サブ1" class="product-thumb"></td>
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub2" alt="スーパードライ サブ2" class="product-thumb"></td>
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub3" alt="スーパードライ サブ3" class="product-thumb"></td>
-                                <td>ビール</td> <!-- 元: 種類 -->
-                                <td>初心者向け</td> <!-- 元: カテゴリ -->
+                                <td>ビール</td>
+                                <td>初心者向け</td>
                                 <td>辛口でキレのあるビールです。</td>
-                                <td>350ml</td> <!-- 新規追加 -->
+                                <td>350ml</td>
                                 <td>爽快感があり、食事に合わせやすい。</td>
                                 <td>冷やしてそのまま飲む。</td>
-                                <td>
-                                    <a href="admin_products_edit.php" class="btn btn-sm btn-edit">編集</a>
-                                    <button class="btn btn-sm btn-delete">削除</button>
-                                </td>
                             </tr>
                             <tr>
                                 <td>山崎シングルモルト</td>
@@ -81,16 +77,12 @@
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub1" alt="山崎 サブ1" class="product-thumb"></td>
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub2" alt="山崎 サブ2" class="product-thumb"></td>
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub3" alt="山崎 サブ3" class="product-thumb"></td>
-                                <td>ウイスキー</td> <!-- 元: 種類 -->
-                                <td>甘口</td> <!-- 元: カテゴリ -->
+                                <td>ウイスキー</td>
+                                <td>甘口</td>
                                 <td>日本を代表するシングルモルトウイスキー。</td>
-                                <td>700ml</td> <!-- 新規追加 -->
+                                <td>700ml</td>
                                 <td>フルーティーで複雑な香り。</td>
                                 <td>ストレートやロックで香りを楽しむ。</td>
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-edit">編集</a>
-                                    <button class="btn btn-sm btn-delete">削除</button>
-                                </td>
                             </tr>
                             <tr>
                                 <td>梅乃宿 あらごしみかん</td>
@@ -98,27 +90,17 @@
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub1" alt="あらごしみかん サブ1" class="product-thumb"></td>
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub2" alt="あらごしみかん サブ2" class="product-thumb"></td>
                                 <td><img src="https://via.placeholder.com/60x60?text=Sub3" alt="あらごしみかん サブ3" class="product-thumb"></td>
-                                <td>日本酒</td> <!-- 元: 種類 -->
-                                <td>甘口</td> <!-- 元: カテゴリ -->
+                                <td>日本酒</td>
+                                <td>甘口</td>
                                 <td>みかんの果肉がたっぷり入ったデザート感覚のお酒。</td>
-                                <td>720ml</td> <!-- 新規追加 -->
+                                <td>720ml</td>
                                 <td>フルーティーでデザート感覚。</td>
                                 <td>冷やしてデザートと一緒に楽しむ。</td>
-                                <td>
-                                    <a href="#" class="btn btn-sm btn-edit">編集</a>
-                                    <button class="btn btn-sm btn-delete">削除</button>
-                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </section>
-
-            <div class="add-liquor-button-area">
-                <a href="admin_products_add.php" class="btn btn-primary btn-add-new">
-                    <span class="btn-icon">＋</span> 新しいお酒を登録する
-                </a>
-            </div>
 
         </div>
     </main>

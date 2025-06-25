@@ -19,14 +19,15 @@
                 <ul class="admin-nav__list">
                     <li><a href="admin_products.php">お酒管理</a></li>
                     <li><a href="admin_otsumami.php">おつまみ管理</a></li>
-                    <li><a href="admin_users.php">ユーザー管理</a></li>
+                    <li><a href="admin_users.php">一般ユーザー管理</a></li>
+                    <li><a href="admin_client_users.php">企業ユーザー管理</a></li>
                     <li><a href="admin_posts.php">投稿管理</a></li>
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php">FAQ管理</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
                 </ul>
             </nav>
-            </div>
+        </div>
     </header>
 
     <main class="admin-main">
@@ -62,7 +63,7 @@
                 <h2 class="admin-section-title">クイックリンク</h2>
                 <ul class="quick-link__list">
                     <li><a href="admin_products_add.php">新しいお酒を登録</a></li>
-                    <li><a href="admin_users.php">ユーザーリストを見る</a></li>
+                    <li><a href="admin_users.php">一般ユーザーリストを見る</a></li>
                     <li><a href="admin_otsumami_add.php">新しいおつまみを登録</a></li>
                     <li><a href="admin_faq_add.php">FAQ項目を追加</a></li>
                 </ul>

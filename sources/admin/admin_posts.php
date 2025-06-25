@@ -20,10 +20,11 @@
                 <ul class="admin-nav__list">
                     <li><a href="admin_products.php">お酒管理</a></li>
                     <li><a href="admin_otsumami.php">おつまみ管理</a></li>
-                    <li><a href="admin_users.php">ユーザー管理</a></li>
+                    <li><a href="admin_users.php">一般ユーザー管理</a></li>
+                    <li><a href="admin_client_users.php">企業ユーザー管理</a></li>
                     <li><a href="admin_posts.php" class="is-current">投稿管理</a></li>
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
-                    <li><a href="admin_faq.php">FAQ登録</a></li>
+                    <li><a href="admin_faq.php">FAQ管理</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
                 </ul>
             </nav>
