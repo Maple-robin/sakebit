@@ -19,8 +19,8 @@ if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
 }
 
 // PHPスクリプト全体でデバッグモードを有効にする/無効にする
-// ★変更点: デバッグモードをfalseに設定 (本番運用向け)
-$debug = false; 
+// ★変更点: デバッグモードをtrueに設定 (確認用)
+$debug = true; 
 
 // contents_db.phpを読み込む
 require_once '../common/contents_db.php';
@@ -46,7 +46,7 @@ $db_otumami_tags = new cotumami_otumami_tags();
 
 // --- 入力値の取得とバリデーション ---
 $otsumami_name = $_POST['otsumami_name'] ?? '';
-$category_id = $_POST['category'] ?? '';
+$category_id = $_POST['category'] ?? ''; // admin_otsumami_add.php の name="category" に合わせる
 $stock = $_POST['stock'] ?? '';
 $price = $_POST['price'] ?? '';
 $desc1 = $_POST['desc1'] ?? '';
@@ -62,10 +62,12 @@ if (empty($otsumami_name)) {
 if (empty($category_id)) {
     $errors[] = 'おつまみカテゴリーは必須です。';
 }
-if (!filter_var($stock, FILTER_VALIDATE_INT, array("options" => array("min_range" => 0))) && $stock !== "0") {
+// 修正: filter_varで数値かつ0以上を厳密にチェック
+if (!is_numeric($stock) || $stock < 0 || !ctype_digit(strval($stock))) {
     $errors[] = '在庫数は0以上の整数で入力してください。';
 }
-if (!filter_var($price, FILTER_VALIDATE_FLOAT, array("options" => array("min_range" => 0)))) { 
+// 修正: filter_varで数値かつ0以上を厳密にチェック
+if (!is_numeric($price) || $price < 0) { 
     $errors[] = '価格は0以上の数値で入力してください。';
 }
 if (empty($desc1)) {
@@ -75,10 +77,12 @@ if (empty($desc1)) {
 // 画像ファイルのチェック
 $uploaded_image_info = []; 
 
-if (empty($_FILES['images']['name'][0])) {
+// PHP 8.1+ では $_FILES['images']['name'] が存在しない場合に警告が出るためチェック
+if (!isset($_FILES['images']['name'][0]) || empty($_FILES['images']['name'][0])) {
     $errors[] = 'おつまみ画像は最低1枚必須です。';
 } else {
     $uploaded_file_count = 0;
+    // まず、実際にファイルが選択された数を確認
     foreach ($_FILES['images']['name'] as $name) {
         if (!empty($name)) {
             $uploaded_file_count++;
@@ -91,15 +95,21 @@ if (empty($_FILES['images']['name'][0])) {
         $errors[] = 'おつまみ画像は最大4枚までです。';
     }
 
+    // 各ファイルのアップロードエラーをチェック
     foreach ($_FILES['images']['error'] as $key => $error) {
         if ($error !== UPLOAD_ERR_OK && $error !== UPLOAD_ERR_NO_FILE) {
-            $errors[] = '画像のアップロード中にエラーが発生しました (コード: ' . $error . ')。';
+            $errors[] = '画像のアップロード中にエラーが発生しました (コード: ' . $error . ')。ファイル名: ' . ($_FILES['images']['name'][$key] ?? '不明');
         }
     }
 
     if (empty($errors)) { 
+        // ★★★ デバッグログの追加 ★★★
+        error_log("--- Image Upload Processing Start ---");
+        error_log("Raw FILES array: " . print_r($_FILES, true));
+
         $display_order_for_upload = 0;
         foreach ($_FILES['images']['name'] as $key => $image_name) {
+            // UPLOAD_ERR_NO_FILE はファイルが選択されなかった場合なのでスキップ
             if (!empty($image_name) && $_FILES['images']['error'][$key] === UPLOAD_ERR_OK && is_uploaded_file($_FILES['images']['tmp_name'][$key])) {
                 $tmp_name = $_FILES['images']['tmp_name'][$key];
                 $ext = pathinfo($image_name, PATHINFO_EXTENSION);
@@ -107,23 +117,28 @@ if (empty($_FILES['images']['name'][0])) {
                 $target_file = $upload_dir . $new_file_name;
                 $image_path_for_db = 'img/' . $new_file_name; 
 
+                // ここで、実際にこのファイルに割り当てられる display_order と image_type をログに出力
+                $current_image_type = ($display_order_for_upload === 0) ? 'main' : 'sub'; 
+                error_log("File: " . $image_name . ", Temp Path: " . $tmp_name . ", Assigned display_order: " . $display_order_for_upload . ", Image Type: " . $current_image_type);
+
                 if (move_uploaded_file($tmp_name, $target_file)) {
-                    $image_type = ($display_order_for_upload === 0) ? 'main' : 'sub'; 
                     $uploaded_image_info[] = [
                         'path' => $image_path_for_db,
-                        'type' => $image_type,
+                        'type' => $current_image_type, // 上記で決定したタイプを使用
                         'order' => $display_order_for_upload
                     ];
-                    $display_order_for_upload++;
+                    $display_order_for_upload++; // 次の画像のためにインクリメント
                 } else {
-                    $errors[] = 'ファイルの実体アップロードに失敗しました。アップロードディレクトリの権限を確認してください: ' . $upload_dir;
+                    $errors[] = 'ファイルの実体アップロードに失敗しました。アップロードディレクトリの権限を確認してください: ' . $upload_dir . ' ファイル: ' . $image_name;
                     break; 
                 }
             } elseif (!empty($image_name) && $_FILES['images']['error'][$key] !== UPLOAD_ERR_NO_FILE) {
-                $errors[] = '画像のアップロード中にPHPエラーが発生しました (コード: ' . $_FILES['images']['error'][$key] . ')。';
+                // その他のPHPアップロードエラー
+                $errors[] = '画像のアップロード中にPHPエラーが発生しました (コード: ' . $_FILES['images']['error'][$key] . ')。ファイル名: ' . $image_name;
                 break; 
             }
         }
+        error_log("--- Image Upload Processing End ---");
     }
 }
 
@@ -193,7 +208,7 @@ try {
 
     $pdo->commit(); // 画像とタグの登録をコミット
 
-    // ★変更点: 成功メッセージをセッションに保存し、リダイレクト
+    // 成功メッセージをセッションに保存し、リダイレクト
     $_SESSION['message'] = '新しいおつまみが正常に登録されました。';
     header('Location: admin_otsumami.php?status=success'); 
     exit();
@@ -203,7 +218,7 @@ try {
         $pdo->rollBack(); 
     }
 
-    // ★変更点: エラーメッセージをセッションに保存し、リダイレクト
+    // エラーメッセージをセッションに保存し、リダイレクト
     $_SESSION['errors'] = ['おつまみの登録中にエラーが発生しました: ' . $e->getMessage()];
     $_SESSION['old_input'] = $_POST; 
     header('Location: admin_otsumami_add.php?status=error');

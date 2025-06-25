@@ -10,7 +10,7 @@
 }
 
 .table-container {
-    /* overflow-x: auto; */
+    overflow-x: auto; /* テーブルの幅が親要素を超える場合にスクロールを有効にする */
     background-color: #fff;
     border-radius: 8px;
     padding: 30px; /* テーブルコンテナのパディングを広げる */
@@ -20,7 +20,8 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 1.6rem;
-    min-width: unset;
+    min-width: 1350px; /* ★調整: テーブルの最小幅をさらに広げる (必要に応じて横スクロールが発生) */
+    table-layout: fixed; /* 列幅を固定し、内容に左右されにくくする */
 }
 
 .data-table th,
@@ -29,53 +30,66 @@
     border-bottom: 1px solid #eee;
     text-align: left;
     vertical-align: middle;
-    white-space: normal;
+    white-space: normal; /* テキストは通常通り折り返す */
+    word-break: break-word; /* 長い単語がはみ出さないように改行 */
+    /* ★変更: overflowとtext-overflowは個別の要素で制御するため、ここからは削除 */
+    /* overflow: hidden; */
+    /* text-overflow: ellipsis; */
 }
 
-/* 各列の幅を設定 (横スクロールなしで収まるように調整) */
-.data-table th:nth-child(1), /* おつまみレシピ */
+/* 各列の幅を設定 (新しいテーブル構造に合わせて調整) */
+.data-table th:nth-child(1), /* おつまみ名 */
 .data-table td:nth-child(1) {
-    width: 25%;
-    max-width: 300px;
+    width: 10%;
 }
-.data-table th:nth-child(2), /* 合うお酒の種類 */
+.data-table th:nth-child(2), /* 画像 */
 .data-table td:nth-child(2) {
-    width: 8%;
+    width: 10%; /* 画像が複数行になっても良いので幅を調整 */
+    min-width: 90px; /* 画像40px*2 + gap*1 + padding で調整 */
+    text-align: center;
+    padding: 10px 8px;
+    white-space: normal; /* 画像は折り返す */
+    overflow: visible; /* 画像セルはオーバーフローを許可 */
+}
+.data-table th:nth-child(3), /* カテゴリー */
+.data-table td:nth-child(3) {
+    width: 8%; /* ★調整: カテゴリーの幅 */
     max-width: 120px;
 }
-.data-table th:nth-child(3), /* 合うお酒のカテゴリ */
-.data-table td:nth-child(3) {
-    width: 10%;
-    max-width: 150px;
-}
-.data-table th:nth-child(4), /* お酒名 */
+.data-table th:nth-child(4), /* タグ */
 .data-table td:nth-child(4) {
-    width: 10%;
-    max-width: 150px;
-}
-.data-table th:nth-child(5), /* おつまみ名 */
-.data-table td:nth-child(5) {
-    width: 12%;
+    width: 12%; /* ★調整: タグの幅 */
     max-width: 180px;
 }
-.data-table th:nth-child(6), /* メイン画像 */
-.data-table td:nth-child(6),
-.data-table th:nth-child(7), /* サブ画像1 */
-.data-table td:nth-child(7),
-.data-table th:nth-child(8), /* サブ画像2 */
-.data-table td:nth-child(8),
-.data-table th:nth-child(9), /* サブ画像3 */
-.data-table td:nth-child(9) {
-    width: 4%;
-    min-width: 40px;
-    text-align: center;
-    padding: 10px 8px; /* 画像セルのパディングを調整 */
+.data-table th:nth-child(5), /* おつまみ説明1 */
+.data-table td:nth-child(5) {
+    width: 18%; /* ★調整: 幅を確保 */
+    max-width: 280px;
+    /* max-heightとoverflow-yは中のdivに適用 */
 }
-.data-table th:nth-child(10), /* 操作 */
-.data-table td:nth-child(10) {
-    width: 8%;
-    min-width: 130px;
-    white-space: nowrap;
+.data-table th:nth-child(6), /* おつまみ説明2 */
+.data-table td:nth-child(6) {
+    width: 18%; /* ★調整: 幅を確保 */
+    max-width: 280px;
+    /* max-heightとoverflow-yは中のdivに適用 */
+}
+.data-table th:nth-child(7), /* 価格 */
+.data-table td:nth-child(7) {
+    width: 6%; /* ★調整 */
+    min-width: 80px; /* ★調整: 全表示のため */
+    white-space: nowrap; /* 価格は改行させない */
+}
+.data-table th:nth-child(8), /* 在庫数 */
+.data-table td:nth-child(8) {
+    width: 6%; /* ★調整 */
+    min-width: 80px; /* ★調整: 全表示のため */
+    white-space: nowrap; /* 在庫数は改行させない */
+}
+.data-table th:nth-child(9), /* 操作 */
+.data-table td:nth-child(9) {
+    width: 10%; /* ★調整: 幅を確保 */
+    min-width: 170px; /* ★調整: 「編集」「削除」ボタンが収まるように */
+    white-space: nowrap; /* ボタンは改行させない */
     text-align: center;
 }
 
@@ -84,7 +98,7 @@
     background-color: #f5f5f5;
     font-weight: 600;
     color: #333;
-    white-space: nowrap;
+    white-space: nowrap; /* ヘッダーは改行させない */
 }
 
 .data-table tbody tr:last-child td {
@@ -95,13 +109,48 @@
     background-color: #f9f9f9;
 }
 
-.product-thumb {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid #eee;
+/* image-thumbs 内の img スタイル */
+.image-thumbs {
+    display: flex;
+    flex-wrap: wrap; /* 画像を折り返すようにする */
+    gap: 5px; /* 画像間のスペース */
+    justify-content: flex-start; /* 画像を左寄せにします */
+    align-items: center; /* 画像が縦方向にずれるのを防ぐ */
 }
+.image-thumbs img {
+    width: 40px; /* サムネイルの幅 */
+    height: 40px; /* サムネイルの高さ */
+    object-fit: cover; /* 画像の比率を保ちつつボックスに収める */
+    border-radius: 4px; /* 角を丸くする */
+    border: 1px solid #ddd;
+    flex-shrink: 0; /* overflowが発生した際に画像を縮小するのを防ぐ */
+}
+.product-tags {
+    display: flex;
+    flex-wrap: wrap; /* タグは折り返す */
+    gap: 5px; /* タグ間のスペース */
+}
+.product-tags span {
+    background-color: #e0f2f7; /* タグの背景色 */
+    color: #007bb5; /* タグの文字色 */
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    white-space: nowrap; /* タグ自体は改行されないように */
+}
+
+/* ★変更: 長い説明文のコンテナスタイル */
+.scrollable-content {
+    display: block; /* blockレベル要素にしてmax-heightを有効にする */
+    height: 80px; /* ★変更: heightで固定 (これにより確実にスクロール) */
+    overflow-y: auto; /* 高さを超えたら縦スクロールを有効に */
+    padding-right: 15px; /* ★調整: スクロールバーのためのパディング */
+    box-sizing: border-box; /* パディングを幅に含める */
+    white-space: normal; /* テキストを折り返す */
+    word-wrap: break-word; /* 長い単語がはみ出さないように改行 */
+    line-height: 1.5; /* ★追加: 行の高さを調整して見やすくする */
+}
+
 
 /* 操作ボタンをFlexboxで横並びにするためのスタイル */
 .action-buttons {
@@ -109,7 +158,7 @@
     gap: 12px; /* ボタン間のスペースを広げる */
     justify-content: center;
     align-items: center;
-    flex-wrap: nowrap;
+    flex-wrap: nowrap; /* ボタンは改行させない */
 }
 
 
@@ -180,9 +229,13 @@
         padding: 15px 12px; /* パディングを調整 */
         font-size: 1.5rem;
     }
-    .product-thumb {
-        width: 50px;
-        height: 50px;
+    .image-thumbs {
+        flex-wrap: wrap; /* レスポンシブでも折り返す */
+    }
+    .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
+        width: 35px;
+        height: 35px;
+        flex-shrink: 0;
     }
     .btn-add-new {
         padding: 20px 50px;
@@ -193,42 +246,46 @@
         margin-right: 15px;
     }
     /* 各列の幅を調整 */
-    .data-table th:nth-child(1),
+    .data-table th:nth-child(1), /* おつまみ名 */
     .data-table td:nth-child(1) {
-        width: 25%;
+        width: 10%;
     }
-    .data-table th:nth-child(2),
+    .data-table th:nth-child(2), /* 画像 */
     .data-table td:nth-child(2) {
+        width: 10%;
+        min-width: 90px;
+        white-space: normal; /* 画像は折り返す */
+    }
+    .data-table th:nth-child(3), /* カテゴリー */
+    .data-table td:nth-child(3) {
         width: 8%;
     }
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) {
-        width: 10%;
-    }
-    .data-table th:nth-child(4),
+    .data-table th:nth-child(4), /* タグ */
     .data-table td:nth-child(4) {
-        width: 10%;
-    }
-    .data-table th:nth-child(5),
-    .data-table td:nth-child(5) {
         width: 12%;
     }
-    .data-table th:nth-child(6),
-    .data-table td:nth-child(6),
-    .data-table th:nth-child(7),
-    .data-table td:nth-child(7),
-    .data-table th:nth-child(8),
-    .data-table td:nth-child(8),
-    .data-table th:nth-child(9),
-    .data-table td:nth-child(9) {
-        width: 4%;
-        min-width: 35px;
-        padding: 10px 5px; /* パディングを調整 */
+    .data-table th:nth-child(5), /* おつまみ説明1 */
+    .data-table td:nth-child(5) {
+        width: 18%;
     }
-    .data-table th:nth-child(10),
-    .data-table td:nth-child(10) {
-        width: 8%;
-        min-width: 120px;
+    .data-table th:nth-child(6), /* おつまみ説明2 */
+    .data-table td:nth-child(6) {
+        width: 18%;
+    }
+    .data-table th:nth-child(7), /* 価格 */
+    .data-table td:nth-child(7) {
+        width: 6%;
+        min-width: 70px;
+    }
+    .data-table th:nth-child(8), /* 在庫数 */
+    .data-table td:nth-child(8) {
+        width: 6%;
+        min-width: 70px;
+    }
+    .data-table th:nth-child(9), /* 操作 */
+    .data-table td:nth-child(9) {
+        width: 10%;
+        min-width: 170px; /* 調整 */
     }
     .action-buttons {
         gap: 10px; /* ボタン間のスペースを調整 */
@@ -236,6 +293,10 @@
     .btn-sm {
         padding: 8px 15px; /* ボタンのパディングを調整 */
         font-size: 1.4rem;
+    }
+    .scrollable-content {
+        height: 70px; /* レスポンシブでの高さ調整 */
+        padding-right: 15px;
     }
 }
 
@@ -251,9 +312,13 @@
         padding: 12px 10px; /* パディングを調整 */
         font-size: 1.4rem;
     }
-    .product-thumb {
-        width: 40px;
-        height: 40px;
+    .image-thumbs {
+        flex-wrap: wrap; /* レスポンシブでも折り返す */
+    }
+    .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
     }
     .btn-sm {
         padding: 6px 12px; /* ボタンのパディングを調整 */
@@ -272,42 +337,54 @@
         margin-right: 12px;
     }
     /* 各列の幅を調整 */
-    .data-table th:nth-child(1),
+    .data-table th:nth-child(1), /* おつまみ名 */
     .data-table td:nth-child(1) {
-        width: 25%;
+        width: 10%;
     }
-    .data-table th:nth-child(2),
+    .data-table th:nth-child(2), /* 画像 */
     .data-table td:nth-child(2) {
+        width: 10%;
+        min-width: 90px;
+        padding: 8px 5px; /* パディングを調整 */
+        white-space: normal; /* 画像は折り返す */
+    }
+    .data-table th:nth-child(3), /* カテゴリー */
+    .data-table td:nth-child(3) {
         width: 8%;
     }
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) {
-        width: 10%;
-    }
-    .data-table th:nth-child(4),
+    .data-table th:nth-child(4), /* タグ */
     .data-table td:nth-child(4) {
-        width: 10%;
+        width: 12%;
     }
-    .data-table th:nth-child(5),
+    .data-table th:nth-child(5), /* おつまみ説明1 */
     .data-table td:nth-child(5) {
-        width: 10%;
+        width: 18%;
     }
-    .data-table th:nth-child(6),
-    .data-table td:nth-child(6),
-    .data-table th:nth-child(7),
-    .data-table td:nth-child(7),
-    .data-table th:nth-child(8),
-    .data-table td:nth-child(8),
-    .data-table th:nth-child(9),
+    .data-table th:nth-child(6), /* おつまみ説明2 */
+    .data-table td:nth-child(6) {
+        width: 18%;
+    }
+    .data-table th:nth-child(7), /* 価格 */
+    .data-table td:nth-child(7) {
+        width: 6%;
+        min-width: 70px;
+    }
+    .data-table th:nth-child(8), /* 在庫数 */
+    .data-table td:nth-child(8) {
+        width: 6%;
+        min-width: 70px;
+    }
+    .data-table th:nth-child(9), /* 操作 */
     .data-table td:nth-child(9) {
-        width: 4%;
-        min-width: 35px;
-        padding: 10px 5px; /* パディングを調整 */
+        width: 10%;
+        min-width: 130px; /* 調整 */
     }
-    .data-table th:nth-child(10),
-    .data-table td:nth-child(10) { width: 8%; }
     .action-buttons {
         gap: 8px; /* ボタン間のスペースを調整 */
+    }
+    .scrollable-content {
+        height: 60px; /* レスポンシブでの高さ調整 */
+        padding-right: 15px;
     }
 }
 
@@ -328,44 +405,47 @@
         font-size: 1.1rem; /* 全体的にフォントサイズをさらに小さく */
         padding: 6px 4px; /* パディングも全体的に小さく */
     }
-    .data-table th:nth-child(1),
+    .data-table th:nth-child(1), /* おつまみ名 */
     .data-table td:nth-child(1) {
-        width: 20%;
+        width: 15%;
     }
-    .data-table th:nth-child(2),
+    .data-table th:nth-child(2), /* 画像 */
     .data-table td:nth-child(2) {
-        width: 8%;
-    }
-    .data-table th:nth-child(3),
-    .data-table td:nth-child(3) {
-        width: 10%;
-    }
-    .data-table th:nth-child(4),
-    .data-table td:nth-child(4) {
-        width: 9%;
-    }
-    .data-table th:nth-child(5),
-    .data-table td:nth-child(5) {
-        width: 10%;
-    }
-    .data-table th:nth-child(6),
-    .data-table td:nth-child(6),
-    .data-table th:nth-child(7),
-    .data-table td:nth-child(7),
-    .data-table th:nth-child(8),
-    .data-table td:nth-child(8),
-    .data-table th:nth-child(9),
-    .data-table td:nth-child(9) {
-        width: 3%;
-        min-width: 25px;
-        padding: 5px 2px; /* パディングをさらに小さく */
-    }
-    .data-table th:nth-child(10),
-    .data-table td:nth-child(10) { width: 8%; }
-    .data-table th:nth-child(11),
-    .data-table td:nth-child(11) {
-        width: 8%;
+        width: 12%;
         min-width: 80px;
+        padding: 5px 2px; /* パディングをさらに小さく */
+        white-space: normal; /* 画像は折り返す */
+    }
+    .data-table th:nth-child(3), /* カテゴリー */
+    .data-table td:nth-child(3) {
+        width: 8%;
+    }
+    .data-table th:nth-child(4), /* タグ */
+    .data-table td:nth-child(4) {
+        width: 15%;
+    }
+    .data-table th:nth-child(5), /* おつまみ説明1 */
+    .data-table td:nth-child(5) {
+        width: 12%;
+    }
+    .data-table th:nth-child(6), /* おつまみ説明2 */
+    .data-table td:nth-child(6) {
+        width: 12%;
+    }
+    .data-table th:nth-child(7), /* 価格 */
+    .data-table td:nth-child(7) {
+        width: 5%;
+        min-width: 40px;
+    }
+    .data-table th:nth-child(8), /* 在庫数 */
+    .data-table td:nth-child(8) {
+        width: 5%;
+        min-width: 40px;
+    }
+    .data-table th:nth-child(9), /* 操作 */
+    .data-table td:nth-child(9) {
+        width: 9%;
+        min-width: 80px; /* 調整 */
     }
     .btn-sm {
         padding: 3px 6px;
@@ -373,5 +453,9 @@
     }
     .action-buttons {
         gap: 2px;
+    }
+    .scrollable-content {
+        height: 50px; /* レスポンシブでの高さ調整 */
+        padding-right: 10px;
     }
 }
