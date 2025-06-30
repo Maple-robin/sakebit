@@ -153,8 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
             item.addEventListener('click', function(event) {
                 event.preventDefault(); // リンクのデフォルト動作を防ぐ
                 const postId = this.dataset.postId;
-                // report.htmlに遷移（投稿IDをクエリパラメータで渡す）
-                window.location.href = `report.html?postId=${encodeURIComponent(postId)}`;
+                // report.phpに遷移（投稿IDをクエリパラメータで渡す）
+                window.location.href = `report.php?postId=${encodeURIComponent(postId)}`;
             });
         });
 
@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const editProfileButton = document.querySelector('.edit-profile-button');
     if (editProfileButton) {
         editProfileButton.addEventListener('click', () => {
-            window.location.href = 'edit_profile.php';
+            window.location.href = 'profile_edit.php'; // モーダルではなくページ遷移
         });
     }
 

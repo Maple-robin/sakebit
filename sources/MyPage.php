@@ -684,7 +684,8 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
                     echo nl2br(htmlspecialchars($text_with_actual_newlines));
                     ?>
                 </p>
-                <button class="edit-profile-button">プロフィールを編集</button>
+                <!-- プロフィール編集ボタン -->
+                <button type="button" class="edit-profile-button">プロフィールを編集</button>
                 <!-- 購入履歴ページへのリンクボタン -->
                 <button class="history-button" onclick="window.location.href='history.php'">購入履歴を見る</button>
             </section>
