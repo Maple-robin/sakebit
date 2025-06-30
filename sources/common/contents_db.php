@@ -422,6 +422,72 @@ class cproduct_info extends crecord {
         return $this->fetch_assoc();
     }
 
+    /**
+     * 【修正】管理者画面の商品一覧表示に必要な情報をまとめて取得するメソッド
+     *
+     * 関連テーブルをJOINし、1回のクエリで商品情報、カテゴリ名、メイン画像パス、
+     * タグリストを取得することで、パフォーマンスを大幅に向上させます。
+     * @param bool $debug デバッグモード
+     * @param int $from ページネーション用の取得開始位置
+     * @param int $limit ページネーション用の取得件数
+     * @return array 画面表示用に組み立てられた商品情報の配列
+     */
+    public function get_product_list_for_admin($debug, $from = 0, $limit = 100)
+    {
+        // 複数のテーブルを結合して必要な情報を一度に取得するSQLクエリ
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                p.product_description,
+                p.product_discription,
+                p.product_How,
+                p.product_Contents,
+                p.product_stock,
+                p.product_degree,
+                c.category_name,
+                -- サブクエリを使用して、'main'タイプの画像を最優先で1件取得する
+                (
+                    SELECT pi.image_path
+                    FROM product_images pi
+                    WHERE pi.product_id = p.product_id
+                    ORDER BY 
+                        pi.image_type = 'main' DESC, -- 'main'を優先
+                        pi.display_order ASC,         -- 次に表示順
+                        pi.image_id ASC               -- 最後にID
+                    LIMIT 1
+                ) AS main_image,
+                -- GROUP_CONCATを使用して、関連するタグ名をカンマ区切りの文字列として結合する
+                GROUP_CONCAT(DISTINCT t.tag_name ORDER BY t.tag_id SEPARATOR ',') AS tags_concat
+            FROM
+                product_info p
+            LEFT JOIN
+                categories c ON p.product_category = c.category_id
+            LEFT JOIN
+                product_tags_relation ptr ON p.product_id = ptr.product_id
+            LEFT JOIN
+                tags t ON ptr.tag_id = t.tag_id
+            GROUP BY
+                p.product_id -- 商品ごとに結果をまとめる
+            ORDER BY
+                p.product_id DESC -- 新しい商品から表示
+            LIMIT :from, :limit
+        ";
+
+        $prep_arr = [
+            ':from'      => (int)$from,
+            ':limit'     => (int)$limit
+        ];
+        
+        $arr = [];
+        $this->select_query($debug, $query, $prep_arr);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+
     public function __destruct() {
         parent::__destruct();
     }
