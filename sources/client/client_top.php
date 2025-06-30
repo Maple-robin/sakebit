@@ -58,6 +58,7 @@
                             <th>商品の特徴</th>
                             <th>おすすめの飲み方</th>
                             <th>内容量</th>
+                            <th>アルコール度数</th>
                             <th>在庫数</th>
                             <th>操作</th>
                         </tr>
@@ -69,11 +70,17 @@
                             <td>伊勢志摩地方の豊かな自然で育まれた上質な米と清らかな伏流水から生まれた純米大吟醸。</td>
                             <td>¥ 5,800</td>
                             <td>日本酒</td>
-                            <td>#日本酒, #華やか, #ギフト</td>
+                            <td>
+                                <div class="admin-table-tag-list">
+                                    <span class="admin-table-tag">#日本酒</span>
+                                    <span class="admin-table-tag">#華やか</span>
+                                    <span class="admin-table-tag">#ギフト</span>
+                                </div>
+                            </td>
                             <td>芳醇な香りと透明感のある味わい。</td>
                             <td>冷酒でお召し上がりいただくのがおすすめ。</td>
                             <td>720ml</td>
-                            <td>100</td>
+                            <td>15.5%</td>
                             <td>
                                 <div class="admin-action-buttons-group">
                                     <a href="client_add_product.php?id=1" class="admin-action-button admin-action-button--edit"><i class="fas fa-edit"></i> 編集</a>
@@ -92,7 +99,7 @@
                             <td>フルーティーな香りとまろやかな味わい。</td>
                             <td>ロックまたはソーダ割りがおすすめ。</td>
                             <td>500ml</td>
-                            <td>50</td>
+                            <td>10%</td>
                             <td>
                                 <div class="admin-action-buttons-group">
                                     <a href="client_add_product.php?id=2" class="admin-action-button admin-action-button--edit"><i class="fas fa-edit"></i> 編集</a>
@@ -111,7 +118,7 @@
                             <td>クリーミーな泡と豊かな果実味。</td>
                             <td>冷やしてそのまま、またはカクテルベースに。</td>
                             <td>750ml</td>
-                            <td>20</td>
+                            <td>12%</td>
                             <td>
                                 <div class="admin-action-buttons-group">
                                     <a href="client_add_product.php?id=3" class="admin-action-button admin-action-button--edit"><i class="fas fa-edit"></i> 編集</a>
@@ -130,7 +137,7 @@
                             <td>飲みやすく、さっぱりとした後味。</td>
                             <td>そのままでも、氷を入れても美味しくいただけます。</td>
                             <td>350ml</td>
-                            <td>300</td>
+                            <td>3%</td>
                             <td>
                                 <div class="admin-action-buttons-group">
                                     <a href="client_add_product.php?id=4" class="admin-action-button admin-action-button--edit"><i class="fas fa-edit"></i> 編集</a>
