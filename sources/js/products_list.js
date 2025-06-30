@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 12,
             name: 'シングルモルト 〇〇aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-            image: 'img/berry.png',
+            image: '../img/berry.png',
             volume: '700ml',
             price: 4000,
             tags: ['本格派', '熟成'],
@@ -290,112 +290,155 @@ document.addEventListener('DOMContentLoaded', function() {
         const modeToRender = (window.innerWidth > 767) ? 'grid' : currentDisplayMode; // PCではグリッド固定、スマホでは現在の選択
 
         renderProducts(filteredProducts, modeToRender);
-    }
-
-    // ページタイトルを更新する関数
+    }    // ページタイトルを更新する関数
     function updatePageTitle() {
         let enTitle = "PRODUCTS LIST";
         let jaTitle = "( 商品一覧 )";
+        let guideLink = "#"; // デフォルトのリンク先
+        let description = ""; // カテゴリ説明文
 
-        // 最も優先度の高いタイトル設定: ランキング順かつフィルターなしの場合
-        if (currentSortOrder === 'ranking' && currentFilters.tags.length === 0 && 
-            (currentFilters.categories.length === 0 || (currentFilters.categories.length === 1 && currentFilters.categories.includes('すべて')))) {
-            enTitle = "RANKING";
-            jaTitle = "( ランキング一覧 )";
-        }
-        // 次にタグフィルターが適用されている場合
-        else if (currentFilters.tags.length === 1) {
-            const selectedTag = currentFilters.tags[0];
-            switch (selectedTag) {
-                case '初心者向け':
-                    enTitle = "FOR BEGINNERS";
-                    jaTitle = "( 初めての方へおすすめの一杯 )";
-                    break;
-                case '甘口':
-                    enTitle = "SWEET SELECTION";
-                    jaTitle = "( 甘口一覧 )";
-                    break;
-                case '辛口':
-                    enTitle = "DRY SELECTION";
-                    jaTitle = "( 辛口一覧 )";
-                    break;
-                case '度数低め':
-                    enTitle = "LOW ALCOHOL";
-                    jaTitle = "( 度数低め一覧 )";
-                    break;
-                case '度数高め':
-                    enTitle = "HIGH ALCOHOL";
-                    jaTitle = "( 度数高め一覧 )";
-                    break;
-                case '新発売':
-                    enTitle = "NEW ARRIVALS";
-                    jaTitle = "( 新発売商品 )";
-                    break;
-                default:
-                    enTitle = `${selectedTag.toUpperCase()} LIST`;
-                    jaTitle = `( ${selectedTag}一覧 )`;
-                    break;
-            }
-        }
-        // ▼▼▼ ここをカテゴリ10種に統一 ▼▼▼
-        else if (currentFilters.categories.length === 1 && currentFilters.categories[0] !== 'すべて') {
+        // カテゴリが選択されている場合（カテゴリを優先）
+        if (currentFilters.categories.length === 1 && currentFilters.categories[0] !== 'すべて') {
             const selectedCategory = currentFilters.categories[0];
-            switch (selectedCategory) {
-                case '日本酒':
+            switch (selectedCategory) {                case '日本酒':
                     enTitle = "SAKE LIST";
                     jaTitle = "( 日本酒一覧 )";
+                    guideLink = "guide_sake.html";
+                    description = "米と水、<ruby>麹<rt>こうじ</rt></ruby>で<ruby>造<rt>つく</rt></ruby>る日本の<ruby>伝統酒<rt>でんとうしゅ</rt></ruby>。<ruby>冷<rt>ひや</rt></ruby>でも<ruby>燗<rt>かん</rt></ruby>でも、<ruby>料理<rt>りょうり</rt></ruby>と<ruby>合<rt>あ</rt></ruby>わせて<ruby>楽<rt>たの</rt></ruby>しめます。";
                     break;
-                case '中国酒':
-                    enTitle = "CHINESE LIQUOR LIST";
-                    jaTitle = "( 中国酒一覧 )";
+                case 'リキュール':
+                    enTitle = "LIQUEUR LIST";
+                    jaTitle = "( リキュール一覧 )";
+                    guideLink = "guide_liquor.html";
+                    description = "<ruby>果実<rt>かじつ</rt></ruby>やハーブが<ruby>香<rt>かお</rt></ruby>るお<ruby>酒<rt>さけ</rt></ruby>。カクテルやデザートに、<ruby>楽<rt>たの</rt></ruby>しみ<ruby>方<rt>かた</rt></ruby>は<ruby>自由自在<rt>じゆうじざい</rt></ruby>です。";
                     break;
-                case '梅酒':
-                    enTitle = "UMESHU LIST";
-                    jaTitle = "( 梅酒一覧 )";
+                case 'ビール':
+                    enTitle = "BEER LIST";
+                    jaTitle = "( ビール一覧 )";
+                    guideLink = "guide_beer.html";
+                    description = "<ruby>麦芽<rt>ばくが</rt></ruby>とホップの<ruby>豊<rt>ゆた</rt></ruby>かな<ruby>香<rt>かお</rt></ruby>り。<ruby>世界中<rt>せかいじゅう</rt></ruby>で<ruby>愛<rt>あい</rt></ruby>される、<ruby>多彩<rt>たさい</rt></ruby>な<ruby>味<rt>あじ</rt></ruby>わいのビールです。";
                     break;
-                case '缶チューハイ':
-                    enTitle = "CHU-HI LIST";
-                    jaTitle = "( 缶チューハイ一覧 )";
+                case 'ワイン':
+                    enTitle = "WINE LIST";
+                    jaTitle = "( ワイン一覧 )";
+                    guideLink = "guide_wine.html";
+                    description = "ぶどうから<ruby>造<rt>つく</rt></ruby>られる、<ruby>香<rt>かお</rt></ruby>り<ruby>高<rt>たか</rt></ruby>いお<ruby>酒<rt>さけ</rt></ruby>。<ruby>赤<rt>あか</rt></ruby>・<ruby>白<rt>しろ</rt></ruby>・ロゼ、<ruby>料理<rt>りょうり</rt></ruby>との<ruby>組<rt>く</rt></ruby>み<ruby>合<rt>あ</rt></ruby>わせも<ruby>無限大<rt>むげんだい</rt></ruby>です。";
                     break;
                 case '焼酎':
                     enTitle = "SHOCHU LIST";
                     jaTitle = "( 焼酎一覧 )";
+                    guideLink = "guide_shochu.html";
+                    description = "<ruby>芋<rt>いも</rt></ruby>や<ruby>麦<rt>むぎ</rt></ruby>など、<ruby>原料<rt>げんりょう</rt></ruby>の<ruby>個性<rt>こせい</rt></ruby>が<ruby>光<rt>ひか</rt></ruby>る<ruby>日本<rt>にほん</rt></ruby>の<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>。<ruby>水割<rt>みずわ</rt></ruby>り、お<ruby>湯割<rt>ゆわ</rt></ruby>り、ロックでどうぞ。";
                     break;
                 case 'ウィスキー':
                 case 'ウイスキー': // どちらも対応
                     enTitle = "WHISKY LIST";
                     jaTitle = "( ウィスキー一覧 )";
+                    guideLink = "guide_whisky.html";
+                    description = "<ruby>樽熟成<rt>たるじゅくせい</rt></ruby>が<ruby>生<rt>う</rt></ruby>む、<ruby>深<rt>ふか</rt></ruby>い<ruby>香<rt>かお</rt></ruby>りと<ruby>味<rt>あじ</rt></ruby>わい。ストレートやハイボールでじっくりと。";
                     break;
                 case 'スピリッツ':
                     enTitle = "SPIRITS LIST";
                     jaTitle = "( スピリッツ一覧 )";
+                    guideLink = "guide_spirits.html";
+                    description = "アルコール<ruby>度数<rt>どすう</rt></ruby>の<ruby>高<rt>たか</rt></ruby>い<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>の<ruby>総称<rt>そうしょう</rt></ruby>。カクテルのベースとして<ruby>豊<rt>ゆた</rt></ruby>かな<ruby>個性<rt>こせい</rt></ruby>が<ruby>光<rt>ひか</rt></ruby>ります。";
                     break;
-                case 'リキュール':
-                    enTitle = "LIQUEUR LIST";
-                    jaTitle = "( リキュール一覧 )";
+                case '梅酒':
+                    enTitle = "UMESHU LIST";
+                    jaTitle = "( 梅酒一覧 )";
+                    guideLink = "guide_umeshu.html";
+                    description = "<ruby>青梅<rt>あおうめ</rt></ruby>をじっくり<ruby>漬<rt>つ</rt></ruby>け<ruby>込<rt>こ</rt></ruby>んだ、<ruby>甘酸<rt>あまず</rt></ruby>っぱいお<ruby>酒<rt>さけ</rt></ruby>。ロックやソーダ<ruby>割<rt>わ</rt></ruby>りで、<ruby>食前<rt>しょくぜん</rt></ruby><ruby>食後<rt>しょくご</rt></ruby>に。";
                     break;
-                case 'ワイン':
-                    enTitle = "WINE LIST";
-                    jaTitle = "( ワイン一覧 )";
+                case '缶チューハイ':
+                    enTitle = "CHUHAI LIST";
+                    jaTitle = "( 缶チューハイ一覧 )";
+                    guideLink = "guide_chuhai.html";
+                    description = "シュワっと<ruby>弾<rt>はじ</rt></ruby>ける、<ruby>手軽<rt>てがる</rt></ruby>な美味しさ。<ruby>豊富<rt>ほうふ</rt></ruby>なフレーバーから、<ruby>今日<rt>きょう</rt></ruby>の<ruby>気分<rt>きぶん</rt></ruby>で<ruby>選<rt>えら</rt></ruby>べます。";
                     break;
-                case 'ビール':
-                    enTitle = "BEER LIST";
-                    jaTitle = "( ビール一覧 )";
+                case '中国酒':
+                    enTitle = "CHINESE LIQUOR LIST";
+                    jaTitle = "( 中国酒一覧 )";
+                    guideLink = "guide_chinese_liquor.html";
+                    description = "<ruby>高粱<rt>こうりゃん</rt></ruby>などから<ruby>造<rt>つく</rt></ruby>られる、<ruby>中国<rt>ちゅうごく</rt></ruby><ruby>伝統<rt>でんとう</rt></ruby>の<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>。<ruby>独特<rt>どくとく</rt></ruby>の<ruby>香<rt>かお</rt></ruby>りが、<ruby>中華<rt>ちゅうか</rt></ruby><ruby>料理<rt>りょうり</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>を<ruby>引<rt>ひ</rt></ruby>き<ruby>立<rt>た</rt></ruby>てます。";
                     break;
                 default:
                     enTitle = "PRODUCTS LIST";
                     jaTitle = "( 商品一覧 )";
+                    guideLink = "#";
+                    description = "";
                     break;
             }
         }
-        // ▲▲▲ ここまで ▲▲▲
+        // タグが選択されている場合（カテゴリが選択されていない場合のみ適用）
+        else if (currentFilters.tags.length === 1) {
+            const selectedTag = currentFilters.tags[0];
+            switch (selectedTag) {                case '初心者向け':
+                    enTitle = "FOR BEGINNERS";
+                    jaTitle = "( 初めての方へおすすめの一杯 )";
+                    description = "お<ruby>酒<rt>さけ</rt></ruby><ruby>初心者<rt>しょしんしゃ</rt></ruby>の<ruby>方<rt>かた</rt></ruby>でも<ruby>安心<rt>あんしん</rt></ruby>してお<ruby>楽<rt>たの</rt></ruby>しみいただける<ruby>商品<rt>しょうひん</rt></ruby>を<ruby>厳選<rt>げんせん</rt></ruby>しました。アルコール<ruby>度数<rt>どすう</rt></ruby>が<ruby>低<rt>ひく</rt></ruby>めで<ruby>飲<rt>の</rt></ruby>みやすく、クセの<ruby>少<rt>すく</rt></ruby>ない<ruby>味<rt>あじ</rt></ruby>わいのものを<ruby>中心<rt>ちゅうしん</rt></ruby>にラインナップ。まずはこちらから<ruby>始<rt>はじ</rt></ruby>めて、お<ruby>酒<rt>さけ</rt></ruby>の<ruby>世界<rt>せかい</rt></ruby>を<ruby>広<rt>ひろ</rt></ruby>げていきましょう。";
+                    break;
+                case '甘口':
+                    enTitle = "SWEET SELECTION";
+                    jaTitle = "( 甘口一覧 )";
+                    description = "<ruby>甘口<rt>あまくち</rt></ruby>のお<ruby>酒<rt>さけ</rt></ruby>は、フルーティーで<ruby>飲<rt>の</rt></ruby>みやすく、デザート<ruby>感覚<rt>かんかく</rt></ruby>で<ruby>楽<rt>たの</rt></ruby>しめます。<ruby>食後酒<rt>しょくごしゅ</rt></ruby>としても<ruby>人気<rt>にんき</rt></ruby>があり、<ruby>甘<rt>あま</rt></ruby>いものがお<ruby>好<rt>す</rt></ruby>きな<ruby>方<rt>かた</rt></ruby>や<ruby>女性<rt>じょせい</rt></ruby>の<rt>かた</rt></ruby>に<ruby>特<rt>とく</rt></ruby>におすすめです。アルコールの<ruby>辛味<rt>からみ</rt></ruby>が<ruby>苦手<rt>にがて</rt></ruby>な<ruby>方<rt>かた</rt></ruby>にもぴったりです。";
+                    break;
+                case '辛口':
+                    enTitle = "DRY SELECTION";
+                    jaTitle = "( 辛口一覧 )";
+                    description = "<ruby>辛口<rt>からくち</rt></ruby>のお<ruby>酒<rt>さけ</rt></ruby>は、キレが<ruby>良<rt>よ</rt></ruby>く、すっきりとした<ruby>味<rt>あじ</rt></ruby>わいが<ruby>特徴<rt>とくちょう</rt></ruby>です。<ruby>食事<rt>しょくじ</rt></ruby>との<ruby>相性<rt>あいしょう</rt></ruby>が<ruby>良<rt>よ</rt></ruby>く、<ruby>特<rt>とく</rt></ruby>に<ruby>和食<rt>わしょく</rt></ruby>や<ruby>魚料理<rt>さかなりょうり</rt></ruby>によく<ruby>合<rt>あ</rt></ruby>います。アルコール<ruby>本来<rt>ほんらい</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しみたい<ruby>方<rt>かた</rt></ruby>におすすめです。";
+                    break;
+                case '度数低め':
+                    enTitle = "LOW ALCOHOL";
+                    jaTitle = "( 度数低め一覧 )";
+                    description = "アルコール<ruby>度数<rt>どすう</rt></ruby>5%<ruby>以下<rt>いか</rt></ruby>の<ruby>商品<rt>しょうひん</rt></ruby>を<ruby>集<rt>あつ</rt></ruby>めました。お<ruby>酒<rt>さけ</rt></ruby>に<ruby>慣<rt>な</rt></ruby>れていない<ruby>方<rt>かた</rt></ruby>や、<ruby>軽<rt>かる</rt></ruby>く<ruby>飲<rt>の</rt></ruby>みたいときにすすめです。アルコール<ruby>感<rt>かん</rt></ruby>が<ruby>少<rt>すく</rt></ruby>なく、ジュース<ruby>感覚<rt>かんかく</rt></ruby>で<ruby>楽<rt>たの</rt></ruby>しめるものも<ruby>多数<rt>たすう</rt></ruby>ご<ruby>用意<rt>ようい</rt></ruby>しています。";
+                    break;
+                case '度数高め':
+                    enTitle = "HIGH ALCOHOL";
+                    jaTitle = "( 度数高め一覧 )";
+                    description = "アルコール<ruby>度数<rt>どすう</rt></ruby>20%<ruby>以上<rt>いじょう</rt></ruby>の<ruby>本格的<rt>ほんかくてき</rt></ruby>なお<ruby>酒<rt>さけ</rt></ruby>をお<ruby>探<rt>さが</rt></ruby>しの<ruby>方<rt>かた</rt></ruby>に。しっかりとした<ruby>飲<rt>の</rt></ruby>みごたえと<ruby>深<rt>ふか</rt></ruby>い<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しめます。ストレートやロックで、お<ruby>酒<rt>さけ</rt></ruby><ruby>本来<rt>ほんらい</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>をじっくりと<ruby>味<rt>あじ</rt></ruby>わってください。";
+                    break;
+                case '新発売':
+                    enTitle = "NEW ARRIVALS";
+                    jaTitle = "( 新発売商品 )";
+                    description = "<ruby>話題<rt>わだい</rt></ruby>の<ruby>新商品<rt>しんしょうひん</rt></ruby>をいち<ruby>早<rt>はや</rt></ruby>くお<ruby>試<rt>ため</rt></ruby>しください。<ruby>限定品<rt>げんていひん</rt></ruby>や<ruby>季節<rt>きせつ</rt></ruby><ruby>商品<rt>しょうひん</rt></ruby>も<ruby>含<rt>ふく</rt></ruby>まれており、<ruby>新<rt>あたら</rt></ruby>しい<ruby>味<rt>あじ</rt></ruby>わいとの<ruby>出会<rt>であ</rt></ruby>いをお<ruby>楽<rt>たの</rt></ruby>しみいただけます。トレンドを<ruby>抑<rt>おさ</rt></ruby>えたい<ruby>方<rt>かた</rt></ruby>におすすめです。";
+                    break;
+                default:
+                    enTitle = `${selectedTag.toUpperCase()} LIST`;
+                    jaTitle = `( ${selectedTag}一覧 )`;
+                    description = "";
+                    break;
+            }
+        }
+        // デフォルトのタイトル
         else {
             enTitle = "PRODUCTS LIST";
             jaTitle = "( 商品一覧 )";
+            description = "";
         }
 
         pageTitleEn.textContent = enTitle;
-        pageTitleJa.textContent = jaTitle;
+        pageTitleJa.textContent = jaTitle;        // 説明文を更新
+        const categoryDescription = document.getElementById('category-description');
+        const descriptionText = document.getElementById('description-text');
+        if (description) {
+            descriptionText.innerHTML = description.replace(/。/g, '。<br>'); // 「。」を「。<br>」に置換
+            categoryDescription.style.display = 'block';
+        } else {
+            categoryDescription.style.display = 'none';
+        }
+
+        // お酒ガイドボタンのリンクを更新
+        const guideButton = document.getElementById('guide-button');
+        if (guideButton) {
+            guideButton.href = guideLink;
+
+            // リンクが反応しない場合は非表示にする
+            if (guideLink === "#") {
+                guideButton.style.display = "none";
+            } else {
+                guideButton.style.display = "inline-block";
+            }
+        }
     }
 
     // フィルターボタンクリック時の処理

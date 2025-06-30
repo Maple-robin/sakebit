@@ -1,18 +1,3 @@
-<?php
-/*!
-@file index.php
-@brief トップページ
-@copyright Copyright (c) 2024 Your Name.
-*/
-
-// セッションを開始 (HTML出力の前に置く)
-session_start();
-
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
-// require_once __DIR__ . '/common/contents_db.php';
-
-// ここにトップページ固有のPHPロジックがあれば記述
-?>
 <!DOCTYPE html>
 <html lang="ja">
 
@@ -65,15 +50,9 @@ session_start();
 
     <nav class="sp-menu">
         <div class="sp-menu__header">
-            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
-                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログアウト
-                </a>
-            <?php else: ?>
-                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログイン
-                </a>
-            <?php endif; ?>
+            <div class="sp-menu__login">
+                <i class="fas fa-user-circle"></i> ログイン
+            </div>
         </div>
         <div class="sp-menu__search">
             <input type="text" placeholder="検索...">
@@ -116,12 +95,21 @@ session_start();
     </nav>
 
     <!-- ここから下はランキング等のメインコンテンツ -->
-    <main>
-        <div class="ranking-container">
+    <main>        <div class="ranking-container">
             <h1 class="page-title">
                 <span class="en">BEER LIST</span>
                 <span class="ja">( ビール一覧 )</span>
             </h1>
+            
+            <!-- カテゴリ説明文エリア -->
+            <div class="category-description" id="category-description" style="display: none;">
+                <p class="description-text" id="description-text"></p>
+            </div>
+
+            <!-- お酒ガイドへの遷移ボタン -->
+            <div class="guide-button-container">
+                <a href="#" id="guide-button" class="guide-button">お酒ガイドを見る</a>
+            </div>
 
             <div class="controls-section">
                 <div class="filter-sort-buttons">
@@ -220,10 +208,9 @@ session_start();
                 <li><a href="cart.php">買い物かごを見る</a></li>
                 <li><a href="privacy.php">プライバシーポリシー</a></li>
                 <li><a href="terms.php">利用規約</a></li>
-            </ul>
-            <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.php">
-                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
+            </ul>            <div class="footer__logo" style="margin: 24px 0 12px;">
+                <a href="index.php" style="text-decoration: none; font-family: 'Zen Old Mincho', serif; font-size: 2.4rem; font-weight: 700; color: #333;">
+                    OUR BRAND
                 </a>
             </div>
             <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
@@ -231,9 +218,9 @@ session_start();
     </footer>
 
     <!-- JavaScriptファイルを修正後のproducts_list.jsに更新 -->
-    <script src="js/script.js"></script>
     <script src="js/products_list.js"></script>
     <script src="js/sticky-controls.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>

@@ -361,6 +361,24 @@ main {
     bottom: 0;
 }
 
+/* カテゴリ説明文 */
+.category-description {
+    text-align: left; /* テキストを左揃えに変更 */
+    margin: 20px 0 30px;
+    max-width: 100%; /* 親要素の幅いっぱいに広げる */
+    padding: 0; /* ranking-containerのpaddingに合わせる */
+}
+
+.description-text {
+    font-size: 1.6rem; /* スマホでの読みやすさを考慮し、フォントサイズを大きく */
+    line-height: 1.8; /* 行間を調整 */
+    color: #333;
+    /* 2行制限と省略記号のスタイルを削除 */
+    overflow-wrap: break-word; /* 単語の途中でも適切に改行 */
+    word-break: normal; /* CSSの標準的な改行ルールを使用 */
+    line-break: auto;   /* 禁則処理をブラウザに任せる */
+}
+
 /* Controls Section (Filter, Sort, Display Mode) */
 .controls-section {
     display: flex;
@@ -773,6 +791,27 @@ main {
     width: 100%;
 }
 
+/* お酒ガイドへの遷移ボタンのスタイル */
+.guide-button-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.guide-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: #A0522D;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.guide-button:hover {
+    background-color: #8B4513;
+}
 
 /* PC (min-width: 768px) */
 @media (min-width: 768px) {
@@ -820,10 +859,15 @@ main {
 
     .page-title .ja {
         font-size: 2.2rem;
+    }    .page-title .ja::after {
+        width: 60px;
+    }    /* PC版カテゴリ説明文 */
+    .category-description {
+        margin: 30px auto 50px;
     }
 
-    .page-title .ja::after {
-        width: 60px;
+    .description-text {
+        font-size: 1.7rem;
     }
 
     /* PCでは常にグリッド表示 */
