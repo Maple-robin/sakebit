@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 実際のサイトでは、送信成功後に別のページにリダイレクトしたり、
             // フォームをクリアしたりする処理を行います。
-            // 例: window.location.href = 'thank_you_page.html';
+            // 例: window.location.href = 'thank_you_page.php';
             contactForm.reset(); // フォームをクリア
         });
     }

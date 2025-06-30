@@ -74,12 +74,12 @@ class crecord {
                                  " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') .
                                  " Driver Message: " . ($e->errorInfo[2] ?? 'N/A') .
                                  " Query: " . $query .
-                                 " Params: " . json_encode($prep_arr);
+                                 " Params: . " . json_encode($prep_arr); // こちらの行でPHP 8.1の非推奨警告が出ないよう修正
             error_log($error_message_log);
 
             // デバッグモードがtrueの場合、ブラウザにも詳細なエラーメッセージを出力し、そこで実行を停止
             // ただし、本番環境向けではこれをコメントアウトまたは削除し、ログのみにする
-            // 現在のconfig.phpでDEBUG=falseなので、このechoは実行されず、exitも実行されません。
+            // config.phpでDEBUG=falseなので、このechoは実行されず、exitも実行されません。
             if (defined('DEBUG') && DEBUG) {
                 echo "<div style='background-color:#ffe6e6; border:1px solid #ffb3b3; padding:10px; margin-bottom:10px; color:#cc0000; font-family:monospace;'>";
                 echo "<strong>データベースエラーが発生しました（DEBUGモード）:</strong><br>";
@@ -426,7 +426,74 @@ class cproduct_info extends crecord {
         parent::__destruct();
     }
 }
+//--------------------------------------------------------------------------------------
+/// 商品画像クラス（PHPBase2スタイル）
+//--------------------------------------------------------------------------------------
+class cproduct_images extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
 
+    /**
+     * 新しい商品画像をデータベースに挿入するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $product_id 関連する商品ID
+     * @param string $image_path 画像ファイルのパス
+     * @param int $display_order 画像の表示順序（1～4）
+     * @return int|false 挿入されたimage_id、または失敗した場合はfalse
+     */
+    public function insert_image($debug, $product_id, $image_path, $display_order) {
+        $query = "INSERT INTO product_images (product_id, image_path, display_order) VALUES (:product_id, :image_path, :display_order)";
+        $prep_arr = array(
+            ':product_id' => (int)$product_id,
+            ':image_path' => $image_path,
+            ':display_order' => (int)$display_order
+        );
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 挿入された image_id を返す
+        }
+        return false;
+    }
+
+    /**
+     * 特定の商品IDに紐づく全ての画像を取得するメソッド（最大4件まで）
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $product_id 商品ID
+     * @return array 商品画像情報の配列、または見つからない場合は空の配列
+     */
+    public function get_images_by_product_id($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "SELECT * FROM product_images WHERE product_id = :product_id ORDER BY display_order ASC, image_id ASC LIMIT 4";
+        $stmt = $this->execute_query($debug, $query, array(':product_id' => (int)$product_id));
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+    /**
+     * 特定の商品に紐づく画像を全て削除するメソッド
+     * @param bool $debug デバッグモードのオン/オフ
+     * @param int $product_id 商品ID
+     * @return bool 成功した場合はtrue、失敗した場合はfalse
+     */
+    public function delete_images_by_product_id($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM product_images WHERE product_id = :product_id";
+        $prep_arr = array(':product_id' => (int)$product_id);
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
 //--------------------------------------------------------------------------------------
 /// カテゴリークラス
 //--------------------------------------------------------------------------------------
@@ -632,8 +699,8 @@ class cproduct_tags_relation extends crecord {
                   FROM product_tags_relation ptr
                   JOIN tags t ON ptr.tag_id = t.tag_id
                   JOIN tag_categories tc ON t.tag_category_id = tc.tag_category_id
-                  ORDER BY tc.tag_category_id ASC, t.tag_id ASC
-                  WHERE ptr.product_id = :product_id"; // WHERE句を移動
+                  WHERE ptr.product_id = :product_id
+                  ORDER BY tc.tag_category_id ASC, t.tag_id ASC";
         $stmt = $this->execute_query($debug, $query, array(':product_id' => (int)$product_id));
         if ($stmt) {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

@@ -141,8 +141,8 @@ document.addEventListener('DOMContentLoaded', function() {
             item.addEventListener('click', function(event) {
                 event.preventDefault(); // リンクのデフォルト動作を防ぐ
                 const postId = this.dataset.postId;
-                // report.htmlに遷移（投稿IDをクエリパラメータで渡す）
-                window.location.href = `report.html?postId=${encodeURIComponent(postId)}`;
+                // report.phpに遷移（投稿IDをクエリパラメータで渡す）
+                window.location.href = `report.php?postId=${encodeURIComponent(postId)}`;
             });
         });
 
