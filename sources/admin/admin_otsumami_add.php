@@ -1,48 +1,29 @@
 <?php
-// セッションを開始 (ファイルの先頭に必ず記述)
 session_start();
 
-// ログイン状態のチェック
-// $_SESSION['admin_user_id']が設定されていない、または空の場合はログインページにリダイレクト
-// ★変更点: admin_login.php から login.php に修正
 if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
-    header('Location: login.php'); // ログインページのパスに修正
+    header('Location: login.php');
     exit();
 }
 
-// contents_db.php を読み込む
-// /home/j2025g/public_html/admin/admin_otsumami_add.php から見て
-// /home/j2025g/public_html/common/contents_db.php への相対パス
 require_once '../common/contents_db.php';
     
-$debug = false; // デバッグモードをオンにするかどうか。開発中はtrue、本番環境ではfalseにすることを推奨。
+$debug = false;
 
-// cotumami_categories および cotumami_tags クラスのインスタンスを生成
 $db_categories = new cotumami_categories();
 $db_tags = new cotumami_tags();
 
-// カテゴリーデータを取得
 $categories = $db_categories->get_all_categories($debug);
-if ($categories === false) {
-    $categories = []; // 取得失敗時は空の配列を設定
-    error_log("Failed to fetch categories."); // エラーログに出力
-}
+if ($categories === false) $categories = [];
 
-// タグデータを取得
 $tags = $db_tags->get_all_tags($debug);
-if ($tags === false) {
-    $tags = []; // 取得失敗時は空の配列を設定
-    error_log("Failed to fetch tags."); // エラーログに出力
-}
+if ($tags === false) $tags = [];
 
-// セッションからメッセージと古い入力を取得し、表示後にクリア
 $messages = $_SESSION['message'] ?? '';
 $errors = $_SESSION['errors'] ?? [];
 $old_input = $_SESSION['old_input'] ?? [];
 
-unset($_SESSION['message']);
-unset($_SESSION['errors']);
-unset($_SESSION['old_input']);
+unset($_SESSION['message'], $_SESSION['errors'], $_SESSION['old_input']);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -66,13 +47,12 @@ unset($_SESSION['old_input']);
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
                     <li><a href="admin_products.php">お酒管理</a></li>
-                    <li><a href="admin_otsumami.php" >おつまみ管理</a></li>
+                    <li><a href="admin_otsumami.php" class="is-current">おつまみ管理</a></li>
                     <li><a href="admin_users.php">ユーザー管理</a></li>
                     <li><a href="admin_posts.php">投稿管理</a></li>
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php">FAQ登録</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
-                    <!-- ここにログアウトリンクを追加すると良いでしょう -->
                     <li><a href="admin_logout.php">ログアウト</a></li> 
                 </ul>
             </nav>
@@ -87,15 +67,13 @@ unset($_SESSION['old_input']);
             </h2>
 
             <?php if (!empty($messages)): ?>
-                <div style="color: green; padding: 10px; border: 1px solid green; margin-bottom: 20px;">
-                    <?php echo htmlspecialchars($messages); ?>
-                </div>
+                <div class="success-message"><?= htmlspecialchars($messages) ?></div>
             <?php endif; ?>
             <?php if (!empty($errors)): ?>
-                <div style="color: red; padding: 10px; border: 1px solid red; margin-bottom: 20px;">
+                <div class="error-messages">
                     <ul>
                         <?php foreach ($errors as $error): ?>
-                            <li><?php echo htmlspecialchars($error); ?></li>
+                            <li><?= htmlspecialchars($error) ?></li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -105,32 +83,34 @@ unset($_SESSION['old_input']);
                 <form action="process_add_otsumami.php" method="post" enctype="multipart/form-data" class="admin-form">
                     <div class="form-group">
                         <label for="otsumami_name">おつまみ名 <span class="required-tag">必須</span></label>
-                        <input type="text" id="otsumami_name" name="otsumami_name" required maxlength="128"
-                               value="<?php echo htmlspecialchars($old_input['otsumami_name'] ?? ''); ?>">
+                        <input type="text" id="otsumami_name" name="otsumami_name" required maxlength="128" value="<?= htmlspecialchars($old_input['otsumami_name'] ?? '') ?>">
+                    </div>
+
+                    <!-- ★★★★★★★★★★★★★★★★★★★★★★ -->
+                    <!-- ★★★ ここからが修正箇所 ★★★ -->
+                    <!-- ★★★★★★★★★★★★★★★★★★★★★★ -->
+                    <div class="form-group">
+                        <label for="main_image">メイン画像 <span class="required-tag">必須</span></label>
+                        <input type="file" id="main_image" name="main_image" accept="image/*" required>
+                        <div id="mainImagePreview" class="image-preview"></div>
                     </div>
 
                     <div class="form-group">
-                        <label>おつまみ画像 <span class="required-tag">最低1枚必須・最大4枚</span></label>
-                        <input type="file" id="images" name="images[]" accept="image/*" multiple required>
-                        <small class="form-note">1枚以上4枚まで選択してください。</small>
-                        <div id="image-preview" class="image-preview">
-                            <?php 
-                            // フォームがエラーで戻ってきた場合、画像プレビューは再表示されないため、注意が必要です。
-                            // 永続的なプレビューが必要な場合は、複雑なJS/Ajax処理が必要になります。
-                            ?>
-                        </div>
+                        <label for="sub_images">サブ画像 (最大3枚)</label>
+                        <input type="file" id="sub_images" name="sub_images[]" accept="image/*" multiple>
+                        <div id="subImagesPreview" class="image-preview"></div>
                     </div>
+                    <!-- ★★★★★★★★★★★★★★★★★★★★★★ -->
+                    <!-- ★★★        修正箇所ここまで        ★★★ -->
+                    <!-- ★★★★★★★★★★★★★★★★★★★★★★ -->
 
                     <div class="form-group">
-                        <label for="category">おつまみカテゴリー <span class="required-tag">必須</span></label>
+                        <label for="category">合うお酒のカテゴリー <span class="required-tag">必須</span></label>
                         <select id="category" name="category" required>
                             <option value="">選択してください</option>
-                            <?php 
-                            $old_category_id = $old_input['category'] ?? '';
-                            foreach ($categories as $category): ?>
-                                <option value="<?php echo htmlspecialchars($category['category_id']); ?>"
-                                    <?php echo ($old_category_id == $category['category_id']) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($category['category_name']); ?>
+                            <?php foreach ($categories as $category): ?>
+                                <option value="<?= htmlspecialchars($category['category_id']) ?>" <?= (isset($old_input['category']) && $old_input['category'] == $category['category_id']) ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($category['category_name']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -139,40 +119,31 @@ unset($_SESSION['old_input']);
                     <div class="form-group">
                         <label>おつまみタグ</label>
                         <div class="checkbox-group">
-                            <?php 
-                            $old_selected_tags = $old_input['tags'] ?? [];
-                            if (!empty($tags)): ?>
-                                <?php foreach ($tags as $tag): ?>
-                                    <label>
-                                        <input type="checkbox" name="tags[]" value="<?php echo htmlspecialchars($tag['tag_id']); ?>"
-                                            <?php echo in_array($tag['tag_id'], $old_selected_tags) ? 'checked' : ''; ?>>
-                                        <?php echo htmlspecialchars($tag['tag_name']); ?>
-                                    </label>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <p>利用可能なタグがありません。</p>
-                            <?php endif; ?>
+                            <?php foreach ($tags as $tag): ?>
+                                <label>
+                                    <input type="checkbox" name="tags[]" value="<?= htmlspecialchars($tag['tag_id']) ?>" <?= (isset($old_input['tags']) && is_array($old_input['tags']) && in_array($tag['tag_id'], $old_input['tags'])) ? 'checked' : '' ?>>
+                                    <?= htmlspecialchars($tag['tag_name']) ?>
+                                </label>
+                            <?php endforeach; ?>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="desc1">おつまみ説明1 <span class="required-tag">必須</span></label>
-                        <textarea id="desc1" name="desc1" rows="4" required maxlength="200"><?php echo htmlspecialchars($old_input['desc1'] ?? ''); ?></textarea>
+                        <textarea id="desc1" name="desc1" rows="4" required maxlength="200"><?= htmlspecialchars($old_input['desc1'] ?? '') ?></textarea>
                     </div>
                     <div class="form-group">
                         <label for="desc2">おつまみ説明2</label>
-                        <textarea id="desc2" name="desc2" rows="4" maxlength="200"><?php echo htmlspecialchars($old_input['desc2'] ?? ''); ?></textarea>
+                        <textarea id="desc2" name="desc2" rows="4" maxlength="200"><?= htmlspecialchars($old_input['desc2'] ?? '') ?></textarea>
                     </div>
 
                     <div class="form-group">
                         <label for="price">価格 <span class="required-tag">必須</span></label>
-                        <input type="number" id="price" name="price" required min="0" step="1"
-                               value="<?php echo htmlspecialchars($old_input['price'] ?? ''); ?>">
+                        <input type="number" id="price" name="price" required min="0" step="1" value="<?= htmlspecialchars($old_input['price'] ?? '') ?>">
                     </div>
                     <div class="form-group">
                         <label for="stock">在庫数 <span class="required-tag">必須</span></label>
-                        <input type="number" id="stock" name="stock" required min="0" step="1"
-                               value="<?php echo htmlspecialchars($old_input['stock'] ?? ''); ?>">
+                        <input type="number" id="stock" name="stock" required min="0" step="1" value="<?= htmlspecialchars($old_input['stock'] ?? '') ?>">
                     </div>
 
                     <div class="form-actions">
@@ -182,11 +153,8 @@ unset($_SESSION['old_input']);
             </section>
 
             <div class="back-to-list-button-area">
-                <a href="admin_otsumami.php" class="btn btn-secondary btn-back-to-list">
-                    おつまみ管理一覧に戻る
-                </a>
+                <a href="admin_otsumami.php" class="btn btn-secondary btn-back-to-list">おつまみ管理一覧に戻る</a>
             </div>
-
         </div>
     </main>
 
@@ -197,21 +165,27 @@ unset($_SESSION['old_input']);
     </footer>
 
     <script>
-document.getElementById('images').addEventListener('change', function(e) {
-    const preview = document.getElementById('image-preview');
-    preview.innerHTML = '';
-    const files = Array.from(e.target.files).slice(0, 4); // 最大4枚
-    files.forEach(file => {
-        if (!file.type.startsWith('image/')) return;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const img = document.createElement('img');
-            img.src = evt.target.result;
-            preview.appendChild(img);
-        };
-        reader.readAsDataURL(file);
+    function previewImages(input, previewContainer) {
+        const preview = document.querySelector(previewContainer);
+        preview.innerHTML = '';
+        const files = Array.from(input.files);
+        files.forEach(file => {
+            if (!file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = document.createElement('img');
+                img.src = evt.target.result;
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    document.getElementById('main_image').addEventListener('change', function() {
+        previewImages(this, '#mainImagePreview');
     });
-});
+    document.getElementById('sub_images').addEventListener('change', function() {
+        previewImages(this, '#subImagesPreview');
+    });
     </script>
 
 </body>

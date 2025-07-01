@@ -1,34 +1,14 @@
 <?php
-// セッションを開始します。
-session_start();
+// ログインチェックとセッション開始、デバッグ変数定義を共通ファイルに任せます
+require_once 'auth_check.php';
 
-// ご指定のパスでデータベース操作クラス群を読み込みます。
-require_once __DIR__ . '/../common/contents_db.php';
+// データベース操作クラスを読み込みます
+require_once '../common/contents_db.php';
 
-// =================================================================
-// ログイン状態の確認 (セキュリティの要)
-// =================================================================
-// セッションからクライアントIDを取得します。未設定の場合は 0 (無効なID) を設定します。
-$client_id = $_SESSION['client_id'] ?? 0;
-
-// client_idが0、または空の場合は、ログインしていないと判断し処理を中断します。
-if (empty($client_id)) {
-    // ログインページへリダイレクトします。
-    header('Location: login.php');
-    exit();
-}
-
-// =================================================================
 // データ取得処理
-// =================================================================
-
-// ■ステップ1: cproduct_infoクラスをインスタンス化
 $product_db = new cproduct_info();
-
-// ■ステップ2: client_idでの絞り込みを無くしたメソッドを呼び出し、全商品情報を取得します。
-$display_products = $product_db->get_product_list_for_admin(false, 0, 100);
-
-// ■ステップ3: 使い終わったDBオブジェクトを解放
+// auth_check.phpで定義された$client_idと$debugを渡します
+$display_products = $product_db->get_product_list_for_admin($debug, $client_id, 0, 100);
 $product_db = null;
 
 ?>
@@ -59,7 +39,7 @@ $product_db = null;
                     <li><a href="client_analytics.php">情報確認</a></li>
                 </ul>
                 <div class="admin-header__actions">
-                    <a href="login.php" class="admin-header__logout">
+                    <a href="logout.php" class="admin-header__logout">
                         <i class="fas fa-sign-out-alt"></i> ログアウト
                     </a>
                 </div>
@@ -107,10 +87,22 @@ $product_db = null;
                             <?php foreach ($display_products as $product): ?>
                                 <tr>
                                     <td>
-                                        <?php if (!empty($product['main_image'])): ?>
-                                            <img src="<?= htmlspecialchars($product['main_image'], ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?>" class="admin-table__img">
+                                        <?php 
+                                        $images = [];
+                                        if (!empty($product['image_paths'])) {
+                                            $images = explode(';', $product['image_paths']);
+                                        }
+                                        $image_count = count($images);
+                                        ?>
+                                        <?php if ($image_count > 0): ?>
+                                            <!-- ★★★ 画像の枚数に応じたクラスを付与 ★★★ -->
+                                            <div class="admin-table__img-grid img-count-<?= $image_count ?>">
+                                                <?php foreach ($images as $image_path): ?>
+                                                    <img src="../<?= htmlspecialchars($image_path, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?>">
+                                                <?php endforeach; ?>
+                                            </div>
                                         <?php else: ?>
-                                            <div class="admin-table__img-placeholder" style="width: 80px; height: 80px; background: #eee; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 1.2rem; border-radius: 5px;">画像なし</div>
+                                            <div class="admin-table__img-placeholder">画像なし</div>
                                         <?php endif; ?>
                                     </td>
                                     <td><?= htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?></td>
@@ -121,7 +113,6 @@ $product_db = null;
                                         <?php if (!empty($product['tags_concat'])): ?>
                                             <div class="admin-table-tag-list">
                                                 <?php 
-                                                // カンマで区切られたタグ文字列を配列に変換
                                                 $tags = explode(',', $product['tags_concat']);
                                                 foreach ($tags as $tag): 
                                                 ?>
