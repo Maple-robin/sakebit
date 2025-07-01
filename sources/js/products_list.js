@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const pageTitleEn = document.querySelector('.page-title .en');
     const pageTitleJa = document.querySelector('.page-title .ja');
+    const paginationContainer = document.getElementById('pagination-container');
+
 
     // 商品データ
     let products = [
@@ -156,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // ウイスキー
         {
             id: 12,
-            name: 'シングルモルト 〇〇aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            name: 'シングルモルト 〇〇',
             image: '../img/berry.png',
             volume: '700ml',
             price: 4000,
@@ -165,7 +167,26 @@ document.addEventListener('DOMContentLoaded', function() {
             releaseDate: '2020-07-01',
             rankingScore: 140,
             isFavorite: false
-        }
+        },
+        // テストデータ追加 (13-30)
+        { id: 13, name: 'テスト商品13', image: 'https://placehold.co/300x200', volume: '350ml', price: 500, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-01', rankingScore: 79, isFavorite: false },
+        { id: 14, name: 'テスト商品14', image: 'https://placehold.co/300x200', volume: '350ml', price: 510, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-02', rankingScore: 78, isFavorite: false },
+        { id: 15, name: 'テスト商品15', image: 'https://placehold.co/300x200', volume: '720ml', price: 2800, tags: ['テスト'], category: '日本酒', releaseDate: '2024-01-03', rankingScore: 77, isFavorite: false },
+        { id: 16, name: 'テスト商品16', image: 'https://placehold.co/300x200', volume: '750ml', price: 2300, tags: ['テスト'], category: 'ワイン', releaseDate: '2024-01-04', rankingScore: 76, isFavorite: false },
+        { id: 17, name: 'テスト商品17', image: 'https://placehold.co/300x200', volume: '350ml', price: 520, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-05', rankingScore: 75, isFavorite: false },
+        { id: 18, name: 'テスト商品18', image: 'https://placehold.co/300x200', volume: '500ml', price: 460, tags: ['テスト'], category: 'ハイボール', releaseDate: '2024-01-06', rankingScore: 74, isFavorite: false },
+        { id: 19, name: 'テスト商品19', image: 'https://placehold.co/300x200', volume: '330ml', price: 630, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-07', rankingScore: 73, isFavorite: false },
+        { id: 20, name: 'テスト商品20', image: 'https://placehold.co/300x200', volume: '700ml', price: 4100, tags: ['テスト'], category: 'ウイスキー', releaseDate: '2024-01-08', rankingScore: 72, isFavorite: false },
+        { id: 21, name: 'テスト商品21', image: 'https://placehold.co/300x200', volume: '350ml', price: 530, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-09', rankingScore: 71, isFavorite: false },
+        { id: 22, name: 'テスト商品22', image: 'https://placehold.co/300x200', volume: '300ml', price: 710, tags: ['テスト'], category: 'カクテル', releaseDate: '2024-01-10', rankingScore: 70, isFavorite: false },
+        { id: 23, name: 'テスト商品23', image: 'https://placehold.co/300x200', volume: '350ml', price: 540, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-11', rankingScore: 69, isFavorite: false },
+        { id: 24, name: 'テスト商品24', image: 'https://placehold.co/300x200', volume: '720ml', price: 3100, tags: ['テスト'], category: '日本酒', releaseDate: '2024-01-12', rankingScore: 68, isFavorite: false },
+        { id: 25, name: 'テスト商品25', image: 'https://placehold.co/300x200', volume: '350ml', price: 550, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-13', rankingScore: 67, isFavorite: false },
+        { id: 26, name: 'テスト商品26', image: 'https://placehold.co/300x200', volume: '750ml', price: 2600, tags: ['テスト'], category: 'ワイン', releaseDate: '2024-01-14', rankingScore: 66, isFavorite: false },
+        { id: 27, name: 'テスト商品27', image: 'https://placehold.co/300x200', volume: '350ml', price: 560, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-15', rankingScore: 65, isFavorite: false },
+        { id: 28, name: 'テスト商品28', image: 'https://placehold.co/300x200', volume: '500ml', price: 470, tags: ['テスト'], category: 'ハイボール', releaseDate: '2024-01-16', rankingScore: 64, isFavorite: false },
+        { id: 29, name: 'テスト商品29', image: 'https://placehold.co/300x200', volume: '330ml', price: 640, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-17', rankingScore: 63, isFavorite: false },
+        { id: 30, name: 'テスト商品30', image: 'https://placehold.co/300x200', volume: '700ml', price: 4200, tags: ['テスト'], category: 'ウイスキー', releaseDate: '2024-01-18', rankingScore: 62, isFavorite: false }
     ];
 
     // URLパラメータを解析する関数
@@ -186,6 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     let currentSortOrder = 'ranking'; // デフォルトの並び順
     let currentDisplayMode = 'list'; // デフォルトをリスト表示に変更
+    let currentPage = 1; // 現在のページ番号
 
     // URLパラメータを読み込み、初期フィルター/ソートを設定
     const queryParams = getQueryParams();
@@ -203,7 +225,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 商品をレンダリングする関数
-    function renderProducts(productsToRender, displayMode) {
+    function renderProducts(productsToRender, displayMode, totalProducts) {
         productList.innerHTML = '';
         productList.className = ''; // クラスをリセット
         
@@ -215,30 +237,36 @@ document.addEventListener('DOMContentLoaded', function() {
             productList.classList.add(`product-${displayMode}`);
         }
 
-        productsToRender.forEach(product => {
-            const productCard = document.createElement('div');
-            productCard.classList.add('product-card');
+        if (productsToRender.length === 0) {
+            productList.innerHTML = '<p class="no-results">該当する商品が見つかりませんでした。</p>';
+        } else {
+            productsToRender.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.classList.add('product-card');
+                // 商品IDをdata属性として追加
+                productCard.dataset.productId = product.id;
 
-            // スマホのリスト表示時にのみ 'product-list-item' クラスを追加
-            if (displayMode === 'list' && window.innerWidth <= 767) { // 767px以下でリスト表示の場合
-                productCard.classList.add('product-list-item');
-            }
+                // スマホのリスト表示時にのみ 'product-list-item' クラスを追加
+                if (displayMode === 'list' && window.innerWidth <= 767) { // 767px以下でリスト表示の場合
+                    productCard.classList.add('product-list-item');
+                }
 
-            // ハートアイコンのクラスを動的に設定
-            const favoriteClass = product.isFavorite ? 'fas fa-heart is-favorite' : 'far fa-heart';
+                // ハートアイコンのクラスを動的に設定
+                const favoriteClass = product.isFavorite ? 'fas fa-heart is-favorite' : 'far fa-heart';
 
-            productCard.innerHTML = `
-                <img src="${product.image}" alt="${product.name}" class="product-card__image">
-                <i class="${favoriteClass} product-card__favorite" data-product-id="${product.id}"></i>
-                <div class="product-card__details">
-                    <h3 class="product-card__title">${product.name}</h3>
-                    <p class="product-card__volume">${product.volume}</p>
-                    <p class="product-card__price">¥ ${product.price.toLocaleString()} <span>~ 【税込】</span></p>
-                    <span class="product-card__tag">${product.tags[0] || ''}</span>
-                </div>
-            `;
-            productList.appendChild(productCard);
-        });
+                productCard.innerHTML = `
+                    <img src="${product.image}" alt="${product.name}" class="product-card__image">
+                    <i class="${favoriteClass} product-card__favorite" data-product-id="${product.id}"></i>
+                    <div class="product-card__details">
+                        <h3 class="product-card__title">${product.name}</h3>
+                        <p class="product-card__volume">${product.volume}</p>
+                        <p class="product-card__price">¥ ${product.price.toLocaleString()} <span>~ 【税込】</span></p>
+                        <span class="product-card__tag">${product.tags[0] || ''}</span>
+                    </div>
+                `;
+                productList.appendChild(productCard);
+            });
+        }
 
         // ハートアイコンのクリックイベントリスナーを設定
         document.querySelectorAll('.product-card__favorite').forEach(heartIcon => {
@@ -254,10 +282,73 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
+
+        renderPagination(totalProducts);
     }
 
+    // ページネーションをレンダリングする関数
+    function renderPagination(totalProducts) {
+        paginationContainer.innerHTML = '';
+        const itemsPerPage = getItemsPerPage();
+        const totalPages = Math.ceil(totalProducts / itemsPerPage);
+
+        if (totalPages <= 1) return;
+
+        // 「前へ」ボタン
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = '&laquo;';
+        prevButton.classList.add('page-btn');
+        prevButton.disabled = currentPage === 1;
+        prevButton.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                applyFiltersAndSort(false);
+            }
+        });
+        paginationContainer.appendChild(prevButton);
+
+        // ページ番号ボタン
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
+            pageButton.textContent = i;
+            pageButton.classList.add('page-btn');
+            if (i === currentPage) {
+                pageButton.classList.add('active');
+            }
+            pageButton.addEventListener('click', () => {
+                currentPage = i;
+                applyFiltersAndSort(false);
+            });
+            paginationContainer.appendChild(pageButton);
+        }
+
+        // 「次へ」ボタン
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = '&raquo;';
+        nextButton.classList.add('page-btn');
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                applyFiltersAndSort(false);
+            }
+        });
+        paginationContainer.appendChild(nextButton);
+    }
+
+    // 1ページあたりの表示件数を取得する関数
+    function getItemsPerPage() {
+        const isGrid = (window.innerWidth > 767) || (currentDisplayMode === 'grid');
+        return isGrid ? 20 : 10;
+    }
+
+
     // フィルターとソートを適用する関数
-    function applyFiltersAndSort() {
+    function applyFiltersAndSort(resetPage = true) {
+        if (resetPage) {
+            currentPage = 1;
+        }
+
         let filteredProducts = [...products];
 
         if (currentFilters.categories.length > 0 && !currentFilters.categories.includes('すべて')) {
@@ -286,10 +377,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updatePageTitle();
 
+        // ページネーション処理
+        const itemsPerPage = getItemsPerPage();
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
+
+
         // 表示モードを決定
         const modeToRender = (window.innerWidth > 767) ? 'grid' : currentDisplayMode; // PCではグリッド固定、スマホでは現在の選択
 
-        renderProducts(filteredProducts, modeToRender);
+        renderProducts(paginatedProducts, modeToRender, filteredProducts.length);
     }    // ページタイトルを更新する関数
     function updatePageTitle() {
         let enTitle = "PRODUCTS LIST";
@@ -539,19 +637,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 表示モードボタン（グリッド）
     displayGridButton.addEventListener('click', () => {
+        if (currentDisplayMode === 'grid') return;
+        const firstVisibleProductId = productList.querySelector('.product-card')?.dataset.productId;
+
         displayGridButton.classList.add('active');
         displayListButton.classList.remove('active');
         currentDisplayMode = 'grid'; // 表示モードを更新
-        applyFiltersAndSort();
+        
+        updateCurrentPage(firstVisibleProductId);
+        applyFiltersAndSort(false);
     });
 
     // 表示モードボタン（リスト）
     displayListButton.addEventListener('click', () => {
+        if (currentDisplayMode === 'list') return;
+        const firstVisibleProductId = productList.querySelector('.product-card')?.dataset.productId;
+
         displayListButton.classList.add('active');
         displayGridButton.classList.remove('active');
         currentDisplayMode = 'list'; // 表示モードを更新
-        applyFiltersAndSort();
+
+        updateCurrentPage(firstVisibleProductId);
+        applyFiltersAndSort(false);
     });
+
+    // 表示モード変更時に現在のページを更新する関数
+    function updateCurrentPage(productId) {
+        if (!productId) return;
+
+        let filteredProducts = [...products];
+        // 現在のフィルターとソートを再適用して、完全なリストを取得
+        if (currentFilters.categories.length > 0 && !currentFilters.categories.includes('すべて')) {
+            filteredProducts = filteredProducts.filter(product => currentFilters.categories.includes(product.category));
+        }
+        if (currentFilters.tags.length > 0) {
+            filteredProducts = filteredProducts.filter(product => product.tags.some(tag => currentFilters.tags.includes(tag)));
+        }
+        if (currentSortOrder === 'newest') {
+            filteredProducts.sort((a, b) => new Date(b.releaseDate) - new Date(a.releaseDate));
+        } else if (currentSortOrder === 'highest_price') {
+            filteredProducts.sort((a, b) => b.price - a.price);
+        } else if (currentSortOrder === 'lowest_price') {
+            filteredProducts.sort((a, b) => a.price - b.price);
+        } else if (currentSortOrder === 'ranking') {
+            filteredProducts.sort((a, b) => b.rankingScore - a.rankingScore);
+        }
+
+        const productIndex = filteredProducts.findIndex(p => p.id == productId);
+        if (productIndex === -1) return;
+
+        const itemsPerPage = getItemsPerPage();
+        currentPage = Math.floor(productIndex / itemsPerPage) + 1;
+    }
+
 
     // 初期表示モードを決定
     // PCでは常にグリッドがデフォルトになるため、ボタンのアクティブ状態は初期化時に調整
@@ -599,7 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ウィンドウのリサイズ時に適用されるロジックを追加し、表示モードを調整
     window.addEventListener('resize', () => {
-        applyFiltersAndSort();
+        applyFiltersAndSort(false);
         // リサイズ時にPC/スマホの切り替えでボタンのアクティブ状態も調整
         if (window.innerWidth > 767) {
             displayGridButton.classList.add('active');
@@ -615,6 +753,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayGridButton.classList.remove('active');
             }
         }
+        applyFiltersAndSort(false); // リサイズ時はページをリセットしない
     });
 
     applyFiltersAndSort(); // 初期表示

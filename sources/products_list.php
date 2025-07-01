@@ -180,6 +180,8 @@
                 <!-- product-grid には、JavaScriptで生成される商品カードが挿入されます -->
                 <div class="product-list" id="product-list">
                 </div>
+                <!-- ページネーションコンテナ -->
+                <div id="pagination-container" class="pagination-container"></div>
             </section>
         </div>
     </main>
