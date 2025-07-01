@@ -1,7 +1,7 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file product.php
+@brief 商品詳細ページ
 @copyright Copyright (c) 2024 Your Name.
 */
 
@@ -142,6 +142,7 @@ session_start();
                     <div class="product-info">
                         <h2 class="product-info__name">純米大吟醸 麗し乃雫</h2>
                         <p class="product-info__type">日本酒</p>
+                        <p class="product-info__company">三重酒造株式会社</p>
                         <p class="product-info__catchcopy">伊勢の豊かな水と厳選米が織りなす、<br>芳醇な香りと透明感のある味わい。</p>
                         <p class="product-info__price">¥ 5,800<span>(税込)</span></p>
                         <p class="product-info__tax-note">※送料別途</p>
