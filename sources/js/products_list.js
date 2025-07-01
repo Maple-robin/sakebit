@@ -303,62 +303,62 @@ document.addEventListener('DOMContentLoaded', function() {
             switch (selectedCategory) {                case '日本酒':
                     enTitle = "SAKE LIST";
                     jaTitle = "( 日本酒一覧 )";
-                    guideLink = "guide_sake.html";
+                    guideLink = "guide_sake.php";
                     description = "米と水、<ruby>麹<rt>こうじ</rt></ruby>で<ruby>造<rt>つく</rt></ruby>る日本の<ruby>伝統酒<rt>でんとうしゅ</rt></ruby>。<ruby>冷<rt>ひや</rt></ruby>でも<ruby>燗<rt>かん</rt></ruby>でも、<ruby>料理<rt>りょうり</rt></ruby>と<ruby>合<rt>あ</rt></ruby>わせて<ruby>楽<rt>たの</rt></ruby>しめます。";
                     break;
                 case 'リキュール':
                     enTitle = "LIQUEUR LIST";
                     jaTitle = "( リキュール一覧 )";
-                    guideLink = "guide_liquor.html";
+                    guideLink = "guide_liquor.php";
                     description = "<ruby>果実<rt>かじつ</rt></ruby>やハーブが<ruby>香<rt>かお</rt></ruby>るお<ruby>酒<rt>さけ</rt></ruby>。カクテルやデザートに、<ruby>楽<rt>たの</rt></ruby>しみ<ruby>方<rt>かた</rt></ruby>は<ruby>自由自在<rt>じゆうじざい</rt></ruby>です。";
                     break;
                 case 'ビール':
                     enTitle = "BEER LIST";
                     jaTitle = "( ビール一覧 )";
-                    guideLink = "guide_beer.html";
+                    guideLink = "guide_beer.php";
                     description = "<ruby>麦芽<rt>ばくが</rt></ruby>とホップの<ruby>豊<rt>ゆた</rt></ruby>かな<ruby>香<rt>かお</rt></ruby>り。<ruby>世界中<rt>せかいじゅう</rt></ruby>で<ruby>愛<rt>あい</rt></ruby>される、<ruby>多彩<rt>たさい</rt></ruby>な<ruby>味<rt>あじ</rt></ruby>わいのビールです。";
                     break;
                 case 'ワイン':
                     enTitle = "WINE LIST";
                     jaTitle = "( ワイン一覧 )";
-                    guideLink = "guide_wine.html";
+                    guideLink = "guide_wine.php";
                     description = "ぶどうから<ruby>造<rt>つく</rt></ruby>られる、<ruby>香<rt>かお</rt></ruby>り<ruby>高<rt>たか</rt></ruby>いお<ruby>酒<rt>さけ</rt></ruby>。<ruby>赤<rt>あか</rt></ruby>・<ruby>白<rt>しろ</rt></ruby>・ロゼ、<ruby>料理<rt>りょうり</rt></ruby>との<ruby>組<rt>く</rt></ruby>み<ruby>合<rt>あ</rt></ruby>わせも<ruby>無限大<rt>むげんだい</rt></ruby>です。";
                     break;
                 case '焼酎':
                     enTitle = "SHOCHU LIST";
                     jaTitle = "( 焼酎一覧 )";
-                    guideLink = "guide_shochu.html";
+                    guideLink = "guide_shochu.php";
                     description = "<ruby>芋<rt>いも</rt></ruby>や<ruby>麦<rt>むぎ</rt></ruby>など、<ruby>原料<rt>げんりょう</rt></ruby>の<ruby>個性<rt>こせい</rt></ruby>が<ruby>光<rt>ひか</rt></ruby>る<ruby>日本<rt>にほん</rt></ruby>の<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>。<ruby>水割<rt>みずわ</rt></ruby>り、お<ruby>湯割<rt>ゆわ</rt></ruby>り、ロックでどうぞ。";
                     break;
                 case 'ウィスキー':
                 case 'ウイスキー': // どちらも対応
                     enTitle = "WHISKY LIST";
                     jaTitle = "( ウィスキー一覧 )";
-                    guideLink = "guide_whisky.html";
+                    guideLink = "guide_whisky.php";
                     description = "<ruby>樽熟成<rt>たるじゅくせい</rt></ruby>が<ruby>生<rt>う</rt></ruby>む、<ruby>深<rt>ふか</rt></ruby>い<ruby>香<rt>かお</rt></ruby>りと<ruby>味<rt>あじ</rt></ruby>わい。ストレートやハイボールでじっくりと。";
                     break;
                 case 'スピリッツ':
                     enTitle = "SPIRITS LIST";
                     jaTitle = "( スピリッツ一覧 )";
-                    guideLink = "guide_spirits.html";
+                    guideLink = "guide_spirits.php";
                     description = "アルコール<ruby>度数<rt>どすう</rt></ruby>の<ruby>高<rt>たか</rt></ruby>い<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>の<ruby>総称<rt>そうしょう</rt></ruby>。カクテルのベースとして<ruby>豊<rt>ゆた</rt></ruby>かな<ruby>個性<rt>こせい</rt></ruby>が<ruby>光<rt>ひか</rt></ruby>ります。";
                     break;
                 case '梅酒':
                     enTitle = "UMESHU LIST";
                     jaTitle = "( 梅酒一覧 )";
-                    guideLink = "guide_umeshu.html";
+                    guideLink = "guide_umeshu.php";
                     description = "<ruby>青梅<rt>あおうめ</rt></ruby>をじっくり<ruby>漬<rt>つ</rt></ruby>け<ruby>込<rt>こ</rt></ruby>んだ、<ruby>甘酸<rt>あまず</rt></ruby>っぱいお<ruby>酒<rt>さけ</rt></ruby>。ロックやソーダ<ruby>割<rt>わ</rt></ruby>りで、<ruby>食前<rt>しょくぜん</rt></ruby><ruby>食後<rt>しょくご</rt></ruby>に。";
                     break;
                 case '缶チューハイ':
                     enTitle = "CHUHAI LIST";
                     jaTitle = "( 缶チューハイ一覧 )";
-                    guideLink = "guide_chuhai.html";
+                    guideLink = "guide_chuhai.php";
                     description = "シュワっと<ruby>弾<rt>はじ</rt></ruby>ける、<ruby>手軽<rt>てがる</rt></ruby>な美味しさ。<ruby>豊富<rt>ほうふ</rt></ruby>なフレーバーから、<ruby>今日<rt>きょう</rt></ruby>の<ruby>気分<rt>きぶん</rt></ruby>で<ruby>選<rt>えら</rt></ruby>べます。";
                     break;
                 case '中国酒':
                     enTitle = "CHINESE LIQUOR LIST";
                     jaTitle = "( 中国酒一覧 )";
-                    guideLink = "guide_chinese_liquor.html";
+                    guideLink = "guide_chinese_liquor.php";
                     description = "<ruby>高粱<rt>こうりゃん</rt></ruby>などから<ruby>造<rt>つく</rt></ruby>られる、<ruby>中国<rt>ちゅうごく</rt></ruby><ruby>伝統<rt>でんとう</rt></ruby>の<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>。<ruby>独特<rt>どくとく</rt></ruby>の<ruby>香<rt>かお</rt></ruby>りが、<ruby>中華<rt>ちゅうか</rt></ruby><ruby>料理<rt>りょうり</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>を<ruby>引<rt>ひ</rt></ruby>き<ruby>立<rt>た</rt></ruby>てます。";
                     break;
                 default:
@@ -408,11 +408,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     description = "";
                     break;
             }
-        }
-        // デフォルトのタイトル
+        }        // デフォルトのタイトル
         else {
             enTitle = "PRODUCTS LIST";
             jaTitle = "( 商品一覧 )";
+            guideLink = "guide.php"; // デフォルトでguide.phpに変更
             description = "";
         }
 
