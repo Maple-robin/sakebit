@@ -5,10 +5,10 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-require_once __DIR__ . '/config.php'; 
+require_once __DIR__ . '/config.php';
 
 class crecord {
-    protected $pdo; 
+    protected $pdo;
     protected $stmt;
 
     public function __construct() {
@@ -343,12 +343,14 @@ class cproduct_info extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function get_product_list_for_admin($debug, $client_id, $from = 0, $limit = 100)
+    /**
+     * 【修正】管理者向けの商品リストを取得するメソッド
+     * client_user_info, categories, tags テーブルをLEFT JOINして
+     * 企業名、カテゴリ名、タグ名をまとめて取得するように変更
+     * また、client_id が指定されない場合は全件取得するように修正
+     */
+    public function get_product_list_for_admin($debug, $client_id = null, $from = 0, $limit = 100)
     {
-        if (!cutil::is_number($client_id) || $client_id < 1) {
-            return [];
-        }
-
         $query = "
             SELECT
                 p.product_id,
@@ -360,6 +362,7 @@ class cproduct_info extends crecord {
                 p.product_Contents,
                 p.product_stock,
                 p.product_degree,
+                cu.company_name,
                 c.category_name,
                 GROUP_CONCAT(DISTINCT t.tag_name ORDER BY t.tag_id SEPARATOR ',') AS tags_concat,
                 (
@@ -371,13 +374,29 @@ class cproduct_info extends crecord {
             FROM
                 product_info p
             LEFT JOIN
+                client_user_info cu ON p.client_id = cu.client_id
+            LEFT JOIN
                 categories c ON p.product_category = c.category_id
             LEFT JOIN
                 product_tags_relation ptr ON p.product_id = ptr.product_id
             LEFT JOIN
                 tags t ON ptr.tag_id = t.tag_id
-            WHERE
-                p.client_id = :client_id
+        ";
+
+        $prep_arr = [];
+        $where_clauses = [];
+
+        // client_id が指定され、かつ有効な数値の場合のみWHERE句を追加
+        if ($client_id !== null && cutil::is_number($client_id) && $client_id > 0) {
+            $where_clauses[] = "p.client_id = :client_id";
+            $prep_arr[':client_id'] = (int)$client_id;
+        }
+
+        if (!empty($where_clauses)) {
+            $query .= " WHERE " . implode(" AND ", $where_clauses);
+        }
+
+        $query .= "
             GROUP BY
                 p.product_id
             ORDER BY
@@ -385,11 +404,8 @@ class cproduct_info extends crecord {
             LIMIT :from, :limit
         ";
 
-        $prep_arr = [
-            ':client_id' => (int)$client_id,
-            ':from'      => (int)$from,
-            ':limit'     => (int)$limit
-        ];
+        $prep_arr[':from']  = (int)$from;
+        $prep_arr[':limit'] = (int)$limit;
         
         $arr = [];
         $this->select_query($debug, $query, $prep_arr);
@@ -589,6 +605,7 @@ class ctag_categories_for_products extends crecord {
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
+
 
     public function __destruct() {
         parent::__destruct();

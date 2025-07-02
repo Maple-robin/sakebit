@@ -40,7 +40,8 @@
     width: 100%;
     border-collapse: collapse; /* ボーダーの結合 */
     font-size: var(--font-size-base);
-    min-width: 1400px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+    min-width: 2000px; /* ★調整: テーブルの最小幅をさらに広げる */
+    table-layout: fixed; /* 列幅を固定し、内容に左右されにくくする */
 }
 
 .data-table th,
@@ -49,7 +50,78 @@
     border-bottom: 1px solid var(--border-color-light);
     text-align: left;
     vertical-align: middle; /* セルの内容を中央に */
+    white-space: normal; /* テキストは通常通り折り返す */
+    word-break: break-word; /* 長い単語がはみ出さないように改行 */
 }
+
+/* 各列の幅を設定 (新しいテーブル構造に合わせて調整) */
+.data-table th:nth-child(1), /* 企業名 */
+.data-table td:nth-child(1) {
+    width: 8%; /* ★調整 */
+}
+.data-table th:nth-child(2), /* 商品名 */
+.data-table td:nth-child(2) {
+    width: 10%; /* ★調整 */
+}
+.data-table th:nth-child(3), /* 画像 */
+.data-table td:nth-child(3) {
+    width: 15%; /* ★調整: 複数画像のために幅を確保 */
+    min-width: 180px; /* 画像40px*4 + gap*3 + padding で調整 */
+    text-align: center;
+    padding: 10px 8px;
+    white-space: normal;
+    overflow: visible;
+}
+.data-table th:nth-child(4), /* 商品説明 */
+.data-table td:nth-child(4) {
+    width: 12%; /* ★調整 */
+    max-width: 250px;
+}
+.data-table th:nth-child(5), /* 価格 */
+.data-table td:nth-child(5) {
+    width: 6%; /* ★調整 */
+    min-width: 90px;
+    white-space: nowrap; /* 価格は改行させない */
+}
+.data-table th:nth-child(6), /* カテゴリ */
+.data-table td:nth-child(6) {
+    width: 8%; /* ★調整 */
+    max-width: 120px;
+}
+.data-table th:nth-child(7), /* タグ */
+.data-table td:nth-child(7) {
+    width: 12%; /* ★調整 */
+    max-width: 180px;
+}
+.data-table th:nth-child(8), /* 商品の特徴 */
+.data-table td:nth-child(8) {
+    width: 12%; /* ★調整 */
+    max-width: 250px;
+}
+.data-table th:nth-child(9), /* おすすめの飲み方 */
+.data-table td:nth-child(9) {
+    width: 12%; /* ★調整 */
+    max-width: 250px;
+}
+.data-table th:nth-child(10), /* 内容量 */
+.data-table td:nth-child(10) {
+    width: 6%; /* ★調整 */
+    min-width: 80px;
+    white-space: nowrap;
+}
+.data-table th:nth-child(11), /* アルコール度数 */
+.data-table td:nth-child(11) {
+    width: 5%; /* ★調整 */
+    min-width: 70px;
+    white-space: nowrap;
+}
+.data-table th:nth-child(12), /* 在庫数 */
+.data-table td:nth-child(12) {
+    width: 5%; /* ★調整 */
+    min-width: 70px;
+    white-space: nowrap;
+}
+
 
 .data-table th {
     background-color: var(--background-color-light);
@@ -66,63 +138,61 @@
     background-color: var(--background-color-hover); /* ホバー時の背景色 */
 }
 
-.product-thumb {
-    width: 60px;
-    height: 60px;
-    object-fit: cover; /* 画像の表示方法 */
-    border-radius: 4px;
-    border: 1px solid var(--border-color-light);
+/* image-thumbs 内の img スタイル (admin_otsumami.cssから移植) */
+.image-thumbs {
+    display: flex;
+    flex-wrap: wrap; /* 画像を折り返すようにする */
+    gap: 5px; /* 画像間のスペース */
+    justify-content: flex-start; /* 画像を左寄せにします */
+    align-items: center; /* 画像が縦方向にずれるのを防ぐ */
+}
+.image-thumbs img {
+    width: 40px; /* サムネイルの幅 */
+    height: 40px; /* サムネイルの高さ */
+    object-fit: cover; /* 画像の比率を保ちつつボックスに収める */
+    border-radius: 4px; /* 角を丸くする */
+    border: 1px solid #ddd;
+    flex-shrink: 0; /* overflowが発生した際に画像を縮小するのを防ぐ */
 }
 
-/* テーブル内のボタン */
-.btn-sm {
-    display: inline-block;
-    padding: 8px 15px;
-    font-size: var(--font-size-button-sm);
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    white-space: nowrap;
-    margin: 0 4px; /* ボタン間の余白 */
+/* タグ表示のスタイル (admin_otsumami.cssから移植) */
+.product-tags {
+    display: flex;
+    flex-wrap: wrap; /* タグは折り返す */
+    gap: 5px; /* タグ間のスペース */
 }
-
-.btn-edit {
-    background-color: var(--edit-button-color); /* 水色 */
-    color: var(--text-color-light);
-}
-
-.btn-delete {
-    background-color: var(--delete-button-color); /* 赤色 */
-    color: var(--text-color-light);
+.product-tags span {
+    background-color: #e0f2f7; /* タグの背景色 */
+    color: #007bb5; /* タグの文字色 */
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    white-space: nowrap; /* タグ自体は改行されないように */
 }
 
 
-/* 新しいお酒を登録するボタンエリア */
+/* 長い説明文のコンテナスタイル (admin_otsumami.cssから移植) */
+.scrollable-content {
+    display: block; /* blockレベル要素にしてmax-heightを有効にする */
+    height: 80px; /* ★変更: heightで固定 (これにより確実にスクロール) */
+    overflow-y: auto; /* 高さを超えたら縦スクロールを有効に */
+    padding-right: 15px; /* ★調整: スクロールバーのためのパディング */
+    box-sizing: border-box; /* パディングを幅に含める */
+    white-space: normal; /* テキストを折り返す */
+    word-wrap: break-word; /* 長い単語がはみ出さないように改行 */
+    line-height: 1.5; /* ★追加: 行の高さを調整して見やすくする */
+}
+
+
+/* テーブル内のボタン (削除済みのためコメントアウト) */
+/* .btn-sm { ... } */
+/* .btn-edit { ... } */
+/* .btn-delete { ... } */
+
+
+/* 新しいお酒を登録するボタンエリア (非表示のまま) */
 .add-liquor-button-area {
-    text-align: center;
-    margin-top: 60px; /* 一覧との間隔 */
-    margin-bottom: 40px; /* フッターとの間隔 */
-}
-
-/* 新しいお酒登録ボタンのスタイル (影・エフェクトなし) */
-.btn-add-new {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center; /* 中央寄せ */
-    padding: 20px 50px; /* パディングを大きく */
-    font-size: var(--font-size-button-lg); /* フォントサイズを大きく */
-    font-weight: bold;
-    background-color: var(--primary-color); /* メインカラー */
-    color: var(--text-color-light);
-    border: 3px solid var(--primary-dark-color); /* 太いボーダーでボタンらしさを強調 */
-    border-radius: 8px; /* 角丸は残しつつ自然に */
-    cursor: pointer;
-}
-
-.btn-icon {
-    font-size: var(--font-size-icon-lg); /* アイコンのサイズを大きく */
-    margin-right: 15px; /* アイコンとテキストの間隔を広げる */
-    line-height: 1;
+    display: none;
 }
 
 
@@ -145,20 +215,47 @@
     .data-table th,
     .data-table td {
         padding: 12px;
+        font-size: 1.5rem;
     }
     .product-thumb {
         width: 50px;
         height: 50px;
     }
-    .btn-add-new {
-        padding: 18px 40px;
-        border-radius: 6px;
-    }
-    .btn-icon {
-        margin-right: 12px;
-    }
     .data-table {
-        min-width: 1000px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+        min-width: 1800px; /* ★調整: テーブルの最小幅を再調整 */
+    }
+    /* 各列の幅を調整 (1024px) */
+    .data-table th:nth-child(1), /* 企業名 */
+    .data-table td:nth-child(1) { width: 8%; }
+    .data-table th:nth-child(2), /* 商品名 */
+    .data-table td:nth-child(2) { width: 10%; }
+    .data-table th:nth-child(3), /* 画像 */
+    .data-table td:nth-child(3) { width: 15%; min-width: 160px;} /* 画像サイズに合わせる */
+    .data-table th:nth-child(4), /* 商品説明 */
+    .data-table td:nth-child(4) { width: 12%; }
+    .data-table th:nth-child(5), /* 価格 */
+    .data-table td:nth-child(5) { width: 6%; min-width: 80px;}
+    .data-table th:nth-child(6), /* カテゴリ */
+    .data-table td:nth-child(6) { width: 8%; }
+    .data-table th:nth-child(7), /* タグ */
+    .data-table td:nth-child(7) { width: 12%; }
+    .data-table th:nth-child(8), /* 商品の特徴 */
+    .data-table td:nth-child(8) { width: 12%; }
+    .data-table th:nth-child(9), /* おすすめの飲み方 */
+    .data-table td:nth-child(9) { width: 12%; }
+    .data-table th:nth-child(10), /* 内容量 */
+    .data-table td:nth-child(10) { width: 6%; min-width: 70px;}
+    .data-table th:nth-child(11), /* アルコール度数 */
+    .data-table td:nth-child(11) { width: 5%; min-width: 60px;}
+    .data-table th:nth-child(12), /* 在庫数 */
+    .data-table td:nth-child(12) { width: 5%; min-width: 60px;}
+    
+    .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
+        width: 35px;
+        height: 35px;
+    }
+    .scrollable-content {
+        height: 70px; /* レスポンシブでの高さ調整 */
     }
 }
 
@@ -176,30 +273,49 @@
         padding: 10px;
     }
     .data-table {
-        min-width: 900px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+        min-width: 1600px; /* ★調整: テーブルの最小幅を再調整 */
     }
     .data-table th,
     .data-table td {
         padding: 8px;
+        font-size: 1.4rem;
     }
     .product-thumb {
         width: 40px;
         height: 40px;
     }
-    .btn-sm {
-        padding: 5px 10px;
+    /* 各列の幅を調整 (768px) */
+    .data-table th:nth-child(1), /* 企業名 */
+    .data-table td:nth-child(1) { width: 8%; }
+    .data-table th:nth-child(2), /* 商品名 */
+    .data-table td:nth-child(2) { width: 10%; }
+    .data-table th:nth-child(3), /* 画像 */
+    .data-table td:nth-child(3) { width: 15%; min-width: 140px;}
+    .data-table th:nth-child(4), /* 商品説明 */
+    .data-table td:nth-child(4) { width: 12%; }
+    .data-table th:nth-child(5), /* 価格 */
+    .data-table td:nth-child(5) { width: 6%; min-width: 70px;}
+    .data-table th:nth-child(6), /* カテゴリ */
+    .data-table td:nth-child(6) { width: 8%; }
+    .data-table th:nth-child(7), /* タグ */
+    .data-table td:nth-child(7) { width: 12%; }
+    .data-table th:nth-child(8), /* 商品の特徴 */
+    .data-table td:nth-child(8) { width: 12%; }
+    .data-table th:nth-child(9), /* おすすめの飲み方 */
+    .data-table td:nth-child(9) { width: 12%; }
+    .data-table th:nth-child(10), /* 内容量 */
+    .data-table td:nth-child(10) { width: 6%; min-width: 60px;}
+    .data-table th:nth-child(11), /* アルコール度数 */
+    .data-table td:nth-child(11) { width: 5%; min-width: 50px;}
+    .data-table th:nth-child(12), /* 在庫数 */
+    .data-table td:nth-child(12) { width: 5%; min-width: 50px;}
+
+    .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
+        width: 30px;
+        height: 30px;
     }
-    .add-liquor-button-area {
-        margin-top: 40px;
-        margin-bottom: 30px;
-    }
-    .btn-add-new {
-        padding: 15px 30px;
-        border-width: 2px; /* スマホではボーダーを少し細く */
-        border-radius: 5px;
-    }
-    .btn-icon {
-        margin-right: 10px;
+    .scrollable-content {
+        height: 60px; /* レスポンシブでの高さ調整 */
     }
 }
 
@@ -209,20 +325,50 @@
         --font-size-icon-lg: 2.2rem;
     }
     .data-table {
-        min-width: 750px; /* ★変更: テーブルの最小幅を増やしました。必要に応じて調整してください。 */
+        min-width: 1200px; /* ★調整: テーブルの最小幅を再調整 */
     }
-    .btn-add-new {
-        width: 90%;
-        max-width: 300px;
-        padding: 12px 20px;
+    .data-table th,
+    .data-table td {
+        font-size: 1.1rem; /* 全体的にフォントサイズをさらに小さく */
+        padding: 6px 4px; /* パディングも全体的に小さく */
     }
-    .btn-icon {
-        margin-right: 8px;
+    /* 各列の幅をさらに調整 (480px) */
+    .data-table th:nth-child(1), /* 企業名 */
+    .data-table td:nth-child(1) { width: 8%; }
+    .data-table th:nth-child(2), /* 商品名 */
+    .data-table td:nth-child(2) { width: 10%; }
+    .data-table th:nth-child(3), /* 画像 */
+    .data-table td:nth-child(3) { width: 15%; min-width: 120px;}
+    .data-table th:nth-child(4), /* 商品説明 */
+    .data-table td:nth-child(4) { width: 12%; }
+    .data-table th:nth-child(5), /* 価格 */
+    .data-table td:nth-child(5) { width: 6%; min-width: 60px;}
+    .data-table th:nth-child(6), /* カテゴリ */
+    .data-table td:nth-child(6) { width: 8%; }
+    .data-table th:nth-child(7), /* タグ */
+    .data-table td:nth-child(7) { width: 12%; }
+    .data-table th:nth-child(8), /* 商品の特徴 */
+    .data-table td:nth-child(8) { width: 12%; }
+    .data-table th:nth-child(9), /* おすすめの飲み方 */
+    .data-table td:nth-child(9) { width: 12%; }
+    .data-table th:nth-child(10), /* 内容量 */
+    .data-table td:nth-child(10) { width: 6%; min-width: 50px;}
+    .data-table th:nth-child(11), /* アルコール度数 */
+    .data-table td:nth-child(11) { width: 5%; min-width: 40px;}
+    .data-table th:nth-child(12), /* 在庫数 */
+    .data-table td:nth-child(12) { width: 5%; min-width: 40px;}
+
+    .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
+        width: 25px;
+        height: 25px;
+    }
+    .scrollable-content {
+        height: 50px; /* レスポンシブでの高さ調整 */
     }
 }
 
-/* 操作列の幅を広げる */
+/* 操作列は表示しない */
 .data-table th:last-child,
 .data-table td:last-child {
-    width: 200px; /* 操作列の幅を広げる */
+    display: none;
 }
