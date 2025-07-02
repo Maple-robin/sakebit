@@ -14,7 +14,7 @@
 //     exit();
 // }
 
-require_once __DIR__ . '/../common/contents_db.php'; 
+require_once __DIR__ . '/../common/contents_db.php'; // contents_db.php を読み込み
 
 // DEBUGモードの定義（config.phpで定義されていることを前提とするが、念のため）
 if (!defined('DEBUG')) {
@@ -22,6 +22,9 @@ if (!defined('DEBUG')) {
 }
 
 $product_info_obj = new cproduct_info();
+$order_items_obj = new corder_items(); // 売れた数を取得するためのインスタンス
+$product_views_obj = new cproduct_views(); // 訪問数を取得するためのインスタンス
+
 // ページネーションを考慮せず全て取得しますが、データ量が多い場合はページネーション実装を検討してください
 $products = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999); // 全ての商品を取得
 if ($products === false) {
@@ -86,14 +89,19 @@ if ($products === false) {
                                 <th>商品の特徴</th>
                                 <th>おすすめの飲み方</th>
                                 <th>内容量</th>
-                                <th>アルコール度数</th>
+                                <th>度数</th>
                                 <th>在庫数</th>
+                                <th>売れた数</th><!-- 新しい列 -->
+                                <th>訪問数</th><!-- 新しい列 -->
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($products)): ?>
                                 <?php foreach ($products as $product): ?>
                                     <?php
+                                        // 商品IDを取得
+                                        $product_id = $product['product_id'];
+
                                         // 画像パスを配列に変換し、各画像を表示
                                         $image_paths_str = $product['image_paths'] ?? '';
                                         $image_paths = !empty($image_paths_str) ? explode(';', $image_paths_str) : [];
@@ -101,6 +109,12 @@ if ($products === false) {
                                         // タグを配列に変換（カンマ区切りで取得されている前提）
                                         $tags_str = $product['tags_concat'] ?? '';
                                         $tags = !empty($tags_str) ? explode(',', $tags_str) : [];
+
+                                        // 売れた数を取得
+                                        $sold_count = $order_items_obj->get_total_sold_count_by_product_id(DEBUG, $product_id);
+
+                                        // 訪問数を取得
+                                        $view_count = $product_views_obj->get_product_view_count(DEBUG, $product_id);
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($product['company_name'] ?? 'N/A'); ?></td>
@@ -149,11 +163,13 @@ if ($products === false) {
                                         <td><?php echo htmlspecialchars($product['product_Contents'] ?? 'N/A'); ?></td>
                                         <td><?php echo htmlspecialchars($product['product_degree'] ?? 'N/A') . '%'; ?></td>
                                         <td><?php echo htmlspecialchars($product['product_stock'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($sold_count); ?></td><!-- 売れた数 -->
+                                        <td><?php echo htmlspecialchars($view_count); ?></td><!-- 訪問数 -->
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="12">商品情報がありません。</td>
+                                    <td colspan="14">商品情報がありません。</td><!-- 列数が増えたのでcolspanも変更 -->
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -169,6 +185,7 @@ if ($products === false) {
             <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
         </div>
     </footer>
+    <!-- Font Awesomeの読み込み（CDN） -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
 </body>

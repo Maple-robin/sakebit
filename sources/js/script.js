@@ -10,24 +10,61 @@ document.addEventListener('DOMContentLoaded', function () {
             hamburgerMenu.classList.toggle('is-active');
             spMenu.classList.toggle('is-active');
             document.body.classList.toggle('no-scroll', spMenu.classList.contains('is-active'));
+
+            // ★追加: SPメニューが開く際に、全てのサブリストとアイコンを閉じる
+            if (spMenu.classList.contains('is-active')) {
+                spMenu.querySelectorAll('.sp-menu__sub-list.is-open').forEach(subList => {
+                    subList.classList.remove('is-open');
+                    const icon = subList.previousElementSibling.querySelector('.category-icon');
+                    if (icon) icon.classList.remove('is-open');
+                });
+                spMenu.querySelectorAll('.sp-menu__sub-sub-list.is-open').forEach(subSubList => {
+                    subSubList.classList.remove('is-open');
+                    const icon = subSubList.previousElementSibling.querySelector('.category-icon');
+                    if (icon) icon.classList.remove('is-open');
+                });
+            }
         });
     }
 
-    // 複数カテゴリトグル対応
+    // 複数カテゴリトグル対応 (既存のカテゴリトグル)
     const spCategoryToggles = document.querySelectorAll('.sp-menu__category-toggle');
     spCategoryToggles.forEach(toggle => {
         toggle.addEventListener('click', function () {
-            this.classList.toggle('is-open');
+            this.classList.toggle('is-open'); // これがアイコンの回転に影響
             const subList = this.querySelector('.sp-menu__sub-list');
             if (subList) {
                 subList.classList.toggle('is-open');
                 // サブリストを閉じるときはスクロール位置をリセット
                 if (!subList.classList.contains('is-open')) {
                     subList.scrollTop = 0;
+                    // サブサブリストも閉じるロジック（もしあれば）
+                    subList.querySelectorAll('.sp-menu__sub-sub-list.is-open').forEach(subSub => {
+                        subSub.classList.remove('is-open');
+                        const subSubIcon = subSub.previousElementSibling.querySelector('.category-icon');
+                        if (subSubIcon) subSubIcon.classList.remove('is-open'); // アイコンも閉じる
+                    });
                 }
             }
         });
     });
+
+    // 商品タグのカテゴリトグル対応 (products_list.phpのSPメニューで動的に生成される要素用)
+    const spTagCategoryToggles = document.querySelectorAll('.sp-menu__tag-category-toggle');
+    spTagCategoryToggles.forEach(toggle => {
+        toggle.addEventListener('click', function (event) {
+            event.stopPropagation(); // 親の.sp-menu__category-toggleのイベントが発火しないように停止
+            this.classList.toggle('is-open'); // アイコンの回転用
+            const subSubList = this.nextElementSibling; // 次の兄弟要素のULが対象
+            if (subSubList && subSubList.classList.contains('sp-menu__sub-sub-list')) {
+                subSubList.classList.toggle('is-open');
+                if (!subSubList.classList.contains('is-open')) {
+                    subSubList.scrollTop = 0;
+                }
+            }
+        });
+    });
+
 
     // Swiperが読み込まれている場合のみ初期化
     if (typeof Swiper !== 'undefined') {
@@ -121,14 +158,4 @@ document.addEventListener('DOMContentLoaded', function () {
         displayMessage('ログアウトしました！', 'success');
         history.replaceState(null, '', window.location.pathname); // URLパラメータを削除
     }
-
-    // 全ページ共通：ログインボタンでlogin.phpに遷移 (PHPで動的にhrefが切り替わるため、ここは固定で良い)
-    // ハンバーガーメニューのPHPロジックにより、ログイン/ログアウトどちらかのリンクが設定されるため、
-    // ここで'js-login-btn'にclickイベントを追加する必要はありません。
-    // 元のHTMLに onclick="location.href='login.php'" が直接記述されているため、このJavaScriptは不要です。
-    // document.querySelectorAll('.js-login-btn').forEach(btn => {
-    //     btn.addEventListener('click', function () {
-    //         window.location.href = 'login.php';
-    //     });
-    // });
 });

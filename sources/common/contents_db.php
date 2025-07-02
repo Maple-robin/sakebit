@@ -347,6 +347,7 @@ class cproduct_info extends crecord {
      * 【修正】管理者向けの商品リストを取得するメソッド
      * client_user_info, categories, tags テーブルをLEFT JOINして
      * 企業名、カテゴリ名、タグ名をまとめて取得するように変更
+     * created_at も追加で取得
      * また、client_id が指定されない場合は全件取得するように修正
      */
     public function get_product_list_for_admin($debug, $client_id = null, $from = 0, $limit = 100)
@@ -362,6 +363,7 @@ class cproduct_info extends crecord {
                 p.product_Contents,
                 p.product_stock,
                 p.product_degree,
+                p.created_at, -- ★追加: created_at を取得
                 cu.company_name,
                 c.category_name,
                 GROUP_CONCAT(DISTINCT t.tag_name ORDER BY t.tag_id SEPARATOR ',') AS tags_concat,
@@ -525,6 +527,53 @@ class ctags_for_products extends crecord {
         return false;
     }
 
+    /**
+     * 【新規追加】すべてのタグをタグカテゴリごとにグループ化して取得するメソッド
+     * @param bool $debug デバッグモード
+     * @return array タグカテゴリごとにグループ化されたタグの配列
+     */
+    public function get_all_tags_grouped_by_category($debug) {
+        $query = "
+            SELECT
+                tc.tag_category_id,
+                tc.tag_category_name,
+                t.tag_id,
+                t.tag_name
+            FROM
+                tag_categories tc
+            LEFT JOIN
+                tags t ON tc.tag_category_id = t.tag_category_id
+            ORDER BY
+                tc.tag_category_id ASC, t.tag_id ASC
+        ";
+        $stmt = $this->execute_query($debug, $query);
+        $grouped_tags = [];
+        if ($stmt) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $category_id = $row['tag_category_id'];
+                $category_name = $row['tag_category_name'];
+                
+                if (!isset($grouped_tags[$category_id])) {
+                    $grouped_tags[$category_id] = [
+                        'tag_category_id' => $category_id,
+                        'tag_category_name' => $category_name,
+                        'tags' => []
+                    ];
+                }
+                // tag_idがnullの場合（カテゴリにタグがない場合）はスキップ
+                if ($row['tag_id'] !== null) {
+                    $grouped_tags[$category_id]['tags'][] = [
+                        'tag_id' => $row['tag_id'],
+                        'tag_name' => $row['tag_name']
+                    ];
+                }
+            }
+        }
+        // 連想配列のキーを捨てて、0からの連番の配列にする
+        return array_values($grouped_tags);
+    }
+
+
     public function get_all_count($debug) {
         $query = "SELECT COUNT(*) AS total_count FROM tags WHERE 1";
         $prep_arr = array();
@@ -576,7 +625,7 @@ class ctag_categories_for_products extends crecord {
     }
 
     public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) AS total_count FROM tag_categories WHERE 1";
+        $query = "SELECT COUNT(*) AS total_count FROM faq_categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
         if ($row = $this->fetch_assoc()) {
@@ -587,7 +636,7 @@ class ctag_categories_for_products extends crecord {
 
     public function get_all($debug, $from, $limit) {
         $arr = array();
-        $query = "SELECT * FROM tag_categories WHERE 1 ORDER BY tag_category_id ASC LIMIT :from, :limit";
+        $query = "SELECT * FROM faq_categories WHERE 1 ORDER BY faq_category_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
         $this->select_query($debug, $query, $prep_arr);
         while ($row = $this->fetch_assoc()) {
@@ -600,7 +649,7 @@ class ctag_categories_for_products extends crecord {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
-        $query = "SELECT * FROM tag_categories WHERE tag_category_id = :tag_category_id";
+        $query = "SELECT * FROM faq_categories WHERE tag_category_id = :tag_category_id";
         $prep_arr = array(':tag_category_id' => (int)$id);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
@@ -1616,6 +1665,23 @@ class corder_items extends crecord {
         return $this->fetch_assoc();
     }
 
+    /**
+     * 特定商品の売れた合計数を取得するメソッド
+     * @param bool $debug デバッグモード
+     * @param int $product_id 商品ID
+     * @return int 売れた合計数
+     */
+    public function get_total_sold_count_by_product_id($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            return 0;
+        }
+        $query = "SELECT COALESCE(SUM(quantity), 0) AS total_sold_count FROM order_items WHERE product_id = :product_id";
+        $prep_arr = array(':product_id' => (int)$product_id);
+        $this->select_query($debug, $query, $prep_arr);
+        $row = $this->fetch_assoc();
+        return $row ? (int)$row['total_sold_count'] : 0;
+    }
+
     public function __destruct() {
         parent::__destruct();
     }
@@ -1644,6 +1710,56 @@ class cadmin_user_info extends crecord {
         $prep_arr = array(':admin_user_name' => (string)$admin_user_name);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
+    }
+
+    public function __destruct() {
+        parent::__destruct();
+    }
+}
+
+/**
+ * 【新規追加】商品詳細ページの訪問数を管理するクラス
+ */
+class cproduct_views extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * 商品詳細ページへの訪問を記録する
+     * @param bool $debug デバッグモード
+     * @param int $product_id 訪問された商品ID
+     * @return int|false 挿入された行のID、または失敗した場合はfalse
+     */
+    public function insert_product_view($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            error_log("Invalid product_id for insert_product_view: " . $product_id);
+            return false;
+        }
+        $query = "INSERT INTO product_views (product_id) VALUES (:product_id)";
+        $prep_arr = array(':product_id' => (int)$product_id);
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id();
+        }
+        return false;
+    }
+
+    /**
+     * 特定商品の総訪問数を取得する
+     * @param bool $debug デバッグモード
+     * @param int $product_id 商品ID
+     * @return int 総訪問数
+     */
+    public function get_product_view_count($debug, $product_id) {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            return 0;
+        }
+        $query = "SELECT COUNT(*) AS total_view_count FROM product_views WHERE product_id = :product_id";
+        $prep_arr = array(':product_id' => (int)$product_id);
+        $this->select_query($debug, $query, $prep_arr);
+        $row = $this->fetch_assoc();
+        return $row ? (int)$row['total_view_count'] : 0;
     }
 
     public function __destruct() {

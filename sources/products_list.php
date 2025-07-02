@@ -1,36 +1,98 @@
+<?php
+/*!
+@file products_list.php
+@brief 商品一覧ページ
+@copyright Copyright (c) 2024 Your Name.
+*/
+
+// commonディレクトリにあるcontents_db.phpを読み込む
+require_once __DIR__ . '/common/contents_db.php';
+
+// DEBUGモードの定義（config.phpで定義されていることを前提とするが、念のため）
+if (!defined('DEBUG')) {
+    define('DEBUG', true);
+}
+
+// データベースクラスのインスタンスを生成
+$product_info_obj = new cproduct_info();
+$tags_obj = new ctags_for_products(); // タグ情報を取得するためのインスタンス
+
+// 全ての商品を取得 (ここではclient_idはnullで全件取得)
+$products_from_db = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999); 
+if ($products_from_db === false) {
+    $products_from_db = []; // 取得失敗時は空の配列を設定
+    error_log("Failed to fetch all product data.");
+}
+
+// JavaScriptに渡すための商品データを整形
+$products_for_js = [];
+if (!empty($products_from_db)) {
+    foreach ($products_from_db as $product) {
+        // created_at が存在しない場合のフォールバックを追加
+        $created_at = $product['created_at'] ?? date('Y-m-d H:i:s'); 
+
+        $image_paths_str = $product['image_paths'] ?? '';
+        $image_paths = !empty($image_paths_str) ? explode(';', $image_paths_str) : [];
+        $main_image = !empty($image_paths[0]) ? htmlspecialchars($image_paths[0]) : 'https://placehold.co/300x200?text=NoImage';
+        
+        $tags_array = !empty($product['tags_concat']) ? array_map('trim', explode(',', $product['tags_concat'])) : [];
+
+        $products_for_js[] = [
+            'id' => (int)$product['product_id'],
+            'name' => htmlspecialchars($product['product_name']),
+            'image' => $main_image, // 画像のパス
+            'volume' => htmlspecialchars($product['product_Contents']),
+            'price' => (float)$product['product_price'],
+            'tags' => $tags_array, // タグの配列
+            'category' => htmlspecialchars($product['category_name']),
+            'releaseDate' => date('Y-m-d', strtotime($created_at)), // 登録日時をリリース日として扱う
+            'rankingScore' => 100, // 仮のランキングスコア。必要であればDBから取得
+            'isFavorite' => false // お気に入り状態はユーザーセッションによるため、ここでは初期値false
+        ];
+    }
+}
+
+// タグカテゴリごとにグループ化されたタグを取得 (フィルターパネル用)
+$grouped_tags = $tags_obj->get_all_tags_grouped_by_category(DEBUG);
+
+// ここでセッションを開始（各ファイルで独立して開始する）
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+// ログイン状態に応じた表示の切り替え（products_list.php内で直接使用）
+$is_logged_in_local = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+$login_link_local = $is_logged_in_local ? 'logout.php' : 'login.php';
+$login_text_local = $is_logged_in_local ? 'ログアウト' : 'ログイン';
+$login_icon_local = $is_logged_in_local ? 'fas fa-sign-out-alt' : 'fas fa-user-circle';
+
+?>
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ビールランキング | OUR BRAND</title>
+    <title>商品一覧 | OUR BRAND</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- CSSファイルを修正後のproducts_list.cssに更新 -->
     <link rel="stylesheet" href="css/products_list.css">
-    <link rel="stylesheet" href="css/top.css">
-</head>
+    <link rel="stylesheet" href="css/top.css"> </head>
 
 <body>
-    <!-- 共通ヘッダー：index.phpからコピー -->
     <header class="header">
         <div class="header__inner">
-            <!-- ハンバーガーメニューを左端に配置 -->
             <button class="hamburger-menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            <!-- ロゴを中央に配置 -->
             <h1 class="header__logo">
                 <a href="index.php">OUR BRAND</a>
             </h1>
-            <!-- ナビゲーションとアイコンを右端に配置 -->
             <nav class="header__nav">
                 <ul class="nav__list pc-only">
                     <li><a href="products_list.php">商品一覧</a></li>
@@ -51,7 +113,7 @@
     <nav class="sp-menu">
         <div class="sp-menu__header">
             <div class="sp-menu__login">
-                <i class="fas fa-user-circle"></i> ログイン
+                <i class="<?php echo $login_icon_local; ?>"></i> <a href="<?php echo $login_link_local; ?>"><?php echo $login_text_local; ?></a>
             </div>
         </div>
         <div class="sp-menu__search">
@@ -77,11 +139,26 @@
             <li class="sp-menu__category-toggle">
                 商品タグ <i class="fas fa-chevron-down category-icon"></i>
                 <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?tag=初心者向け">初心者向け</a></li>
-                    <li><a href="products_list.php?tag=甘口">甘口</a></li>
-                    <li><a href="products_list.php?tag=辛口">辛口</a></li>
-                    <li><a href="products_list.php?tag=度数低め">度数低め</a></li>
-                    <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
+                    <?php if (!empty($grouped_tags)): // products_list.phpで取得した$grouped_tagsを使用 ?>
+                        <?php foreach ($grouped_tags as $category): ?>
+                            <li>
+                                <span class="sp-menu__tag-category-toggle">
+                                    <?php echo htmlspecialchars($category['tag_category_name']); ?> <i class="fas fa-chevron-down category-icon"></i>
+                                </span>
+                                <ul class="sp-menu__sub-sub-list">
+                                    <?php if (!empty($category['tags'])): ?>
+                                        <?php foreach ($category['tags'] as $tag): ?>
+                                            <li><a href="products_list.php?tag=<?php echo urlencode($tag['tag_name']); ?>"><?php echo htmlspecialchars($tag['tag_name']); ?></a></li>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <li><span>タグなし</span></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li><span>タグ情報がありません。</span></li>
+                    <?php endif; ?>
                 </ul>
             </li>
             <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
@@ -94,19 +171,16 @@
         </ul>
     </nav>
 
-    <!-- ここから下はランキング等のメインコンテンツ -->
     <main>        <div class="ranking-container">
             <h1 class="page-title">
-                <span class="en">BEER LIST</span>
-                <span class="ja">( ビール一覧 )</span>
+                <span class="en">PRODUCTS LIST</span>
+                <span class="ja">( 商品一覧 )</span>
             </h1>
             
-            <!-- カテゴリ説明文エリア -->
             <div class="category-description" id="category-description" style="display: none;">
                 <p class="description-text" id="description-text"></p>
             </div>
 
-            <!-- お酒ガイドへの遷移ボタン -->
             <div class="guide-button-container">
                 <a href="#" id="guide-button" class="guide-button">お酒ガイドを見る</a>
             </div>
@@ -147,14 +221,29 @@
                             <label><input type="checkbox" name="category" value="ワイン"> ワイン</label>
                             <label><input type="checkbox" name="category" value="ビール"> ビール</label>
                         </div>
+                        
                         <div class="filter-group">
                             <h3>商品タグ</h3>
-                            <label><input type="checkbox" name="tag" value="初心者向け"> 初心者向け</label>
-                            <label><input type="checkbox" name="tag" value="甘口"> 甘口</label>
-                            <label><input type="checkbox" name="tag" value="辛口"> 辛口</label>
-                            <label><input type="checkbox" name="tag" value="度数低め"> 度数低め</label>
-                            <label><input type="checkbox" name="tag" value="度数高め"> 度数高め</label>
+                            <?php if (isset($grouped_tags) && !empty($grouped_tags)): // products_list.phpで取得した$grouped_tagsを使用 ?>
+                                <?php foreach ($grouped_tags as $category): ?>
+                                    <details class="tag-category-group">
+                                        <summary><?php echo htmlspecialchars($category['tag_category_name']); ?></summary>
+                                        <div class="tag-list">
+                                            <?php if (!empty($category['tags'])): ?>
+                                                <?php foreach ($category['tags'] as $tag): ?>
+                                                    <label><input type="checkbox" name="tag" value="<?php echo htmlspecialchars($tag['tag_name']); ?>"> <?php echo htmlspecialchars($tag['tag_name']); ?></label>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <p class="no-tags">このカテゴリにタグはありません。</p>
+                                            <?php endif; ?>
+                                        </div>
+                                    </details>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>タグ情報がありません。</p>
+                            <?php endif; ?>
                         </div>
+
                         <button class="apply-filter-button">絞り込む</button>
                     </div>
                 </div>
@@ -177,10 +266,8 @@
             </div>
 
             <section class="ranking-list-section">
-                <!-- product-grid には、JavaScriptで生成される商品カードが挿入されます -->
                 <div class="product-list" id="product-list">
                 </div>
-                <!-- ページネーションコンテナ -->
                 <div id="pagination-container" class="pagination-container"></div>
             </section>
         </div>
@@ -211,15 +298,18 @@
                 <li><a href="privacy.php">プライバシーポリシー</a></li>
                 <li><a href="terms.php">利用規約</a></li>
             </ul>            <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.php" style="text-decoration: none; font-family: 'Zen Old Mincho', serif; font-size: 2.4rem; font-weight: 700; color: #333;">
-                    OUR BRAND
+                <a href="index.php">
+                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
                 </a>
             </div>
             <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScriptファイルを修正後のproducts_list.jsに更新 -->
+    <script>
+        // PHPから商品データをJSON形式で受け取る
+        const initialProductsData = <?php echo json_encode($products_for_js, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); ?>;
+    </script>
     <script src="js/products_list.js"></script>
     <script src="js/sticky-controls.js"></script>
     <script src="js/script.js"></script>

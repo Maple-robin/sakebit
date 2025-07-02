@@ -40,7 +40,7 @@
     width: 100%;
     border-collapse: collapse; /* ボーダーの結合 */
     font-size: var(--font-size-base);
-    min-width: 2000px; /* ★調整: テーブルの最小幅をさらに広げる */
+    min-width: 2200px; /* ★調整: テーブルの最小幅をさらに広げる (売れた数と訪問数追加のため) */
     table-layout: fixed; /* 列幅を固定し、内容に左右されにくくする */
 }
 
@@ -74,7 +74,7 @@
 }
 .data-table th:nth-child(4), /* 商品説明 */
 .data-table td:nth-child(4) {
-    width: 12%; /* ★調整 */
+    width: 10%; /* ★調整 */
     max-width: 250px;
 }
 .data-table th:nth-child(5), /* 価格 */
@@ -90,17 +90,17 @@
 }
 .data-table th:nth-child(7), /* タグ */
 .data-table td:nth-child(7) {
-    width: 12%; /* ★調整 */
+    width: 10%; /* ★調整 */
     max-width: 180px;
 }
 .data-table th:nth-child(8), /* 商品の特徴 */
 .data-table td:nth-child(8) {
-    width: 12%; /* ★調整 */
+    width: 10%; /* ★調整 */
     max-width: 250px;
 }
 .data-table th:nth-child(9), /* おすすめの飲み方 */
 .data-table td:nth-child(9) {
-    width: 12%; /* ★調整 */
+    width: 10%; /* ★調整 */
     max-width: 250px;
 }
 .data-table th:nth-child(10), /* 内容量 */
@@ -117,6 +117,18 @@
 }
 .data-table th:nth-child(12), /* 在庫数 */
 .data-table td:nth-child(12) {
+    width: 5%; /* ★調整 */
+    min-width: 70px;
+    white-space: nowrap;
+}
+.data-table th:nth-child(13), /* 売れた数 */
+.data-table td:nth-child(13) {
+    width: 5%; /* ★調整 */
+    min-width: 70px;
+    white-space: nowrap;
+}
+.data-table th:nth-child(14), /* 訪問数 */
+.data-table td:nth-child(14) {
     width: 5%; /* ★調整 */
     min-width: 70px;
     white-space: nowrap;
@@ -232,23 +244,27 @@
     .data-table th:nth-child(3), /* 画像 */
     .data-table td:nth-child(3) { width: 15%; min-width: 160px;} /* 画像サイズに合わせる */
     .data-table th:nth-child(4), /* 商品説明 */
-    .data-table td:nth-child(4) { width: 12%; }
+    .data-table td:nth-child(4) { width: 10%; }
     .data-table th:nth-child(5), /* 価格 */
     .data-table td:nth-child(5) { width: 6%; min-width: 80px;}
     .data-table th:nth-child(6), /* カテゴリ */
     .data-table td:nth-child(6) { width: 8%; }
     .data-table th:nth-child(7), /* タグ */
-    .data-table td:nth-child(7) { width: 12%; }
+    .data-table td:nth-child(7) { width: 10%; }
     .data-table th:nth-child(8), /* 商品の特徴 */
-    .data-table td:nth-child(8) { width: 12%; }
+    .data-table td:nth-child(8) { width: 10%; }
     .data-table th:nth-child(9), /* おすすめの飲み方 */
-    .data-table td:nth-child(9) { width: 12%; }
+    .data-table td:nth-child(9) { width: 10%; }
     .data-table th:nth-child(10), /* 内容量 */
     .data-table td:nth-child(10) { width: 6%; min-width: 70px;}
     .data-table th:nth-child(11), /* アルコール度数 */
     .data-table td:nth-child(11) { width: 5%; min-width: 60px;}
     .data-table th:nth-child(12), /* 在庫数 */
     .data-table td:nth-child(12) { width: 5%; min-width: 60px;}
+    .data-table th:nth-child(13), /* 売れた数 */
+    .data-table td:nth-child(13) { width: 5%; min-width: 60px;}
+    .data-table th:nth-child(14), /* 訪問数 */
+    .data-table td:nth-child(14) { width: 5%; min-width: 60px;}
     
     .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
         width: 35px;
@@ -292,23 +308,27 @@
     .data-table th:nth-child(3), /* 画像 */
     .data-table td:nth-child(3) { width: 15%; min-width: 140px;}
     .data-table th:nth-child(4), /* 商品説明 */
-    .data-table td:nth-child(4) { width: 12%; }
+    .data-table td:nth-child(4) { width: 10%; }
     .data-table th:nth-child(5), /* 価格 */
     .data-table td:nth-child(5) { width: 6%; min-width: 70px;}
     .data-table th:nth-child(6), /* カテゴリ */
     .data-table td:nth-child(6) { width: 8%; }
     .data-table th:nth-child(7), /* タグ */
-    .data-table td:nth-child(7) { width: 12%; }
+    .data-table td:nth-child(7) { width: 10%; }
     .data-table th:nth-child(8), /* 商品の特徴 */
-    .data-table td:nth-child(8) { width: 12%; }
+    .data-table td:nth-child(8) { width: 10%; }
     .data-table th:nth-child(9), /* おすすめの飲み方 */
-    .data-table td:nth-child(9) { width: 12%; }
+    .data-table td:nth-child(9) { width: 10%; }
     .data-table th:nth-child(10), /* 内容量 */
     .data-table td:nth-child(10) { width: 6%; min-width: 60px;}
     .data-table th:nth-child(11), /* アルコール度数 */
     .data-table td:nth-child(11) { width: 5%; min-width: 50px;}
     .data-table th:nth-child(12), /* 在庫数 */
     .data-table td:nth-child(12) { width: 5%; min-width: 50px;}
+    .data-table th:nth-child(13), /* 売れた数 */
+    .data-table td:nth-child(13) { width: 5%; min-width: 50px;}
+    .data-table th:nth-child(14), /* 訪問数 */
+    .data-table td:nth-child(14) { width: 5%; min-width: 50px;}
 
     .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
         width: 30px;
@@ -340,23 +360,27 @@
     .data-table th:nth-child(3), /* 画像 */
     .data-table td:nth-child(3) { width: 15%; min-width: 120px;}
     .data-table th:nth-child(4), /* 商品説明 */
-    .data-table td:nth-child(4) { width: 12%; }
+    .data-table td:nth-child(4) { width: 10%; }
     .data-table th:nth-child(5), /* 価格 */
     .data-table td:nth-child(5) { width: 6%; min-width: 60px;}
     .data-table th:nth-child(6), /* カテゴリ */
     .data-table td:nth-child(6) { width: 8%; }
     .data-table th:nth-child(7), /* タグ */
-    .data-table td:nth-child(7) { width: 12%; }
+    .data-table td:nth-child(7) { width: 10%; }
     .data-table th:nth-child(8), /* 商品の特徴 */
-    .data-table td:nth-child(8) { width: 12%; }
+    .data-table td:nth-child(8) { width: 10%; }
     .data-table th:nth-child(9), /* おすすめの飲み方 */
-    .data-table td:nth-child(9) { width: 12%; }
+    .data-table td:nth-child(9) { width: 10%; }
     .data-table th:nth-child(10), /* 内容量 */
     .data-table td:nth-child(10) { width: 6%; min-width: 50px;}
     .data-table th:nth-child(11), /* アルコール度数 */
     .data-table td:nth-child(11) { width: 5%; min-width: 40px;}
     .data-table th:nth-child(12), /* 在庫数 */
     .data-table td:nth-child(12) { width: 5%; min-width: 40px;}
+    .data-table th:nth-child(13), /* 売れた数 */
+    .data-table td:nth-child(13) { width: 5%; min-width: 40px;}
+    .data-table th:nth-child(14), /* 訪問数 */
+    .data-table td:nth-child(14) { width: 5%; min-width: 40px;}
 
     .image-thumbs img { /* レスポンシブでも画像サイズを調整 */
         width: 25px;
