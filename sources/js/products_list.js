@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // --- ランキングページ固有のロジック ---
+    // PHPから渡された商品データを取得
+    let products = initialProductsData; 
+
     const filterButton = document.getElementById('filter-button');
     const sortButton = document.getElementById('sort-button');
     const filterOverlay = document.getElementById('filter-overlay');
@@ -16,178 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const pageTitleJa = document.querySelector('.page-title .ja');
     const paginationContainer = document.getElementById('pagination-container');
 
-
-    // 商品データ
-    let products = [
-        {
-            id: 1,
-            name: '【新発売】ベリーベリー カシス',
-            image: 'https://placehold.co/300x200/F08080/000000?text=AleBeer',
-            volume: '200ml/720ml',
-            price: 1750,
-            tags: ['新発売', '甘口', '初心者向け'],
-            category: 'カクテル',
-            releaseDate: '2024-06-01',
-            rankingScore: 150,
-            isFavorite: true
-        },
-        {
-            id: 2,
-            name: 'オリジナルエールビール',
-            image: 'https://placehold.co/300x200/F08080/000000?text=AleBeer',
-            volume: '350ml',
-            price: 550,
-            tags: ['定番', '辛口', '度数高め'],
-            category: 'ビール',
-            releaseDate: '2022-01-01',
-            rankingScore: 120,
-            isFavorite: false 
-        },
-        {
-            id: 3,
-            name: 'フルーツIPA',
-            image: 'https://placehold.co/300x200/87CEFA/000000?text=FruitIPA',
-            volume: '350ml',
-            price: 600,
-            tags: ['限定', '甘口', '初心者向け'],
-            category: 'ビール',
-            releaseDate: '2024-04-10',
-            rankingScore: 110,
-            isFavorite: true 
-        },
-        {
-            id: 4,
-            name: 'ダークラガー',
-            image: 'https://placehold.co/300x200/8B4513/FFFFFF?text=DarkLager',
-            volume: '350ml',
-            price: 580,
-            tags: ['濃厚', '辛口'],
-            category: 'ビール',
-            releaseDate: '2023-11-20',
-            rankingScore: 105,
-            isFavorite: false
-        },
-        {
-            id: 5,
-            name: 'ホワイトビール',
-            image: 'https://placehold.co/300x200/F5DEB3/000000?text=WhiteBeer',
-            volume: '330ml',
-            price: 520,
-            tags: ['爽やか', '初心者向け'],
-            category: 'ビール',
-            releaseDate: '2023-05-15',
-            rankingScore: 98,
-            isFavorite: false
-        },
-        {
-            id: 6,
-            name: 'ペールエール',
-            image: 'https://placehold.co/300x200/FFDAB9/000000?text=PaleAle',
-            volume: '350ml',
-            price: 570,
-            tags: ['ホップ', '苦味'],
-            category: 'ビール',
-            releaseDate: '2022-09-01',
-            rankingScore: 92,
-            isFavorite: true
-        },
-        {
-            id: 7,
-            name: 'スタウト',
-            image: 'https://placehold.co/300x200/36454F/FFFFFF?text=Stout',
-            volume: '330ml',
-            price: 620,
-            tags: ['ロースト', '濃厚'],
-            category: 'ビール',
-            releaseDate: '2023-02-28',
-            rankingScore: 85,
-            isFavorite: false
-        },
-        // ハイボール
-        {
-            id: 8,
-            name: 'オリジナルハイボール',
-            image: 'https://placehold.co/300x200/A0522D/FFFFFF?text=Highball',
-            volume: '500ml',
-            price: 450,
-            tags: ['定番', '爽快'],
-            category: 'ハイボール',
-            releaseDate: '2022-03-01',
-            rankingScore: 80,
-            isFavorite: false
-        },
-        // カクテル
-        {
-            id: 9,
-            name: 'モヒート',
-            image: 'https://placehold.co/300x200/6A5ACD/FFFFFF?text=Cocktail',
-            volume: '300ml',
-            price: 700,
-            tags: ['限定', '甘口', '初心者向け'],
-            category: 'カクテル',
-            releaseDate: '2024-05-01',
-            rankingScore: 95,
-            isFavorite: true
-        },
-        // ワイン
-        {
-            id: 10,
-            name: '赤ワイン ボルドー',
-            image: 'https://placehold.co/300x200/8B0000/FFFFFF?text=Wine',
-            volume: '750ml',
-            price: 2500,
-            tags: ['濃厚', '辛口'],
-            category: 'ワイン',
-            releaseDate: '2021-10-01',
-            rankingScore: 130,
-            isFavorite: false
-        },
-        // 日本酒
-        {
-            id: 11,
-            name: '純米大吟醸 〇〇',
-            image: 'https://placehold.co/300x200/F0F8FF/000000?text=Sake',
-            volume: '720ml',
-            price: 3000,
-            tags: ['華やか', 'ギフト'],
-            category: '日本酒',
-            releaseDate: '2023-09-01',
-            rankingScore: 115,
-            isFavorite: false
-        },
-        // ウイスキー
-        {
-            id: 12,
-            name: 'シングルモルト 〇〇',
-            image: '../img/berry.png',
-            volume: '700ml',
-            price: 4000,
-            tags: ['本格派', '熟成'],
-            category: 'ウイスキー',
-            releaseDate: '2020-07-01',
-            rankingScore: 140,
-            isFavorite: false
-        },
-        // テストデータ追加 (13-30)
-        { id: 13, name: 'テスト商品13', image: 'https://placehold.co/300x200', volume: '350ml', price: 500, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-01', rankingScore: 79, isFavorite: false },
-        { id: 14, name: 'テスト商品14', image: 'https://placehold.co/300x200', volume: '350ml', price: 510, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-02', rankingScore: 78, isFavorite: false },
-        { id: 15, name: 'テスト商品15', image: 'https://placehold.co/300x200', volume: '720ml', price: 2800, tags: ['テスト'], category: '日本酒', releaseDate: '2024-01-03', rankingScore: 77, isFavorite: false },
-        { id: 16, name: 'テスト商品16', image: 'https://placehold.co/300x200', volume: '750ml', price: 2300, tags: ['テスト'], category: 'ワイン', releaseDate: '2024-01-04', rankingScore: 76, isFavorite: false },
-        { id: 17, name: 'テスト商品17', image: 'https://placehold.co/300x200', volume: '350ml', price: 520, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-05', rankingScore: 75, isFavorite: false },
-        { id: 18, name: 'テスト商品18', image: 'https://placehold.co/300x200', volume: '500ml', price: 460, tags: ['テスト'], category: 'ハイボール', releaseDate: '2024-01-06', rankingScore: 74, isFavorite: false },
-        { id: 19, name: 'テスト商品19', image: 'https://placehold.co/300x200', volume: '330ml', price: 630, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-07', rankingScore: 73, isFavorite: false },
-        { id: 20, name: 'テスト商品20', image: 'https://placehold.co/300x200', volume: '700ml', price: 4100, tags: ['テスト'], category: 'ウイスキー', releaseDate: '2024-01-08', rankingScore: 72, isFavorite: false },
-        { id: 21, name: 'テスト商品21', image: 'https://placehold.co/300x200', volume: '350ml', price: 530, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-09', rankingScore: 71, isFavorite: false },
-        { id: 22, name: 'テスト商品22', image: 'https://placehold.co/300x200', volume: '300ml', price: 710, tags: ['テスト'], category: 'カクテル', releaseDate: '2024-01-10', rankingScore: 70, isFavorite: false },
-        { id: 23, name: 'テスト商品23', image: 'https://placehold.co/300x200', volume: '350ml', price: 540, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-11', rankingScore: 69, isFavorite: false },
-        { id: 24, name: 'テスト商品24', image: 'https://placehold.co/300x200', volume: '720ml', price: 3100, tags: ['テスト'], category: '日本酒', releaseDate: '2024-01-12', rankingScore: 68, isFavorite: false },
-        { id: 25, name: 'テスト商品25', image: 'https://placehold.co/300x200', volume: '350ml', price: 550, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-13', rankingScore: 67, isFavorite: false },
-        { id: 26, name: 'テスト商品26', image: 'https://placehold.co/300x200', volume: '750ml', price: 2600, tags: ['テスト'], category: 'ワイン', releaseDate: '2024-01-14', rankingScore: 66, isFavorite: false },
-        { id: 27, name: 'テスト商品27', image: 'https://placehold.co/300x200', volume: '350ml', price: 560, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-15', rankingScore: 65, isFavorite: false },
-        { id: 28, name: 'テスト商品28', image: 'https://placehold.co/300x200', volume: '500ml', price: 470, tags: ['テスト'], category: 'ハイボール', releaseDate: '2024-01-16', rankingScore: 64, isFavorite: false },
-        { id: 29, name: 'テスト商品29', image: 'https://placehold.co/300x200', volume: '330ml', price: 640, tags: ['テスト'], category: 'ビール', releaseDate: '2024-01-17', rankingScore: 63, isFavorite: false },
-        { id: 30, name: 'テスト商品30', image: 'https://placehold.co/300x200', volume: '700ml', price: 4200, tags: ['テスト'], category: 'ウイスキー', releaseDate: '2024-01-18', rankingScore: 62, isFavorite: false }
-    ];
 
     // URLパラメータを解析する関数
     function getQueryParams() {
@@ -214,10 +44,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (queryParams.category) {
         currentFilters.categories = [queryParams.category];
-        currentFilters.tags = []; // カテゴリが指定されたらタグはリセット
+        currentFilters.tags = []; 
     } else if (queryParams.tag) {
         currentFilters.tags = [queryParams.tag];
-        currentFilters.categories = ['すべて']; // タグが指定されたらカテゴリは「すべて」
+        currentFilters.categories = ['すべて']; 
     }
 
     if (queryParams.sort) {
@@ -227,10 +57,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 商品をレンダリングする関数
     function renderProducts(productsToRender, displayMode, totalProducts) {
         productList.innerHTML = '';
-        productList.className = ''; // クラスをリセット
+        productList.className = ''; 
         
-        // PCでは常にグリッド、スマホでは選択されたモードに
-        if (window.innerWidth > 767) { // PCのブレークポイントを768pxから767pxに変更
+        if (window.innerWidth > 767) { 
             productList.classList.add('product-grid');
             productList.classList.remove('product-list');
         } else {
@@ -243,16 +72,15 @@ document.addEventListener('DOMContentLoaded', function() {
             productsToRender.forEach(product => {
                 const productCard = document.createElement('div');
                 productCard.classList.add('product-card');
-                // 商品IDをdata属性として追加
                 productCard.dataset.productId = product.id;
 
-                // スマホのリスト表示時にのみ 'product-list-item' クラスを追加
-                if (displayMode === 'list' && window.innerWidth <= 767) { // 767px以下でリスト表示の場合
+                if (displayMode === 'list' && window.innerWidth <= 767) { 
                     productCard.classList.add('product-list-item');
                 }
 
-                // ハートアイコンのクラスを動的に設定
                 const favoriteClass = product.isFavorite ? 'fas fa-heart is-favorite' : 'far fa-heart';
+
+                const tagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
 
                 productCard.innerHTML = `
                     <img src="${product.image}" alt="${product.name}" class="product-card__image">
@@ -261,14 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         <h3 class="product-card__title">${product.name}</h3>
                         <p class="product-card__volume">${product.volume}</p>
                         <p class="product-card__price">¥ ${product.price.toLocaleString()} <span>~ 【税込】</span></p>
-                        <span class="product-card__tag">${product.tags[0] || ''}</span>
+                        <div class="product-card__tags-container">
+                            ${tagsHtml}
+                        </div>
                     </div>
                 `;
                 productList.appendChild(productCard);
             });
         }
 
-        // ハートアイコンのクリックイベントリスナーを設定
         document.querySelectorAll('.product-card__favorite').forEach(heartIcon => {
             heartIcon.addEventListener('click', function() {
                 this.classList.toggle('far');
@@ -286,7 +115,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderPagination(totalProducts);
     }
 
-    // ページネーションをレンダリングする関数
     function renderPagination(totalProducts) {
         paginationContainer.innerHTML = '';
         const itemsPerPage = getItemsPerPage();
@@ -294,7 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (totalPages <= 1) return;
 
-        // 「前へ」ボタン
         const prevButton = document.createElement('button');
         prevButton.innerHTML = '&laquo;';
         prevButton.classList.add('page-btn');
@@ -307,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         paginationContainer.appendChild(prevButton);
 
-        // ページ番号ボタン
         for (let i = 1; i <= totalPages; i++) {
             const pageButton = document.createElement('button');
             pageButton.textContent = i;
@@ -322,7 +148,6 @@ document.addEventListener('DOMContentLoaded', function() {
             paginationContainer.appendChild(pageButton);
         }
 
-        // 「次へ」ボタン
         const nextButton = document.createElement('button');
         nextButton.innerHTML = '&raquo;';
         nextButton.classList.add('page-btn');
@@ -336,14 +161,11 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationContainer.appendChild(nextButton);
     }
 
-    // 1ページあたりの表示件数を取得する関数
     function getItemsPerPage() {
         const isGrid = (window.innerWidth > 767) || (currentDisplayMode === 'grid');
         return isGrid ? 20 : 10;
     }
 
-
-    // フィルターとソートを適用する関数
     function applyFiltersAndSort(resetPage = true) {
         if (resetPage) {
             currentPage = 1;
@@ -377,25 +199,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         updatePageTitle();
 
-        // ページネーション処理
         const itemsPerPage = getItemsPerPage();
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
-
-        // 表示モードを決定
-        const modeToRender = (window.innerWidth > 767) ? 'grid' : currentDisplayMode; // PCではグリッド固定、スマホでは現在の選択
+        const modeToRender = (window.innerWidth > 767) ? 'grid' : currentDisplayMode; 
 
         renderProducts(paginatedProducts, modeToRender, filteredProducts.length);
-    }    // ページタイトルを更新する関数
+    }    
+    
     function updatePageTitle() {
         let enTitle = "PRODUCTS LIST";
         let jaTitle = "( 商品一覧 )";
-        let guideLink = "#"; // デフォルトのリンク先
-        let description = ""; // カテゴリ説明文
+        let guideLink = "#"; 
+        let description = ""; 
 
-        // カテゴリが選択されている場合（カテゴリを優先）
         if (currentFilters.categories.length === 1 && currentFilters.categories[0] !== 'すべて') {
             const selectedCategory = currentFilters.categories[0];
             switch (selectedCategory) {                case '日本酒':
@@ -429,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     description = "<ruby>芋<rt>いも</rt></ruby>や<ruby>麦<rt>むぎ</rt></ruby>など、<ruby>原料<rt>げんりょう</rt></ruby>の<ruby>個性<rt>こせい</rt></ruby>が<ruby>光<rt>ひか</rt></ruby>る<ruby>日本<rt>にほん</rt></ruby>の<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>。<ruby>水割<rt>みずわ</rt></ruby>り、お<ruby>湯割<rt>ゆわ</rt></ruby>り、ロックでどうぞ。";
                     break;
                 case 'ウィスキー':
-                case 'ウイスキー': // どちらも対応
+                case 'ウイスキー': 
                     enTitle = "WHISKY LIST";
                     jaTitle = "( ウィスキー一覧 )";
                     guideLink = "guide_whisky.php";
@@ -467,7 +286,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
             }
         }
-        // タグが選択されている場合（カテゴリが選択されていない場合のみ適用）
         else if (currentFilters.tags.length === 1) {
             const selectedTag = currentFilters.tags[0];
             switch (selectedTag) {                case '初心者向け':
@@ -493,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case '度数高め':
                     enTitle = "HIGH ALCOHOL";
                     jaTitle = "( 度数高め一覧 )";
-                    description = "アルコール<ruby>度数<rt>どすう</rt></ruby>20%<ruby>以上<rt>いじょう</rt></ruby>の<ruby>本格的<rt>ほんかくてき</rt></ruby>なお<ruby>酒<rt>さけ</rt></ruby>をお<ruby>探<rt>さが</rt></ruby>しの<ruby>方<rt>かた</rt></ruby>に。しっかりとした<ruby>飲<rt>の</rt></ruby>みごたえと<ruby>深<rt>ふか</rt></ruby>い<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しめます。ストレートやロックで、お<ruby>酒<rt>さけ</rt></ruby><ruby>本来<rt>ほんらい</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>をじっくりと<ruby>味<rt>あじ</rt></ruby>わってください。";
+                    description = "アルコール<ruby>度数<rt>どすう</rt></ruby>20%<ruby>以上<rt>いじょう</rt></ruby>の<ruby>本格的<rt>ほんかくてき</rt></ruby>なお<ruby>酒<rt>さけ</rt></ruby>をお<ruby>探<rt>さが</rt></ruby>しの<ruby>方<rt>かた</rt></ruby>に。しっかりとした<ruby>飲<rt>の</rt></ruby>みごたえと<ruby>深<rt>ふか</rt></ruby>い<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しめます。ストレートやロックで、お<ruby>酒<rt>さけ</rt></ruby><ruby>本来<rt>ほんらい</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しみたい<ruby>方<rt>かた</rt></ruby>におすすめです。";
                     break;
                 case '新発売':
                     enTitle = "NEW ARRIVALS";
@@ -501,36 +319,35 @@ document.addEventListener('DOMContentLoaded', function() {
                     description = "<ruby>話題<rt>わだい</rt></ruby>の<ruby>新商品<rt>しんしょうひん</rt></ruby>をいち<ruby>早<rt>はや</rt></ruby>くお<ruby>試<rt>ため</rt></ruby>しください。<ruby>限定品<rt>げんていひん</rt></ruby>や<ruby>季節<rt>きせつ</rt></ruby><ruby>商品<rt>しょうひん</rt></ruby>も<ruby>含<rt>ふく</rt></ruby>まれており、<ruby>新<rt>あたら</rt></ruby>しい<ruby>味<rt>あじ</rt></ruby>わいとの<ruby>出会<rt>であ</rt></ruby>いをお<ruby>楽<rt>たの</rt></ruby>しみいただけます。トレンドを<ruby>抑<rt>おさ</rt></ruby>えたい<ruby>方<rt>かた</rt></ruby>におすすめです。";
                     break;
                 default:
-                    enTitle = `${selectedTag.toUpperCase()} LIST`;
-                    jaTitle = `( ${selectedTag}一覧 )`;
+                    enTitle = `TAG: ${selectedTag.toUpperCase()}`;
+                    jaTitle = `( ${selectedTag}タグ一覧 )`;
                     description = "";
                     break;
             }
-        }        // デフォルトのタイトル
+            guideLink = "#"; 
+        }        
         else {
             enTitle = "PRODUCTS LIST";
             jaTitle = "( 商品一覧 )";
-            guideLink = "guide.php"; // デフォルトでguide.phpに変更
+            guideLink = "guide.php"; 
             description = "";
         }
 
         pageTitleEn.textContent = enTitle;
-        pageTitleJa.textContent = jaTitle;        // 説明文を更新
+        pageTitleJa.textContent = jaTitle;        
         const categoryDescription = document.getElementById('category-description');
         const descriptionText = document.getElementById('description-text');
         if (description) {
-            descriptionText.innerHTML = description.replace(/。/g, '。<br>'); // 「。」を「。<br>」に置換
+            descriptionText.innerHTML = description.replace(/。/g, '。<br>'); 
             categoryDescription.style.display = 'block';
         } else {
             categoryDescription.style.display = 'none';
         }
 
-        // お酒ガイドボタンのリンクを更新
         const guideButton = document.getElementById('guide-button');
         if (guideButton) {
             guideButton.href = guideLink;
 
-            // リンクが反応しない場合は非表示にする
             if (guideLink === "#") {
                 guideButton.style.display = "none";
             } else {
@@ -539,9 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // フィルターボタンクリック時の処理
     filterButton.addEventListener('click', () => {
-        // フィルターパネルを開くときに、現在のフィルター状態をチェックボックスに反映
         document.querySelectorAll('#filter-overlay input[name="category"]').forEach(checkbox => {
             checkbox.checked = currentFilters.categories.includes(checkbox.value);
         });
@@ -564,6 +379,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             otherCheckbox.checked = false;
                         }
                     });
+                    document.querySelectorAll('#filter-overlay input[name="tag"]').forEach(tagCheckbox => { // 「すべて」選択時はタグも解除
+                        tagCheckbox.checked = false;
+                    });
                 }
             } else {
                 if (this.checked && allCheckbox && allCheckbox.checked) {
@@ -579,27 +397,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // ソートボタンクリック時の処理
+    // タグチェックボックスの変更イベントリスナー
+    document.querySelectorAll('#filter-overlay input[name="tag"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const allCategoryCheckbox = document.querySelector('#filter-overlay input[name="category"][value="すべて"]');
+            if (this.checked && allCategoryCheckbox) { // タグが選択されたら「すべて」カテゴリを解除
+                allCategoryCheckbox.checked = false;
+            }
+            const checkedTags = Array.from(document.querySelectorAll('#filter-overlay input[name="tag"]:checked'));
+            const checkedCategories = Array.from(document.querySelectorAll('#filter-overlay input[name="category"]:checked'))
+                                                     .map(cb => cb.value)
+                                                     .filter(value => value !== 'すべて');
+            
+            if (checkedTags.length === 0 && checkedCategories.length === 0 && allCategoryCheckbox) {
+                allCategoryCheckbox.checked = true;
+            }
+        });
+    });
+
     sortButton.addEventListener('click', () => {
-        // ソートパネルを開くときに、現在のソート状態をラジオボタンに反映
-        document.querySelector(`#sort-overlay input[name="sort_order"][value="${currentSortOrder}"]`).checked = true;
+        document.querySelector(`#sort-overlay input[name="sort_order"]:checked`).value;
         sortOverlay.classList.add('is-active');
         document.body.classList.add('no-scroll');
     });
 
-    // フィルターパネルの閉じるボタン
     filterCloseButton.addEventListener('click', () => {
         filterOverlay.classList.remove('is-active');
         document.body.classList.remove('no-scroll');
     });
 
-    // ソートパネルの閉じるボタン
     sortCloseButton.addEventListener('click', () => {
         sortOverlay.classList.remove('is-active');
         document.body.classList.remove('no-scroll');
     });
 
-    // フィルター適用ボタン
     applyFilterButton.addEventListener('click', () => {
         currentFilters.categories = [];
         currentFilters.tags = [];
@@ -607,19 +438,16 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#filter-overlay input[name="category"]:checked').forEach(checkbox => {
             currentFilters.categories.push(checkbox.value);
         });
-        document.querySelectorAll('#filter-overlay input[name="tag"]:checked').forEach(checkbox => {
+        document.querySelectorAll('#filter-overlay input[name="tag"]').forEach(checkbox => {
             currentFilters.tags.push(checkbox.value);
         });
 
-        if (currentFilters.categories.length === 0 || (currentFilters.categories.length > 0 && currentFilters.categories.includes('すべて'))) {
+        if (currentFilters.categories.length === 0 && currentFilters.tags.length === 0) {
             currentFilters.categories = ['すべて'];
-            document.querySelectorAll('#filter-overlay input[name="category"]').forEach(checkbox => {
-                if (checkbox.value !== 'すべて') {
-                    checkbox.checked = false;
-                } else {
-                    checkbox.checked = true;
-                }
-            });
+            document.querySelector('#filter-overlay input[name="category"][value="すべて"]').checked = true;
+        } else if (currentFilters.categories.length > 0 && currentFilters.categories.includes('すべて')) {
+            currentFilters.categories = ['すべて'];
+            currentFilters.tags = [];
         }
         
         filterOverlay.classList.remove('is-active');
@@ -627,7 +455,6 @@ document.addEventListener('DOMContentLoaded', function() {
         applyFiltersAndSort();
     });
 
-    // ソート適用ボタン
     applySortButton.addEventListener('click', () => {
         currentSortOrder = document.querySelector('#sort-overlay input[name="sort_order"]:checked').value;
         sortOverlay.classList.remove('is-active');
@@ -635,38 +462,34 @@ document.addEventListener('DOMContentLoaded', function() {
         applyFiltersAndSort();
     });
 
-    // 表示モードボタン（グリッド）
     displayGridButton.addEventListener('click', () => {
         if (currentDisplayMode === 'grid') return;
         const firstVisibleProductId = productList.querySelector('.product-card')?.dataset.productId;
 
         displayGridButton.classList.add('active');
         displayListButton.classList.remove('active');
-        currentDisplayMode = 'grid'; // 表示モードを更新
+        currentDisplayMode = 'grid'; 
         
         updateCurrentPage(firstVisibleProductId);
         applyFiltersAndSort(false);
     });
 
-    // 表示モードボタン（リスト）
     displayListButton.addEventListener('click', () => {
         if (currentDisplayMode === 'list') return;
         const firstVisibleProductId = productList.querySelector('.product-card')?.dataset.productId;
 
         displayListButton.classList.add('active');
         displayGridButton.classList.remove('active');
-        currentDisplayMode = 'list'; // 表示モードを更新
+        currentDisplayMode = 'list'; 
 
         updateCurrentPage(firstVisibleProductId);
         applyFiltersAndSort(false);
     });
 
-    // 表示モード変更時に現在のページを更新する関数
     function updateCurrentPage(productId) {
         if (!productId) return;
 
         let filteredProducts = [...products];
-        // 現在のフィルターとソートを再適用して、完全なリストを取得
         if (currentFilters.categories.length > 0 && !currentFilters.categories.includes('すべて')) {
             filteredProducts = filteredProducts.filter(product => currentFilters.categories.includes(product.category));
         }
@@ -692,18 +515,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     // 初期表示モードを決定
-    // PCでは常にグリッドがデフォルトになるため、ボタンのアクティブ状態は初期化時に調整
-    if (window.innerWidth > 767) { // PCの場合
+    if (window.innerWidth > 767) { 
         displayGridButton.classList.add('active');
         displayListButton.classList.remove('active');
-        currentDisplayMode = 'grid'; // PCなので常にグリッド
-    } else { // スマホの場合
-        displayListButton.classList.add('active'); // スマホの初期はリストに設定
+        currentDisplayMode = 'grid'; 
+    } else { 
+        displayListButton.classList.add('active'); 
         displayGridButton.classList.remove('active');
-        currentDisplayMode = 'list'; // スマホなのでリスト表示
+        currentDisplayMode = 'list'; 
     }
 
-    // URLパラメータに基づく初期フィルター/ソートのUI同期は変更なし
+    // URLパラメータに基づく初期フィルター/ソートのUI同期
     if (queryParams.category) {
         const categoryCheckbox = document.querySelector(`#filter-overlay input[name="category"][value="${queryParams.category}"]`);
         if (categoryCheckbox) {
@@ -712,9 +534,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (allCategoryCheckbox) allCategoryCheckbox.checked = false;
         }
     } else if (queryParams.tag) {
+        // URLパラメータにタグがある場合、対応するタグのチェックボックスを探してチェックする
         const tagCheckbox = document.querySelector(`#filter-overlay input[name="tag"][value="${queryParams.tag}"]`);
         if (tagCheckbox) {
             tagCheckbox.checked = true;
+            // 該当するタグの<details>要素を開く (この時点では<details>はproducts_list.phpのHTMLに存在しません)
+            // このロジックは、products_list.phpが動的なタグ表示を行うまで影響しません
+            // const detailsElement = tagCheckbox.closest('details');
+            // if (detailsElement) {
+            //     detailsElement.open = true;
+            // }
         }
     } else {
         const allCategoryCheckbox = document.querySelector('#filter-overlay input[name="category"][value="すべて"]');
@@ -724,7 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (queryParams.sort) {
-        const sortRadio = document.querySelector(`#sort-overlay input[name="sort_order"][value="${queryParams.sort}"]`);
+        const sortRadio = document.querySelector(`#sort-overlay input[name="sort_order"]:checked`); // valueでなく直接選択
         if (sortRadio) {
             sortRadio.checked = true;
         }
@@ -735,16 +564,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // ウィンドウのリサイズ時に適用されるロジックを追加し、表示モードを調整
     window.addEventListener('resize', () => {
         applyFiltersAndSort(false);
-        // リサイズ時にPC/スマホの切り替えでボタンのアクティブ状態も調整
         if (window.innerWidth > 767) {
             displayGridButton.classList.add('active');
             displayListButton.classList.remove('active');
-            currentDisplayMode = 'grid'; // PCになったらグリッドに強制
+            currentDisplayMode = 'grid'; 
         } else {
-            // スマホの場合、現在のcurrentDisplayModeを維持 (ボタンクリックで切り替わった状態)
             if (currentDisplayMode === 'grid') {
                 displayGridButton.classList.add('active');
                 displayListButton.classList.remove('active');
@@ -753,7 +579,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 displayGridButton.classList.remove('active');
             }
         }
-        applyFiltersAndSort(false); // リサイズ時はページをリセットしない
+        applyFiltersAndSort(false); 
     });
 
     applyFiltersAndSort(); // 初期表示

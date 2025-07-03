@@ -1,3 +1,38 @@
+<?php
+/*!
+@file admin_products.php
+@brief 管理画面：お酒管理（一覧）
+@copyright Copyright (c) 2024 Your Name.
+*/
+
+// PHPスクリプトの冒頭でセッションを開始（必要であれば）
+// session_start();
+
+// ログイン状態のチェック (必要であればコメントアウトを解除して使用)
+// if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
+//     header('Location: login.php'); // ログインページのパスに修正
+//     exit();
+// }
+
+require_once __DIR__ . '/../common/contents_db.php'; // contents_db.php を読み込み
+
+// DEBUGモードの定義（config.phpで定義されていることを前提とするが、念のため）
+if (!defined('DEBUG')) {
+    define('DEBUG', true);
+}
+
+$product_info_obj = new cproduct_info();
+$order_items_obj = new corder_items(); // 売れた数を取得するためのインスタンス
+$product_views_obj = new cproduct_views(); // 訪問数を取得するためのインスタンス
+
+// ページネーションを考慮せず全て取得しますが、データ量が多い場合はページネーション実装を検討してください
+$products = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999); // 全ての商品を取得
+if ($products === false) {
+    $products = []; // 取得失敗時は空の配列を設定
+    error_log("Failed to fetch all product data.");
+}
+
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -44,59 +79,99 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>企業名</th>
                                 <th>商品名</th>
-                                <th>メイン画像</th>
-                                <th>サブ画像1</th>
-                                <th>サブ画像2</th>
-                                <th>サブ画像3</th>
+                                <th>画像</th>
+                                <th>商品説明</th>
+                                <th>価格</th>
                                 <th>カテゴリ</th>
                                 <th>タグ</th>
-                                <th>商品説明</th>
+                                <th>商品の特徴</th>
+                                <th>おすすめの飲み方</th>
                                 <th>内容量</th>
-                                <th>特徴</th>
-                                <th>おすすめ飲み方</th>
+                                <th>度数</th>
+                                <th>在庫数</th>
+                                <th>売れた数</th><!-- 新しい列 -->
+                                <th>訪問数</th><!-- 新しい列 -->
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>アサヒスーパードライ</td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Main" alt="スーパードライ メイン" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub1" alt="スーパードライ サブ1" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub2" alt="スーパードライ サブ2" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub3" alt="スーパードライ サブ3" class="product-thumb"></td>
-                                <td>ビール</td>
-                                <td>初心者向け</td>
-                                <td>辛口でキレのあるビールです。</td>
-                                <td>350ml</td>
-                                <td>爽快感があり、食事に合わせやすい。</td>
-                                <td>冷やしてそのまま飲む。</td>
-                            </tr>
-                            <tr>
-                                <td>山崎シングルモルト</td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Main" alt="山崎 メイン" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub1" alt="山崎 サブ1" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub2" alt="山崎 サブ2" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub3" alt="山崎 サブ3" class="product-thumb"></td>
-                                <td>ウイスキー</td>
-                                <td>甘口</td>
-                                <td>日本を代表するシングルモルトウイスキー。</td>
-                                <td>700ml</td>
-                                <td>フルーティーで複雑な香り。</td>
-                                <td>ストレートやロックで香りを楽しむ。</td>
-                            </tr>
-                            <tr>
-                                <td>梅乃宿 あらごしみかん</td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Main" alt="あらごしみかん メイン" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub1" alt="あらごしみかん サブ1" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub2" alt="あらごしみかん サブ2" class="product-thumb"></td>
-                                <td><img src="https://via.placeholder.com/60x60?text=Sub3" alt="あらごしみかん サブ3" class="product-thumb"></td>
-                                <td>日本酒</td>
-                                <td>甘口</td>
-                                <td>みかんの果肉がたっぷり入ったデザート感覚のお酒。</td>
-                                <td>720ml</td>
-                                <td>フルーティーでデザート感覚。</td>
-                                <td>冷やしてデザートと一緒に楽しむ。</td>
-                            </tr>
+                            <?php if (!empty($products)): ?>
+                                <?php foreach ($products as $product): ?>
+                                    <?php
+                                        // 商品IDを取得
+                                        $product_id = $product['product_id'];
+
+                                        // 画像パスを配列に変換し、各画像を表示
+                                        $image_paths_str = $product['image_paths'] ?? '';
+                                        $image_paths = !empty($image_paths_str) ? explode(';', $image_paths_str) : [];
+
+                                        // タグを配列に変換（カンマ区切りで取得されている前提）
+                                        $tags_str = $product['tags_concat'] ?? '';
+                                        $tags = !empty($tags_str) ? explode(',', $tags_str) : [];
+
+                                        // 売れた数を取得
+                                        $sold_count = $order_items_obj->get_total_sold_count_by_product_id(DEBUG, $product_id);
+
+                                        // 訪問数を取得
+                                        $view_count = $product_views_obj->get_product_view_count(DEBUG, $product_id);
+                                    ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($product['company_name'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($product['product_name'] ?? 'N/A'); ?></td>
+                                        <td>
+                                            <div class="image-thumbs">
+                                                <?php if (!empty($image_paths)): ?>
+                                                    <?php foreach ($image_paths as $image_path): ?>
+                                                        <img src="../<?php echo htmlspecialchars($image_path); ?>" 
+                                                             alt="<?php echo htmlspecialchars($product['product_name'] ?? '商品'); ?> 画像"
+                                                             class="product-thumb">
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <img src="https://placehold.co/60x60?text=NoImage" alt="画像なし" class="product-thumb">
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="scrollable-content">
+                                                <?php echo nl2br(htmlspecialchars($product['product_description'] ?? 'N/A')); ?>
+                                            </div>
+                                        </td>
+                                        <td><?php echo htmlspecialchars(number_format($product['product_price'] ?? 0)) . '円'; ?></td>
+                                        <td><?php echo htmlspecialchars($product['category_name'] ?? 'N/A'); ?></td>
+                                        <td>
+                                            <div class="product-tags">
+                                                <?php if (!empty($tags)): ?>
+                                                    <?php foreach ($tags as $tag_name): ?>
+                                                        <span><?php echo htmlspecialchars(trim($tag_name)); ?></span>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <span>N/A</span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="scrollable-content">
+                                                <?php echo nl2br(htmlspecialchars($product['product_discription'] ?? 'N/A')); ?>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="scrollable-content">
+                                                <?php echo nl2br(htmlspecialchars($product['product_How'] ?? 'N/A')); ?>
+                                            </div>
+                                        </td>
+                                        <td><?php echo htmlspecialchars($product['product_Contents'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($product['product_degree'] ?? 'N/A') . '%'; ?></td>
+                                        <td><?php echo htmlspecialchars($product['product_stock'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($sold_count); ?></td><!-- 売れた数 -->
+                                        <td><?php echo htmlspecialchars($view_count); ?></td><!-- 訪問数 -->
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="14">商品情報がありません。</td><!-- 列数が増えたのでcolspanも変更 -->
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -110,6 +185,8 @@
             <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
         </div>
     </footer>
+    <!-- Font Awesomeの読み込み（CDN） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
 </body>
 </html>
