@@ -5,15 +5,16 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★★★ デバッグ用の設定はここから削除してください。本番環境では不要です。 ★★★
-// ini_set('display_errors', 1);
-// error_reporting(E_ALL);
-// ★★★ ここまで削除 ★★★
+// ★注意: このページのPHPロジックはヘッダー出力前に実行する必要があるため、
+// DB接続とセッション開始はこのファイルで先に行います。
+// header.php内のrequire_onceとsession_start()は、重複実行が防止されるので問題ありません。
 
 // セッションを開始
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-// contents_db.php をインクルード
+// 必要なファイルをインクルード
 require_once __DIR__ . '/common/contents_db.php';
 
 $debug_mode = false; // デバッグモードのオン/オフ
@@ -34,133 +35,91 @@ $user_profile = $profile_db->get_profile_by_user_id($debug_mode, $current_user_i
 
 // プロフィール情報が存在しない場合のデフォルト値設定
 if (!$user_profile) {
+    $icon_text = strtoupper(mb_substr($user_data['user_name'] ?? 'U', 0, 1, 'UTF-8'));
     $user_profile = [
-        'profile_icon_url' => 'img/profile_icons/default_user.png', // デフォルトアイコンのパス
-        'profile_text' => 'お酒と美味しい料理をこよなく愛する' . htmlspecialchars($user_data['user_name'] ?? 'サンプル太郎') . 'です。' . "\n" .
-                          '特に日本酒の奥深さに魅了されており、週末は新しい銘柄を探しに出かけるのが趣味です。' . "\n" .
-                          '皆さんとお酒に関する情報交換ができたら嬉しいです！'
+        'profile_icon_url' => 'https://placehold.co/150x150/5CB85C/FFFFFF?text=' . $icon_text,
+        'profile_text' => 'お酒と美味しい料理をこよなく愛する' . htmlspecialchars($user_data['user_name'] ?? 'サンプル太郎') . 'です。'
     ];
-    // 新規登録時に挿入されるはずなので、基本的にはここには来ないが、念のため挿入も試みる
     $profile_db->insert_profile($debug_mode, $current_user_id, $user_profile['profile_icon_url'], $user_profile['profile_text']);
 }
 
-$update_success = false;
 $error_message = '';
 
 // フォーム送信時の処理
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // 送信されたデータを取得
     $new_username = $_POST['username'] ?? '';
     $new_bio = $_POST['bio'] ?? '';
-    $new_icon_url = $user_profile['profile_icon_url']; // デフォルトは現在のアイコンURL
+    $new_icon_url = $user_profile['profile_icon_url'];
 
     // バリデーション
     if (empty($new_username)) {
         $error_message = 'ユーザー名を入力してください。';
-    } elseif (mb_strlen($new_username, 'UTF-8') > 50) { // ユーザー名の最大文字数を設定 (例: 50文字)
+    } elseif (mb_strlen($new_username, 'UTF-8') > 50) {
         $error_message = 'ユーザー名は50文字以内で入力してください。';
-    } elseif (mb_strlen($new_bio, 'UTF-8') > 200) { // 自己紹介の最大文字数を設定 (例: 200文字)
+    } elseif (mb_strlen($new_bio, 'UTF-8') > 200) {
         $error_message = '自己紹介は200文字以内で入力してください。';
     }
 
     // アイコン画像のアップロード処理
-    // ファイルが選択され、かつエラーがない場合のみ処理
     if (empty($error_message) && isset($_FILES['user_icon']) && $_FILES['user_icon']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . '/img/profile_icons/'; // プロフィールアイコンの保存先ディレクトリ
-        // mkdirの権限は適切に設定済みであることを前提としますが、念のため再確認を推奨
+        $upload_dir = __DIR__ . '/img/profile_icons/';
         if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true); // ディレクトリが存在しない場合は作成
+            mkdir($upload_dir, 0777, true);
         }
 
         $file_tmp_name = $_FILES['user_icon']['tmp_name'];
         $file_name = $_FILES['user_icon']['name'];
         $file_size = $_FILES['user_icon']['size'];
-        $file_type = $_FILES['user_icon']['type'];
+        $file_type = mime_content_type($file_tmp_name);
         $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
-        // 許可するファイル拡張子
         $allowed_ext = ['jpg', 'jpeg', 'png', 'gif'];
-        // 許可するMIMEタイプ
         $allowed_mime = ['image/jpeg', 'image/png', 'image/gif'];
-        // 最大ファイルサイズ (例: 5MB)
-        $max_file_size = 5 * 1024 * 1024;
+        $max_file_size = 5 * 1024 * 1024; // 5MB
 
         if (!in_array($file_ext, $allowed_ext) || !in_array($file_type, $allowed_mime)) {
-            $error_message = '許可されていないファイル形式です。JPEG, PNG, GIFのみアップロードできます。';
+            $error_message = '許可されていないファイル形式です。';
         } elseif ($file_size > $max_file_size) {
-            $error_message = 'ファイルサイズが大きすぎます。5MB以下にしてください。';
+            $error_message = 'ファイルサイズが大きすぎます(5MB以下)。';
         } else {
-            // ユニークなファイル名を生成
             $unique_file_name = uniqid('icon_', true) . '.' . $file_ext;
             $destination_path = $upload_dir . $unique_file_name;
-            $relative_path = 'img/profile_icons/' . $unique_file_name; // データベースに保存する相対パス
+            $relative_path = 'img/profile_icons/' . $unique_file_name;
 
             if (move_uploaded_file($file_tmp_name, $destination_path)) {
-                $new_icon_url = $relative_path; // 新しいアイコンのURLを設定
+                $new_icon_url = $relative_path;
             } else {
-                // ファイル移動が失敗した場合の具体的なエラーメッセージ
-                error_log("Failed to move uploaded file: " . $file_tmp_name . " to " . $destination_path . " - Last error: " . (error_get_last()['message'] ?? 'Unknown error'));
-                $error_message = 'ファイルのアップロードに失敗しました。(サーバーエラー)';
+                $error_message = 'ファイルのアップロードに失敗しました。';
             }
         }
-    } else if (isset($_FILES['user_icon']) && $_FILES['user_icon']['error'] !== UPLOAD_ERR_NO_FILE) {
-        // UPLOAD_ERR_NO_FILE (ファイルが選択されていない) 以外のPHPエラーがあった場合
-        switch ($_FILES['user_icon']['error']) {
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                $error_message = 'アップロードされたファイルが大きすぎます。';
-                break;
-            case UPLOAD_ERR_PARTIAL:
-                $error_message = 'ファイルの一部しかアップロードされませんでした。';
-                break;
-            case UPLOAD_ERR_NO_TMP_DIR:
-                $error_message = '一時フォルダがありません。';
-                break;
-            case UPLOAD_ERR_CANT_WRITE:
-                $error_message = 'ディスクへの書き込みに失敗しました。'; // パーミッション関連のエラーの可能性が高い
-                break;
-            case UPLOAD_ERR_EXTENSION:
-                $error_message = 'PHP拡張モジュールによってアップロードが中断されました。';
-                break;
-            default:
-                $error_message = '不明なファイルアップロードエラーが発生しました。';
-                break;
-        }
+    } elseif (isset($_FILES['user_icon']) && $_FILES['user_icon']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $error_message = 'ファイルアップロードエラーが発生しました。';
     }
 
-
     if (empty($error_message)) {
-        // ユーザー名 (user_infoテーブル) の更新
         $username_updated = $user_db->update_user_name($debug_mode, $current_user_id, $new_username);
-
-        // プロフィール情報 (user_profilesテーブル) の更新
         $profile_updated = $profile_db->update_profile($debug_mode, $current_user_id, $new_icon_url, $new_bio);
 
         if ($username_updated && $profile_updated) {
-            // セッションのユーザー名も更新
             $_SESSION['user_name'] = $new_username;
-            $update_success = true;
+            header('Location: MyPage.php?profile_updated=true');
+            exit();
         } else {
             $error_message = 'プロフィールの更新に失敗しました。';
         }
     }
+    // エラーがある場合は、このままページを表示してエラーメッセージを見せる
+}
 
-    // 更新後のリダイレクト
-    if ($update_success) {
-        header('Location: MyPage.php?profile_updated=true');
-        exit();
-    } else {
-        // エラーがある場合は、エラーメッセージをGETパラメータとして渡し、現在のページに留まる
-        header('Location: profile_edit.php?profile_update_error=' . urlencode($error_message));
-        exit();
-    }
+// GETパラメータでエラーメッセージが渡された場合
+if (isset($_GET['profile_update_error'])) {
+    $error_message = urldecode($_GET['profile_update_error']);
 }
 
 // フォームに表示するデータ
 $display_username = htmlspecialchars($user_data['user_name'] ?? '');
 $display_profile_icon_url = htmlspecialchars($user_profile['profile_icon_url'] ?? 'img/profile_icons/default_user.png');
 $display_profile_text = htmlspecialchars(str_replace('\n', "\n", $user_profile['profile_text'] ?? ''));
-
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -179,129 +138,23 @@ $display_profile_text = htmlspecialchars(str_replace('\n', "\n", $user_profile['
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* カスタムメッセージボックスのスタイル (MyPage.phpと連携) */
-        .custom-message-box {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 25px;
-            border-radius: 8px;
-            font-size: 1.6rem;
-            color: #fff;
-            z-index: 10000;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            animation: fadeInOut 3s forwards;
-            min-width: 300px;
-            text-align: center;
-        }
-        .custom-message-box.success {
-            background-color: #28a745;
-        }
-        .custom-message-box.error {
-            background-color: #dc3545;
-        }
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-        }
-        .error-message { /* PHP側でバリデーションエラーがあった場合 */
+        .error-message {
             color: #dc3545;
-            font-size: 0.9em;
-            margin-top: 5px;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
             text-align: center;
         }
     </style>
 </head>
 
 <body>
-    <!-- 共通ヘッダー：index.phpからコピー -->
-    <header class="header">
-        <div class="header__inner">
-            <!-- ハンバーガーメニューを左端に配置 -->
-            <button class="hamburger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <!-- ロゴを中央に配置 -->
-            <h1 class="header__logo">
-                <a href="index.php">OUR BRAND</a>
-            </h1>
-            <!-- ナビゲーションとアイコンを右端に配置 -->
-            <nav class="header__nav">
-                <ul class="nav__list pc-only">
-                    <li><a href="products_list.php">商品一覧</a></li>
-                    <li><a href="contact.php">お問い合わせ</a></li>
-                </ul>
-                <div class="header__icons">
-                    <a href="wishlist.php" class="header__icon-link">
-                        <i class="fas fa-heart"></i>
-                    </a>
-                    <a href="cart.php" class="header__icon-link">
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <nav class="sp-menu">
-        <div class="sp-menu__header">
-            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
-                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログアウト
-                </a>
-            <?php else: ?>
-                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログイン
-                </a>
-            <?php endif; ?>
-        </div>
-        <div class="sp-menu__search">
-            <input type="text" placeholder="検索...">
-            <button type="submit"><i class="fas fa-search"></i></button>
-        </div>
-        <ul class="sp-menu__list">
-            <li class="sp-menu__category-toggle">
-                商品カテゴリ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                    <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                    <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                    <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                    <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                    <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                    <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                    <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                    <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                    <li><a href="products_list.php?category=ビール">ビール</a></li>
-                </ul>
-            </li>
-            <!-- ↓ここから追加 -->
-            <li class="sp-menu__category-toggle">
-                商品タグ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?tag=初心者向け">初心者向け</a></li>
-                    <li><a href="products_list.php?tag=甘口">甘口</a></li>
-                    <li><a href="products_list.php?tag=辛口">辛口</a></li>
-                    <li><a href="products_list.php?tag=度数低め">度数低め</a></li>
-                    <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
-                </ul>
-            </li>
-            <!-- ↑ここまで追加 -->
-            <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
-            <li class="sp-menu__item"><a href="MyPage.php">マイページ</a></li>
-        </ul>
-        <div class="sp-menu__divider"></div>
-        <ul class="sp-menu__list sp-menu__list--bottom">
-            <li class="sp-menu__item"><a href="faq.php">よくある質問</a></li>
-            <li class="sp-menu__item"><a href="contact.php">お問い合わせ</a></li>
-        </ul>
-    </nav>
+    <?php 
+    // 共通ヘッダーを読み込む
+    require_once 'header.php'; 
+    ?>
 
     <main>
         <div class="mypage-container">
@@ -328,21 +181,14 @@ $display_profile_text = htmlspecialchars(str_replace('\n', "\n", $user_profile['
 
                     <div class="profile-edit-item">
                         <label for="username" class="edit-label">ユーザー名</label>
-                        <!-- ユーザー名はここでは編集可とする -->
                         <input type="text" id="username" name="username" class="edit-input" value="<?= $display_username ?>" required>
                     </div>
-
-                    <!-- 誕生日フィールドは削除 -->
-                    <!-- <div class="profile-edit-item">
-                        <label for="birthday" class="edit-label">誕生日</label>
-                        <input type="date" id="birthday" name="birthday" class="edit-input" value="<?= $display_birthday ?>">
-                    </div> -->
 
                     <div class="profile-edit-item">
                         <label for="bio" class="edit-label">自己紹介</label>
                         <textarea id="bio" name="bio" class="edit-textarea" rows="5"
                             placeholder="自己紹介を入力してください。"><?= $display_profile_text ?></textarea>
-                        <p class="char-count"><span id="bio-current-char"></span> / 200文字</p>
+                        <p class="char-count"><span id="bio-current-char">0</span> / 200文字</p>
                     </div>
 
                     <div class="profile-edit-actions">
@@ -354,39 +200,11 @@ $display_profile_text = htmlspecialchars(str_replace('\n', "\n", $user_profile['
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="footer__inner">
-            <ul class="footer__nav">
-                <li>
-                    <span class="footer__nav-title">商品一覧</span>
-                    <ul class="footer__subnav">
-                        <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                        <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                        <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                        <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                        <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                        <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                        <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                        <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                        <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                        <li><a href="products_list.php?category=ビール">ビール</a></li>
-                    </ul>
-                </li>
-                <li><a href="faq.php">よくあるご質問／お問合せ</a></li>
-                <li><a href="MyPage.php">会員登録・ログイン</a></li>
-                <li><a href="history.php">購入履歴</a></li>
-                <li><a href="cart.php">買い物かごを見る</a></li>
-                <li><a href="privacy.php">プライバシーポリシー</a></li>
-                <li><a href="terms.php">利用規約</a></li>
-            </ul>
-            <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.php">
-                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
-                </a>
-            </div>
-            <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
-        </div>
-    </footer>
+    <?php 
+    // 共通フッターを読み込む
+    require_once 'footer.php'; 
+    ?>
+
     <script src="js/script.js"></script>
     <script src="js/profile_edit.js"></script>
 </body>

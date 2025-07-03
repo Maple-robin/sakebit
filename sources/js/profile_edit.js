@@ -35,12 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (currentLength > MAX_BIO_LENGTH) {
                 bioCurrentChar.style.color = 'red';
-                // 保存ボタンを無効にするなどの処理を追加する場合はここに記述
-                // 例: document.querySelector('.btn-save-profile').disabled = true;
             } else {
                 bioCurrentChar.style.color = '#888';
-                // 無効にしたボタンを有効に戻すなどの処理を追加する場合はここに記述
-                // 例: document.querySelector('.btn-save-profile').disabled = false;
             }
         }
 
@@ -49,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCharCount();
     }
 
-    // カスタムメッセージボックスを表示する関数 (MyPage.jsと共通)
+    // カスタムメッセージボックスを表示する関数
     function displayMessage(message, type) {
         const messageBox = document.createElement('div');
         messageBox.classList.add('custom-message-box');
@@ -83,7 +79,14 @@ document.addEventListener('DOMContentLoaded', () => {
         history.replaceState(null, '', window.location.pathname); // URLからパラメータを削除
     }
 
-    // 複数カテゴリトグル対応（スマホメニュー用）
+    // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+    //
+    // 以下のハンバーガーメニュー（アコーディオン）に関するコードは、
+    // 全ページで読み込む script.js に記述されているため、ここでは不要です。
+    // 重複して読み込むと動作が競合し、不具合の原因となります。
+    //
+    // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+    /*
     const spCategoryToggles = document.querySelectorAll('.sp-menu__category-toggle');
     spCategoryToggles.forEach(toggle => {
         toggle.addEventListener('click', function () {
@@ -97,4 +100,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    */
 });

@@ -5,16 +5,21 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// セッションを開始
-session_start();
+// ★注意: このページのPHPロジックはヘッダー出力前に実行する必要があるため、
+// DB接続とセッション開始はこのファイルで先に行います。
+// header.php内のrequire_onceとsession_start()は、重複実行が防止されるので問題ありません。
 
-// contents_db.php をインクルード
+// セッションを開始
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// 共通DBファイルをインクルード
 require_once __DIR__ . '/common/contents_db.php';
 
 $debug_mode = false; // デバッグモードのオン/オフ
 
 $login_error_message = '';
-$login_success = false;
 $submitted_email = ''; // フォームに再表示するためのメールアドレス
 
 // 既にログインしている場合は、トップページにリダイレクト
@@ -22,14 +27,6 @@ if (isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
 }
-
-// 新規登録からのリダイレクトの場合、メッセージを表示
-if (isset($_GET['registered']) && $_GET['registered'] === 'true') {
-    // ログインページで新規登録完了メッセージを表示する
-    // ただし、このページに留まる場合はdisplayMessageを呼ぶ必要があるため、
-    // JavaScriptで制御します。PHPはリダイレクトのみ。
-}
-
 
 // POSTリクエストがある場合のみ処理を実行
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -53,8 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id'] = $user_data['user_id'];
                 $_SESSION['user_name'] = $user_data['user_name'];
                 $_SESSION['user_email'] = $user_data['user_email'];
-                // 必要に応じて他の情報もセッションに保存
-
+                
                 // ログイン成功後、トップページへリダイレクト
                 header('Location: index.php?loggedin=true'); // ログイン成功フラグを追加
                 exit();
@@ -83,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* カスタムメッセージボックスのスタイル（signup.php と同様）*/
+        /* カスタムメッセージボックスのスタイル */
         .custom-message-box {
             position: fixed;
             top: 20px;
@@ -126,88 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
-    <!-- 共通ヘッダー：index.phpからコピー -->
-    <header class="header">
-        <div class="header__inner">
-            <!-- ハンバーガーメニューを左端に配置 -->
-            <button class="hamburger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <!-- ロゴを中央に配置 -->
-            <h1 class="header__logo">
-                <a href="index.php">OUR BRAND</a>
-            </h1>
-            <!-- ナビゲーションとアイコンを右端に配置 -->
-            <nav class="header__nav">
-                <ul class="nav__list pc-only">
-                    <li><a href="products_list.php">商品一覧</a></li>
-                    <li><a href="contact.php">お問い合わせ</a></li>
-                </ul>
-                <div class="header__icons">
-                    <a href="wishlist.php" class="header__icon-link">
-                        <i class="fas fa-heart"></i>
-                    </a>
-                    <a href="cart.php" class="header__icon-link">
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <nav class="sp-menu">
-        <div class="sp-menu__header">
-            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
-                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログアウト
-                </a>
-            <?php else: ?>
-                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログイン
-                </a>
-            <?php endif; ?>
-        </div>
-        <div class="sp-menu__search">
-            <input type="text" placeholder="検索...">
-            <button type="submit"><i class="fas fa-search"></i></button>
-        </div>
-        <ul class="sp-menu__list">
-            <li class="sp-menu__category-toggle">
-                商品カテゴリ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                    <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                    <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                    <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                    <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                    <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                    <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                    <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                    <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                    <li><a href="products_list.php?category=ビール">ビール</a></li>
-                </ul>
-            </li>
-            <li class="sp-menu__category-toggle">
-                商品タグ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?tag=初心者向け">初心者向け</a></li>
-                    <li><a href="products_list.php?tag=甘口">甘口</a></li>
-                    <li><a href="products_list.php?tag=辛口">辛口</a></li>
-                    <li><a href="products_list.php?tag=度数低め">度数低め</a></li>
-                    <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
-                </ul>
-            </li>
-            <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
-            <li class="sp-menu__item"><a href="MyPage.php">マイページ</a></li>
-        </ul>
-        <div class="sp-menu__divider"></div>
-        <ul class="sp-menu__list sp-menu__list--bottom">
-            <li class="sp-menu__item"><a href="faq.php">よくある質問</a></li>
-            <li class="sp-menu__item"><a href="contact.php">お問い合わせ</a></li>
-        </ul>
-    </nav>
+    <?php 
+    // 共通ヘッダーを読み込む
+    require_once 'header.php'; 
+    ?>
 
     <main>
         <div class="login-container">
@@ -236,39 +154,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="footer__inner">
-            <ul class="footer__nav">
-                <li>
-                    <span class="footer__nav-title">商品一覧</span>
-                    <ul class="footer__subnav">
-                        <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                        <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                        <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                        <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                        <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                        <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                        <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                        <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                        <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                        <li><a href="products_list.php?category=ビール">ビール</a></li>
-                    </ul>
-                </li>
-                <li><a href="faq.php">よくあるご質問／お問合せ</a></li>
-                <li><a href="MyPage.php">会員登録・ログイン</a></li>
-                <li><a href="history.php">購入履歴</a></li>
-                <li><a href="cart.php">買い物かごを見る</a></li>
-                <li><a href="privacy.php">プライバシーポリシー</a></li>
-                <li><a href="terms.php">利用規約</a></li>
-            </ul>
-            <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.php">
-                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
-                </a>
-            </div>
-            <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
-        </div>
-    </footer>
+    <?php 
+    // 共通フッターを読み込む
+    require_once 'footer.php'; 
+    ?>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -290,27 +179,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 document.body.appendChild(messageBox);
 
-                setTimeout(() => {
-                    messageBox.remove();
-                }, 3000); // 3秒後に消える
+                // メッセージはアニメーションで消えるので、JSでの削除は不要
             }
 
             // 新規登録からのリダイレクトメッセージがあれば表示
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('registered') === 'true') {
-                displayMessage('新規登録が完了しました！', 'success');
-                // メッセージ表示後、URLからパラメータを削除（任意）
-                history.replaceState(null, '', window.location.pathname);
-            }
-             // ログイン成功からのリダイレクトメッセージがあれば表示 (login.php から index.php にリダイレクト後)
-            if (urlParams.get('loggedin') === 'true') {
-                displayMessage('ログインしました！', 'success');
-                history.replaceState(null, '', window.location.pathname);
-            }
-            // ログアウト成功からのメッセージ表示 (logout.php から index.php にリダイレクト後)
-            if (urlParams.get('loggedout') === 'true') {
-                displayMessage('ログアウトしました！', 'success');
-                history.replaceState(null, '', window.location.pathname);
+                // PHP側でメッセージを表示しているので、JSでは何もしない
+                // もしJSで制御したい場合は、PHPのメッセージを削除して、以下のコメントを外す
+                // displayMessage('新規登録が完了しました！', 'success');
+                // history.replaceState(null, '', window.location.pathname);
             }
         });
     </script>

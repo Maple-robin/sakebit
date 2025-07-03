@@ -1,17 +1,16 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file otsumami.php
+@brief おつまみ詳細ページ
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// セッションを開始 (HTML出力の前に置く)
-session_start();
-
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
+// ★注意: DB接続やセッション開始は header.php で行われるため、ここでの処理は不要です。
+// session_start();
 // require_once __DIR__ . '/common/contents_db.php';
 
-// ここにトップページ固有のPHPロジックがあれば記述
+// ここにおつまみページ固有のPHPロジックがあれば記述します。
+// (例: GETパラメータからIDを取得し、おつまみ情報をDBから取得する処理など)
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -34,87 +33,10 @@ session_start();
 
 <body>
 
-    <header class="header">
-        <div class="header__inner">
-            <!-- ハンバーガーメニューを左端に配置 -->
-            <button class="hamburger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <!-- ロゴを中央に配置 -->
-            <h1 class="header__logo">
-                <a href="index.php">OUR BRAND</a>
-            </h1>
-            <!-- ナビゲーションとアイコンを右端に配置 -->
-            <nav class="header__nav">
-                <ul class="nav__list pc-only">
-                    <li><a href="products_list.php">商品一覧</a></li>
-                    <li><a href="contact.php">お問い合わせ</a></li>
-                </ul>
-                <div class="header__icons">
-                    <a href="wishlist.php" class="header__icon-link">
-                        <i class="fas fa-heart"></i>
-                    </a>
-                    <a href="cart.php" class="header__icon-link">
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <nav class="sp-menu">
-        <div class="sp-menu__header">
-            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
-                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログアウト
-                </a>
-            <?php else: ?>
-                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログイン
-                </a>
-            <?php endif; ?>
-        </div>
-        <div class="sp-menu__search">
-            <input type="text" placeholder="検索...">
-            <button type="submit"><i class="fas fa-search"></i></button>
-        </div>
-        <ul class="sp-menu__list">
-            <li class="sp-menu__category-toggle">
-                商品カテゴリ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                    <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                    <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                    <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                    <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                    <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                    <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                    <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                    <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                    <li><a href="products_list.php?category=ビール">ビール</a></li>
-                </ul>
-            </li>
-            <li class="sp-menu__category-toggle">
-                商品タグ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?tag=初心者向け">初心者向け</a></li>
-                    <li><a href="products_list.php?tag=甘口">甘口</a></li>
-                    <li><a href="products_list.php?tag=辛口">辛口</a></li>
-                    <li><a href="products_list.php?tag=度数低め">度数低め</a></li>
-                    <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
-                </ul>
-            </li>
-            <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
-            <li class="sp-menu__item"><a href="MyPage.php">マイページ</a></li>
-        </ul>
-        <div class="sp-menu__divider"></div>
-        <ul class="sp-menu__list sp-menu__list--bottom">
-            <li class="sp-menu__item"><a href="faq.php">よくある質問</a></li>
-            <li class="sp-menu__item"><a href="contact.php">お問い合わせ</a></li>
-        </ul>
-    </nav>
+    <?php 
+    // 共通ヘッダーを読み込む
+    require_once 'header.php'; 
+    ?>
 
     <main>
         <div class="breadcrumb">
@@ -145,7 +67,6 @@ session_start();
                         <p class="product-info__price">¥ 780<span>(税込)</span></p>
                         <p class="product-info__tax-note">※送料別途</p>
 
-                        <!-- ボタンをまとめるラッパーで余白を統一 -->
                         <div class="product-info__buttons">
                             <div class="product-quantity-add-to-cart">
                                 <div class="product-quantity-controls">
@@ -251,44 +172,16 @@ session_start();
 
     </main>
 
-    <footer class="footer">
-        <div class="footer__inner">
-            <ul class="footer__nav">
-                <li>
-                    <span class="footer__nav-title">商品一覧</span>
-                    <ul class="footer__subnav">
-                        <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                        <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                        <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                        <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                        <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                        <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                        <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                        <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                        <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                        <li><a href="products_list.php?category=ビール">ビール</a></li>
-                    </ul>
-                </li>
-                <li><a href="faq.php">よくあるご質問／お問合せ</a></li>
-                <li><a href="MyPage.php">会員登録・ログイン</a></li>
-                <li><a href="history.php">購入履歴</a></li>
-                <li><a href="cart.php">買い物かごを見る</a></li>
-                <li><a href="privacy.php">プライバシーポリシー</a></li>
-                <li><a href="terms.php">利用規約</a></li>
-            </ul>
-            <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.php">
-                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
-                </a>
-            </div>
-            <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
-        </div>
-    </footer>
+    <?php 
+    // 共通フッターを読み込む
+    require_once 'footer.php'; 
+    ?>
+
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Swiper初期化（既存）
+            // Swiper初期化
             const pairedSwiper = new Swiper('.paired-snacks-swiper', {
                 slidesPerView: 1.2,
                 spaceBetween: 20,
@@ -306,7 +199,7 @@ session_start();
                 }
             });
 
-            // アコーディオン（既存）
+            // アコーディオン
             const accordionItems = document.querySelectorAll('.product-accordion-item');
             accordionItems.forEach(item => {
                 const title = item.querySelector('.product-accordion-item__title');
@@ -324,7 +217,7 @@ session_start();
                 });
             });
 
-            // 数量コントロールのイベントリスナー設定 (商品詳細ページ用)
+            // 数量コントロール
             const quantityMinusBtn = document.querySelector('.product-quantity-controls .quantity-minus');
             const quantityPlusBtn = document.querySelector('.product-quantity-controls .quantity-plus');
             const quantityInput = document.querySelector('.product-quantity-controls .quantity-input');
@@ -350,58 +243,41 @@ session_start();
                 });
             }
 
-            // 「カートに入れる」ボタンのクリックイベント
+            // 「カートに入れる」ボタン
             const addToCartBtn = document.getElementById('add-to-cart-btn');
             if (addToCartBtn) {
                 addToCartBtn.addEventListener('click', function () {
                     const selectedQuantity = parseInt(quantityInput.value);
-                    // ここに、おつまみのIDと数量をカートに追加する実際の処理を記述します。
-                    // 例: LocalStorageへの保存や、APIへの送信など
                     console.log(`おつまみID: を${selectedQuantity}個カートに追加しました！`);
                 });
             }
-            // ★画像切り替え機能
+            
+            // 画像切り替え機能
             const mainImg = document.querySelector('.product-gallery__main img');
             const thumbs = document.querySelectorAll('.product-gallery__thumbnails img');
             thumbs.forEach(thumb => {
                 thumb.addEventListener('click', function () {
-                    // メイン画像をサムネイル画像に切り替え
                     mainImg.src = this.src;
                     mainImg.alt = this.alt;
-                    // サムネイルのis-activeクラス切り替え
                     thumbs.forEach(t => t.classList.remove('is-active'));
                     this.classList.add('is-active');
                 });
             });
 
-            // ★修正済み：お気に入りボタンのクリックイベント (alert削除済み)
+            // お気に入りボタン
             const favoriteBtn = document.querySelector('.btn-favorite');
             if (favoriteBtn) {
                 favoriteBtn.addEventListener('click', function () {
                     this.classList.toggle('is-favorited');
                     const icon = this.querySelector('i');
-                    const favoriteTextSpan = this.querySelector('.favorite-text'); // span要素を取得
+                    const favoriteTextSpan = this.querySelector('.favorite-text');
 
                     if (this.classList.contains('is-favorited')) {
-                        icon.classList.remove('far'); // far (outline) を削除
-                        icon.classList.add('fas'); // fas (solid) を追加
-                        if (favoriteTextSpan) { // span要素が見つかった場合
-                            favoriteTextSpan.textContent = 'お気に入り済み'; // spanのテキストを更新
-                        } else {
-                            // 万が一spanが見つからない場合のフォールバック
-                            this.innerHTML =
-                                '<i class="fas fa-heart"></i> <span class="favorite-text">お気に入り済み</span>';
-                        }
+                        icon.classList.replace('far', 'fas');
+                        if (favoriteTextSpan) favoriteTextSpan.textContent = 'お気に入り済み';
                     } else {
-                        icon.classList.remove('fas');
-                        icon.classList.add('far');
-                        if (favoriteTextSpan) { // span要素が見つかった場合
-                            favoriteTextSpan.textContent = 'お気に入りに追加'; // spanのテキストを更新
-                        } else {
-                            // 万が一spanが見つからない場合のフォールバック
-                            this.innerHTML =
-                                '<i class="far fa-heart"></i> <span class="favorite-text">お気に入りに追加</span>';
-                        }
+                        icon.classList.replace('fas', 'far');
+                        if (favoriteTextSpan) favoriteTextSpan.textContent = 'お気に入りに追加';
                     }
                 });
             }
