@@ -13,9 +13,9 @@
 
     <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/guide.css"> 
 
     <link rel="stylesheet" href="css/top.css">
+    <link rel="stylesheet" href="css/guide.css"> 
 
 </head>
 
@@ -96,30 +96,26 @@
         </ul>
     </nav>    <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/sake-guide-hero.jpg');">
+        <section class="guide-hero" style="background-image: url('img/osyareOsake.png');">
             <div class="guide-hero__inner">
-                <h2 class="guide-hero__title">はじめての<br>お酒ガイド</h2>
-                <p class="guide-hero__subtitle">お酒が苦手な人でも楽しめる！簡単スタートガイド</p>
+                <h2 class="guide-hero__title">お酒の世界へようこそ</h2>
+                <p class="guide-hero__subtitle">初心者向けガイド</p>
             </div>
         </section>
 
         <!-- お酒って何？ -->
         <section class="guide-section intro-section">
             <div class="section-inner">
-                <h3 class="section-title">
-                    <span class="en">WHAT IS ALCOHOL?</span>
-                    <span class="ja">お酒って何？怖くないよ！</span>
-                </h3>
-                <div class="intro-content" style="background-image: url('img/osake.png');">
-                    <div class="intro-text-overlay">
-                        <h4>🍶 お酒は「果物」や「お米」から作られる飲み物</h4>
-                        <p>お酒は、ぶどうやお米、麦など、身近な食材から作られています。アルコールが入っているので、ちょっと大人の味がします。</p>
-                        
-                        <h4>🌟 最初は「甘くて飲みやすい」ものから始めよう</h4>
-                        <p>お酒が苦手な人でも大丈夫！ジュースみたいに甘いものや、アルコールが少ないものから始めると安心です。</p>
-                        
-                        <h4>💡 無理は禁物！ゆっくり楽しもう</h4>
-                        <p>お酒は楽しく飲むもの。無理して飲まなくても大丈夫です。</p>
+                <div class="section-title">
+                    <h2 class="ja">お酒ってなんだろう？</h2>
+                    <p class="en">What is Sake?</p>
+                </div>
+                <div class="intro-content">
+                    <div class="intro-content__image-container">
+                        <img src="img/gingerale.png" alt="お酒の紹介画像" class="intro-content__image">
+                        <div class="intro-content__overlay">
+                            <p>お酒は、リラックスしたり、食事をより楽しんだり、人とのコミュニケーションを円滑にする飲み物です。世界にはビール、ワイン、日本酒など、さまざまな種類のお酒があり、それぞれに独自の文化や味わいがあります。</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -128,184 +124,174 @@
         <!-- 初心者におすすめのお酒 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
-                <h3 class="section-title">
-                    <span class="en">BEGINNER FRIENDLY</span>
-                    <span class="ja">初心者におすすめ！飲みやすいお酒</span>
-                </h3>
+                <div class="section-title">
+                    <h2 class="ja">初心者におすすめの種類</h2>
+                    <p class="en">For Beginners</p>
+                </div>
                 <div class="alcohol-types">
-                    <div class="type-card" style="background-image: url('img/sake.png');">
-                        <div class="type-overlay">
-                            <h4>🍹 缶チューハイ・サワー</h4>
-                            <div class="type-details">
-                                <p class="sweetness">甘さ: ★★★★☆</p>
-                                <p class="alcohol">アルコール: 3-5%（弱め）</p>
-                                <p class="price">値段: 100-200円</p>
-                                <p class="description">レモンや桃、ぶどう味など、ジュースみたいに甘くて飲みやすい！コンビニで買えるのも嬉しい。</p>
-                            </div>
+                    <div class="type-card type-card--bg" style="background-image: url('img/苺梅酒2.png');">
+                        <h4>果実酒・リキュール</h4>
+                        <p>甘くてフルーティーなものが多く、ジュース感覚で楽しめるので最初の一杯にぴったりです。</p>
+                    </div>
+                    <div class="type-card">
+                        <h4>缶チューハイ</h4>
+                        <p>アルコール度数が低めで、様々なフレーバーがあります。コンビニやスーパーで手軽に試せます。</p>
+                    </div>
+                    <div class="type-card">
+                        <h4>ビール</h4>
+                        <p>苦みが特徴ですが、フルーティーで飲みやすいタイプも増えています。まずは少量から試してみましょう。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="how-to-drink-section section-inner">
+            <div class="section-title">
+                <h2 class="ja">おいしい飲み方を見つけよう</h2>
+                <p class="en">HOW TO DRINK</p>
+            </div>
+
+            <div class="drink-ways">
+                <!-- 冷やして飲む -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>冷やして飲む</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>冷蔵庫や氷で冷やします。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/osake.png" alt="グラスに注がれた冷たいお酒">
                         </div>
                     </div>
-                    
-                    <div class="type-card" style="background-image: url('img/gingerale.png');">
-                        <div class="type-overlay">
-                            <h4>🍾 スパークリング</h4>
-                            <div class="type-details">
-                                <p class="sweetness">甘さ: ★★★★☆</p>
-                                <p class="alcohol">アルコール: 5-8%（普通）</p>
-                                <p class="price">値段: 800-2000円</p>
-                                <p class="description">シュワシュワして爽やか！お祝いの時にぴったり。甘いタイプを選べば初心者でも安心。</p>
-                            </div>
+                </div>
+
+                <hr>
+
+                <!-- 温めて飲む -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>温めて飲む</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>徳利や耐熱容器に入れて温めます。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/sake-warm.jpg" alt="温かいお酒、熱燗">
                         </div>
                     </div>
-                    
-                    <div class="type-card" style="background-image: url('img/osake.png');">
-                        <div class="type-overlay">
-                            <h4>🍑 梅酒・果実酒</h4>
-                            <div class="type-details">
-                                <p class="sweetness">甘さ: ★★★★★</p>
-                                <p class="alcohol">アルコール: 8-12%（普通）</p>
-                                <p class="price">値段: 1000-3000円</p>
-                                <p class="description">フルーツの甘みたっぷり！梅酒は特に優しい味で、ロックや水割りで楽しめます。</p>
-                            </div>
+                </div>
+
+                <hr>
+
+                <!-- 割って飲む -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>割って飲む</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>ソーダやジュースなど、お好みの割り材で割ります。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/gingerale.png" alt="ジンジャーエールで割るお酒">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 簡単な飲み方 -->
-        <section class="guide-section how-to-drink">
+        <!-- お酒を楽しむための注意点 -->
+        <section class="guide-section caution-section">
             <div class="section-inner">
-                <h3 class="section-title">
-                    <span class="en">HOW TO DRINK</span>
-                    <span class="ja">家で簡単！おいしい飲み方</span>
-                </h3>
-                <div class="drink-methods">
-                    <div class="method-card" style="background-image: url('img/冷酒サンプル.png');">
-                        <div class="method-overlay">
-                            <h4>🧊 冷やして飲む</h4>
-                            <div class="method-steps">
-                                <p class="step-title">準備するもの</p>
-                                <ul>
-                                    <li>お酒</li>
-                                    <li>普通のグラス</li>
-                                    <li>氷（あれば）</li>
-                                </ul>
-                                <p class="step-title">やり方</p>
-                                <p>冷蔵庫で冷やしてグラスに注ぐだけ！氷を入れてもOK。夏におすすめ。</p>
+                <div class="section-title">
+                    <h2 class="ja">お酒を楽しむための注意点</h2>
+                    <p class="en">Important Points</p>
+                </div>
+                <div class="caution-list">
+                    <div class="caution-item">
+                        <div class="caution-item__header">
+                            <div class="caution-item__icon">
+                                <i class="fas fa-glass-whiskey"></i>
+                            </div>
+                            <h4 class="caution-item__title">適量を守る</h4>
+                            <div class="caution-item__toggle">
+                                <span class="toggle-icon"></span>
+                            </div>
+                        </div>
+                        <div class="caution-item__content">
+                            <div class="caution-item__text">
+                                <p>自分のペースで、無理のない範囲で楽しみましょう。飲みすぎは健康を害する原因になります。</p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="method-card" style="background-image: url('img/sake-roomtemp.jpg');">
-                        <div class="method-overlay">
-                            <h4>🥤 水で割る</h4>
-                            <div class="method-steps">
-                                <p class="step-title">準備するもの</p>
-                                <ul>
-                                    <li>お酒</li>
-                                    <li>水またはお湯</li>
-                                    <li>グラス</li>
-                                </ul>
-                                <p class="step-title">やり方</p>
-                                <p>お酒1：水1の割合で混ぜる。アルコールが薄くなって飲みやすくなります。</p>
+                    <div class="caution-item">
+                        <div class="caution-item__header">
+                            <div class="caution-item__icon">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <h4 class="caution-item__title">空腹時を避ける</h4>
+                            <div class="caution-item__toggle">
+                                <span class="toggle-icon"></span>
+                            </div>
+                        </div>
+                        <div class="caution-item__content">
+                            <div class="caution-item__text">
+                                <p>食事をしながら、または何か食べてから飲むと、アルコールの吸収が穏やかになります。</p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="method-card" style="background-image: url('img/sake-warm.jpg');">
-                        <div class="method-overlay">
-                            <h4>🥤 ジュースで割る</h4>
-                            <div class="method-steps">
-                                <p class="step-title">準備するもの</p>
-                                <ul>
-                                    <li>お酒</li>
-                                    <li>好きなジュース</li>
-                                    <li>グラス</li>
-                                </ul>
-                                <p class="step-title">やり方</p>
-                                <p>お酒1：ジュース2の割合で混ぜる。オレンジジュースやりんごジュースがおすすめ！</p>
+                    <div class="caution-item">
+                        <div class="caution-item__header">
+                            <div class="caution-item__icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <h4 class="caution-item__title">水分補給を忘れずに</h4>
+                            <div class="caution-item__toggle">
+                                <span class="toggle-icon"></span>
+                            </div>
+                        </div>
+                        <div class="caution-item__content">
+                            <div class="caution-item__text">
+                                <p>お酒と同量以上の水を飲むことを心がけましょう。脱水症状や二日酔いの予防になります。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="caution-item">
+                        <div class="caution-item__header">
+                            <div class="caution-item__icon">
+                                <i class="fas fa-car-crash"></i>
+                            </div>
+                            <h4 class="caution-item__title">飲酒後の運転は絶対にしない</h4>
+                            <div class="caution-item__toggle">
+                                <span class="toggle-icon"></span>
+                            </div>
+                        </div>
+                        <div class="caution-item__content">
+                            <div class="caution-item__text">
+                                <p>飲酒運転は法律で固く禁じられています。公共交通機関や運転代行を利用しましょう。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="caution-item">
+                        <div class="caution-item__header">
+                            <div class="caution-item__icon">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                            <h4 class="caution-item__title">休肝日を設ける</h4>
+                            <div class="caution-item__toggle">
+                                <span class="toggle-icon"></span>
+                            </div>
+                        </div>
+                        <div class="caution-item__content">
+                            <div class="caution-item__text">
+                                <p>週に1〜2日はお酒を飲まない日を作り、肝臓を休ませてあげましょう。</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-
-        <!-- 注意事項 -->
-        <section class="guide-section safety-section">
-            <div class="section-inner">
-                <h3 class="section-title">
-                    <span class="en">SAFETY FIRST</span>
-                    <span class="ja">安全に楽しむために</span>
-                </h3>
-                <div class="safety-content" style="background-image: url('img/sake-guide-hero.jpg');">
-                    <div class="safety-overlay">
-                        <div class="safety-tips">
-                            <div class="tip">
-                                <h4>🚫 20歳未満は飲酒禁止</h4>
-                                <p>法律で決まっています。20歳になってから楽しみましょう。</p>
-                            </div>
-                            <div class="tip">
-                                <h4>🚗 車の運転はNG</h4>
-                                <p>お酒を飲んだら絶対に運転しないでください。</p>
-                            </div>
-                            <div class="tip">
-                                <h4>💧 水分補給を忘れずに</h4>
-                                <p>お酒と一緒に水も飲むと、次の日が楽になります。</p>
-                            </div>
-                            <div class="tip">
-                                <h4>🍚 食べ物と一緒に</h4>
-                                <p>空腹でお酒を飲むと酔いやすくなります。何か食べながら飲みましょう。</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- おすすめ商品 -->
-        <section class="products beginner-friendly">
-            <div class="products__inner">
-                <h2 class="section-title">
-                    <span class="en">RECOMMENDED</span>
-                    <span class="ja">初心者におすすめの商品</span>
-                </h2>
-                <div class="swiper mySwiperBeginners">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/gingerale.png" alt="初心者向け商品１">
-                                </div>
-                                <h3 class="product-item__name">月桂冠 スパークリング</h3>
-                                <p class="product-item__price">¥ 1,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#初心者OK #甘口 #飲みやすい</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/osake.png" alt="初心者向け商品２">
-                                </div>
-                                <h3 class="product-item__name">白桃とレモングラスの果実酒</h3>
-                                <p class="product-item__price">¥ 2,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#果実酒 #フルーティー #女性に人気</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake.png" alt="初心者向け商品３">
-                                </div>
-                                <h3 class="product-item__name">サントリー ほろよい</h3>
-                                <p class="product-item__price">¥ 200<span>(税込)</span></p>
-                                <p class="product-item__tag">#低アルコール #お手軽 #家飲み</p>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="swiper-pagination"></div>
-                </div>
-                <a href="products_list.php" class="btn-all-products">初心者向け一覧を見る</a>
             </div>
         </section>
     </main>
@@ -340,13 +326,12 @@
                     <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
                 </a>
             </div>
-            <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
+            <p class="footer__copyright">&copy; 2024 OUR BRAND</p>
         </div>
     </footer>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script src="js/script.js"></script>
-
     <script src="js/guide.js"></script>
 </body>
 
