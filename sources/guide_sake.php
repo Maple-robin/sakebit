@@ -131,62 +131,74 @@
         </section>
 
         <!-- 初心者におすすめの日本酒カルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">初心者におすすめの日本酒</h2>
-                    <p class="en">Recommended Sake for Beginners</p>
-                </div>
+        <section class="products">
+            <div class="products__inner">
+                <h2 class="section-title">
+                    <span class="en">RECOMMENDED</span>
+                    <span class="ja">( 初心者におすすめの日本酒 )</span>
+                </h2>
                 <div class="swiper recommended-sake-swiper">
                     <div class="swiper-wrapper">
                         <!-- 商品1 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=1" class="sake-card">
-                                <img src="img/sake_1.jpg" alt="商品1">
-                                <h3>獺祭 純米大吟醸45</h3>
-                                <p>フルーティーで飲みやすい定番の一本。</p>
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=1">
+                                <div class="product-item__img-wrap">
+                                    <img src="img/sake_1.jpg" alt="商品1">
+                                </div>
+                                <h3 class="product-item__name">獺祭 純米大吟醸45</h3>
+                                <p class="product-item__price">¥ 3,300<span>(税込)</span></p>
+                                <p class="product-item__tag">#フルーティー #定番</p>
                             </a>
                         </div>
                         <!-- 商品2 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=2" class="sake-card">
-                                <img src="img/sake_2.jpg" alt="商品2">
-                                <h3>久保田 千寿</h3>
-                                <p>すっきりと食事に合う、綺麗で上品な味わい。</p>
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=2">
+                                <div class="product-item__img-wrap">
+                                    <img src="img/sake_2.jpg" alt="商品2">
+                                </div>
+                                <h3 class="product-item__name">久保田 千寿</h3>
+                                <p class="product-item__price">¥ 2,800<span>(税込)</span></p>
+                                <p class="product-item__tag">#すっきり #食事と</p>
                             </a>
                         </div>
                         <!-- 商品3 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=3" class="sake-card">
-                                <img src="img/sake_3.jpg" alt="商品3">
-                                <h3>八海山 普通酒</h3>
-                                <p>淡麗辛口の代表格。冷やでも燗でも楽しめる。</p>
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=3">
+                                <div class="product-item__img-wrap">
+                                    <img src="img/sake_3.jpg" alt="商品3">
+                                </div>
+                                <h3 class="product-item__name">八海山 普通酒</h3>
+                                <p class="product-item__price">¥ 2,500<span>(税込)</span></p>
+                                <p class="product-item__tag">#淡麗辛口 #定番</p>
                             </a>
                         </div>
                         <!-- 商品4 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=4" class="sake-card">
-                                <img src="img/sake_4.jpg" alt="商品4">
-                                <h3>出羽桜 桜花吟醸酒</h3>
-                                <p>華やかな香りとふくよかな味わいが魅力。</p>
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=4">
+                                <div class="product-item__img-wrap">
+                                    <img src="img/sake_4.jpg" alt="商品4">
+                                </div>
+                                <h3 class="product-item__name">出羽桜 桜花吟醸酒</h3>
+                                <p class="product-item__price">¥ 3,000<span>(税込)</span></p>
+                                <p class="product-item__tag">#華やか #吟醸香</p>
                             </a>
                         </div>
                         <!-- 商品5 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=5" class="sake-card">
-                                <img src="img/sake_5.jpg" alt="商品5">
-                                <h3>作 穂乃智</h3>
-                                <p>透明感のある軽快な味わいで、初心者にも人気。</p>
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=5">
+                                <div class="product-item__img-wrap">
+                                    <img src="img/sake_5.jpg" alt="商品5">
+                                </div>
+                                <h3 class="product-item__name">作 穂乃智</h3>
+                                <p class="product-item__price">¥ 2,700<span>(税込)</span></p>
+                                <p class="product-item__tag">#軽快 #透明感</p>
                             </a>
                         </div>
                     </div>
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
-
-                    <!-- If we need navigation buttons -->
-                    <div class="swiper-button-prev"></div>
-                    <div class="swiper-button-next"></div>
                 </div>
+                 <a href="products_list.php?tag=初心者向け" class="btn-all-products">初心者向け一覧を見る</a>
             </div>
         </section>
     </main>
