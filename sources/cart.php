@@ -1,17 +1,17 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file cart.php
+@brief 買い物かごページ
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// セッションを開始 (HTML出力の前に置く)
-session_start();
-
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
+// ★注意: DB接続やセッション開始は header.php で行われるため、ここでの処理は不要です。
+// session_start();
 // require_once __DIR__ . '/common/contents_db.php';
 
-// ここにトップページ固有のPHPロジックがあれば記述
+// ここに買い物かごページ固有のPHPロジックがあれば記述します。
+// (例: カート内の商品情報をDBから取得する処理など)
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -34,85 +34,10 @@ session_start();
 
 <body>
 
-    <header class="header">
-        <div class="header__inner">
-            <button class="hamburger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <h1 class="header__logo">
-                <a href="index.php">OUR BRAND</a>
-            </h1>
-            <nav class="header__nav">
-                <ul class="nav__list pc-only">
-                    <li><a href="products_list.php">商品一覧</a></li>
-                    <li><a href="contact.php">お問い合わせ</a></li>
-                </ul>
-                <div class="header__icons">
-                    <a href="wishlist.php" class="header__icon-link">
-                        <i class="fas fa-heart"></i>
-                    </a>
-                    <a href="cart.php" class="header__icon-link active">
-                        <!-- カートページなのでactiveクラスを追加 -->
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <nav class="sp-menu">
-        <div class="sp-menu__header">
-            <?php if (isset($_SESSION['user_id'])): // ログイン状態をチェック ?>
-                <a href="logout.php" class="sp-menu__login" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログアウト
-                </a>
-            <?php else: ?>
-                <a href="login.php" class="sp-menu__login js-login-btn" style="cursor:pointer;">
-                    <i class="fas fa-user-circle"></i> ログイン
-                </a>
-            <?php endif; ?>
-        </div>
-        <div class="sp-menu__search">
-            <input type="text" placeholder="検索...">
-            <button type="submit"><i class="fas fa-search"></i></button>
-        </div>
-        <ul class="sp-menu__list">
-            <li class="sp-menu__category-toggle">
-                商品カテゴリ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                    <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                    <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                    <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                    <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                    <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                    <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                    <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                    <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                    <li><a href="products_list.php?category=ビール">ビール</a></li>
-                </ul>
-            </li>
-            <li class="sp-menu__category-toggle">
-                商品タグ <i class="fas fa-chevron-down category-icon"></i>
-                <ul class="sp-menu__sub-list">
-                    <li><a href="products_list.php?tag=初心者向け">初心者向け</a></li>
-                    <li><a href="products_list.php?tag=甘口">甘口</a></li>
-                    <li><a href="products_list.php?tag=辛口">辛口</a></li>
-                    <li><a href="products_list.php?tag=度数低め">度数低め</a></li>
-                    <li><a href="products_list.php?tag=度数高め">度数高め</a></li>
-                </ul>
-            </li>
-            <li class="sp-menu__item"><a href="posts.php">投稿ページ</a></li>
-            <li class="sp-menu__item"><a href="MyPage.php">マイページ</a></li>
-        </ul>
-        <div class="sp-menu__divider"></div>
-        <ul class="sp-menu__list sp-menu__list--bottom">
-            <li class="sp-menu__item"><a href="faq.php">よくある質問</a></li>
-            <li class="sp-menu__item"><a href="contact.php">お問い合わせ</a></li>
-        </ul>
-    </nav>
+    <?php 
+    // 共通ヘッダーを読み込む
+    require_once 'header.php'; 
+    ?>
 
     <main>
         <section class="cart-section">
@@ -122,13 +47,14 @@ session_start();
                     <span class="ja">(買い物かご)</span>
                 </h2>
 
-                <div class="cart-links-top"> <a href="product.php" class="btn-continue-shopping-top">
+                <div class="cart-links-top"> <a href="products_list.php" class="btn-continue-shopping-top">
                         <i class="fas fa-chevron-left"></i> お買い物を続ける
                     </a>
                 </div>
 
                 <div class="cart-main-container">
                     <div class="cart-items" id="cart-items-container">
+                        <!-- カート内の商品はJavaScriptまたはサーバーサイドのPHPで動的に生成される想定 -->
                         <div class="cart-item">
                             <div class="cart-item__image">
                                 <img src="img/gingerale.png" alt="イセ ポメロモ ヒート">
@@ -204,39 +130,10 @@ session_start();
 
     </main>
 
-    <footer class="footer">
-        <div class="footer__inner">
-            <ul class="footer__nav">
-                <li>
-                    <span class="footer__nav-title">商品一覧</span>
-                    <ul class="footer__subnav">
-                        <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                        <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                        <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                        <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                        <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                        <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                        <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                        <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                        <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                        <li><a href="products_list.php?category=ビール">ビール</a></li>
-                    </ul>
-                </li>
-                <li><a href="faq.php">よくあるご質問／お問合せ</a></li>
-                <li><a href="MyPage.php">会員登録・ログイン</a></li>
-                <li><a href="history.php">購入履歴</a></li>
-                <li><a href="cart.php">買い物かごを見る</a></li>
-                <li><a href="privacy.php">プライバシーポリシー</a></li>
-                <li><a href="terms.php">利用規約</a></li>
-            </ul>
-            <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.php">
-                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
-                </a>
-            </div>
-            <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
-        </div>
-    </footer>
+    <?php 
+    // 共通フッターを読み込む
+    require_once 'footer.php'; 
+    ?>
 
     <script src="js/script.js"></script>
     <script src="js/cart.js"></script>

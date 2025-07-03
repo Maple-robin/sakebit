@@ -640,3 +640,59 @@ ul {
     border: none !important;
     box-shadow: none !important;
 }
+/* SPメニュー内のタグカテゴリトグル用スタイル */
+.sp-menu__tag-category-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    cursor: pointer;
+    background-color: #f5f5f5; /* 少し背景色をつけて階層をわかりやすく */
+    border-radius: 5px;
+    margin-bottom: 5px;
+    font-size: 1.8rem; /* SPメニューのサブリスト項目に合わせる */
+    color: #333;
+}
+
+.sp-menu__tag-category-toggle .category-icon {
+    transition: transform 0.2s ease;
+    font-size: 1.6rem; /* 親のアイコンサイズと合わせる */
+}
+
+.sp-menu__tag-category-toggle .category-icon.is-open {
+    transform: rotate(180deg);
+}
+
+/* SPメニュー内のサブサブリスト (タグリスト) */
+.sp-menu__sub-sub-list {
+    list-style: none;
+    padding-left: 15px; /* サブサブリストのインデント */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out; /* 開閉アニメーション */
+    background-color: #fff; /* 背景色を親とは異なる色に */
+    border-radius: 5px;
+    margin-top: 5px; /* 親カテゴリとの間隔 */
+}
+
+.sp-menu__sub-sub-list.is-open {
+    max-height: 300px; /* 十分な高さ、必要に応じて調整 */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.sp-menu__sub-sub-list li {
+    margin-bottom: 10px; /* 各タグ項目の間隔 */
+    font-size: 1.6rem; /* タグ項目のフォントサイズ */
+    border-bottom: none; /* デフォルトのボーダーをなくす */
+}
+.sp-menu__sub-sub-list li:last-child {
+    margin-bottom: 0;
+}
+.sp-menu__sub-sub-list li a {
+    padding: 5px 0; /* リンクのパディング調整 */
+    color: #555;
+}
+.sp-menu__sub-sub-list li a:hover {
+    color: #A0522D;
+}
