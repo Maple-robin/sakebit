@@ -112,37 +112,6 @@ ul {
     color: #555;
 }
 
-/* ハンバーガーメニューアイコン */
-.hamburger-menu {
-    display: block; /* スマホで表示 */
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 10px;
-    position: relative;
-    z-index: 1000;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    margin-left: -10px; /* 左端に寄せる */
-}
-
-.hamburger-menu span {
-    display: block;
-    width: 28px;
-    height: 2px;
-    background-color: #333;
-    margin-bottom: 6px;
-    transition: 0.3s;
-    position: relative;
-}
-
-.hamburger-menu span:last-child {
-    margin-bottom: 0;
-}
 
 /* ハンバーガーメニューのアクティブ状態 */
 .hamburger-menu.is-active span:nth-of-type(1) {
