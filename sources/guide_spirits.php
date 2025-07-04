@@ -7,25 +7,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>スピリッツガイド | OUR BRAND</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <title>スピリッツガイド - SAKEBIT</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="css/guide.css">
 </head>
 
 <body>
-    <?php 
-    // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
-    ?>
+    <?php require_once 'header.php'; ?>
 
     <main>
         <!-- ヒーローセクション -->
@@ -79,60 +69,58 @@
         </section>
 
         <!-- おいしい飲み方を見つけよう -->
-        <section class="guide-section drink-section">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">定番カクテルを楽しもう</h2>
-                    <p class="en">CLASSIC COCKTAILS</p>
+        <section class="how-to-drink-section section-inner">
+            <div class="section-title">
+                <h2 class="ja">定番カクテルを楽しもう</h2>
+                <p class="en">CLASSIC COCKTAILS</p>
+            </div>
+
+            <div class="drink-ways">
+                <!-- ジントニック -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>ジントニック</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>ジンの爽やかな香りとトニックウォーターのほろ苦さが絶妙にマッチした、世界中で愛されるカクテル。ライムを搾ってどうぞ。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/gin_and_tonic.png" alt="ジントニック">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="drink-ways">
-                    <!-- ジントニック -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>ジントニック</h3>
+                <hr>
+
+                <!-- モスコミュール -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>モスコミュール</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>ウォッカをジンジャーエールで割り、ライムジュースを加えたカクテル。銅製のマグカップで飲むのが伝統的なスタイルです。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>ジンの爽やかな香りとトニックウォーターのほろ苦さが絶妙にマッチした、世界中で愛されるカクテル。ライムを搾ってどうぞ。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/gin_and_tonic.png" alt="ジントニック">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/moscow_mule.png" alt="モスコミュール">
                         </div>
                     </div>
+                </div>
 
-                    <hr>
+                <hr>
 
-                    <!-- モスコミュール -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>モスコミュール</h3>
-                        </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>ウォッカをジンジャーエールで割り、ライムジュースを加えたカクテル。銅製のマグカップで飲むのが伝統的なスタイルです。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/moscow_mule.png" alt="モスコミュール">
-                            </div>
-                        </div>
+                <!-- モヒート -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>モヒート</h3>
                     </div>
-
-                    <hr>
-
-                    <!-- モヒート -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>モヒート</h3>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>ラムをベースに、ミントの葉、ライム、砂糖、ソーダ水を加えた、清涼感あふれるカクテル。夏にぴったりの一杯です。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>ラムをベースに、ミントの葉、ライム、砂糖、ソーダ水を加えた、清涼感あふれるカクテル。夏にぴったりの一杯です。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/mojito.png" alt="モヒート">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/mojito.png" alt="モヒート">
                         </div>
                     </div>
                 </div>
@@ -140,82 +128,79 @@
         </section>
 
         <!-- おすすめスピリッツカルーセル -->
-        <section class="guide-section product-carousel-section">
+        <section class="guide-section recommended-sake">
             <div class="section-inner">
                 <div class="section-title">
                     <h2 class="ja">おすすめのスピリッツ</h2>
                     <p class="en">Recommended Spirits</p>
                 </div>
-                <div class="swiper product-carousel">
+                <div class="swiper recommended-sake-swiper">
                     <div class="swiper-wrapper">
                         <!-- 商品1 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=601" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=601">
+                                <div class="product-item__img-wrap">
                                     <img src="img/ボンベイ・サファイア.png" alt="ボンベイ・サファイア">
                                 </div>
-                                <h3 class="product-card__name">ボンベイ・サファイア</h3>
-                                <p class="product-card__price">¥ 3,000<span>(税込)</span></p>
-                                <p class="product-card__tag">#ジン #ボタニカル</p>
+                                <h3 class="product-item__name">ボンベイ・サファイア</h3>
+                                <p class="product-item__price">¥ 3,000<span>(税込)</span></p>
+                                <p class="product-item__tag">#ジン #ボタニカル</p>
                             </a>
                         </div>
                         <!-- 商品2 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=602" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=602">
+                                <div class="product-item__img-wrap">
                                     <img src="img/smirnoff.png" alt="スミノフ">
                                 </div>
-                                <h3 class="product-card__name">スミノフ ウォッカ</h3>
-                                <p class="product-card__price">¥ 1,500<span>(税込)</span></p>
-                                <p class="product-card__tag">#ウォッカ #クリア</p>
+                                <h3 class="product-item__name">スミノフ ウォッカ</h3>
+                                <p class="product-item__price">¥ 1,500<span>(税込)</span></p>
+                                <p class="product-item__tag">#ウォッカ #クリア</p>
                             </a>
                         </div>
                         <!-- 商品3 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=603" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=603">
+                                <div class="product-item__img-wrap">
                                     <img src="img/bacardi.png" alt="バカルディ">
                                 </div>
-                                <h3 class="product-card__name">バカルディ スペリオール</h3>
-                                <p class="product-card__price">¥ 1,800<span>(税込)</span></p>
-                                <p class="product-card__tag">#ラム #ライト</p>
+                                <h3 class="product-item__name">バカルディ スペリオール</h3>
+                                <p class="product-item__price">¥ 1,800<span>(税込)</span></p>
+                                <p class="product-item__tag">#ラム #ライト</p>
                             </a>
                         </div>
                         <!-- 商品4 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=604" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=604">
+                                <div class="product-item__img-wrap">
                                     <img src="img/cuervo.png" alt="クエルボ">
                                 </div>
-                                <h3 class="product-card__name">ホセ・クエルボ・エスペシャル</h3>
-                                <p class="product-card__price">¥ 2,200<span>(税込)</span></p>
-                                <p class="product-card__tag">#テキーラ #ゴールド</p>
+                                <h3 class="product-item__name">ホセ・クエルボ・エスペシャル</h3>
+                                <p class="product-item__price">¥ 2,200<span>(税込)</span></p>
+                                <p class="product-item__tag">#テキーラ #ゴールド</p>
                             </a>
                         </div>
                         <!-- 商品5 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=605" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=605">
+                                <div class="product-item__img-wrap">
                                     <img src="img/tanqueray.png" alt="タンカレー">
                                 </div>
-                                <h3 class="product-card__name">タンカレー ロンドン ドライジン</h3>
-                                <p class="product-card__price">¥ 2,500<span>(税込)</span></p>
-                                <p class="product-card__tag">#ジン #ドライ</p>
+                                <h3 class="product-item__name">タンカレー ロンドン ドライジン</h3>
+                                <p class="product-item__price">¥ 2,500<span>(税込)</span></p>
+                                <p class="product-item__tag">#ジン #ドライ</p>
                             </a>
                         </div>
                     </div>
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
                 </div>
-                 <a href="products_list.php?category=spirits" class="view-all-btn">スピリッツ一覧を見る</a>
+                 <a href="products_list.php?category=spirits" class="btn-all-products">スピリッツ一覧を見る</a>
             </div>
         </section>
     </main>
 
-    <?php 
-    // 共通フッターを読み込む
-    require_once 'footer.php'; 
-    ?>
+    <?php require_once 'footer.php'; ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script src="js/script.js"></script>

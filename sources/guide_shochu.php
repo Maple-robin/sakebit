@@ -79,60 +79,58 @@
         </section>
 
         <!-- おいしい飲み方を見つけよう -->
-        <section class="guide-section how-to-drink">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おいしい飲み方を見つけよう</h2>
-                    <p class="en">HOW TO DRINK</p>
+        <section class="how-to-drink-section section-inner">
+            <div class="section-title">
+                <h2 class="ja">おいしい飲み方を見つけよう</h2>
+                <p class="en">HOW TO DRINK</p>
+            </div>
+
+            <div class="drink-ways">
+                <!-- 水割り -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>水割り</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>焼酎の定番の飲み方。焼酎と水の割合を変えることで、好みの濃さに調整できます。一般的には焼酎6：水4がおすすめです。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/mizuwari.png" alt="水割り">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="drink-ways">
-                    <!-- 水割り -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>水割り</h3>
+                <hr>
+
+                <!-- お湯割り -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>お湯割り</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>焼酎の香りが引き立ち、体が温まる飲み方。お湯を先に注ぎ、後から焼酎を注ぐと対流が起きて自然に混ざります。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>焼酎の定番の飲み方。焼酎と水の割合を変えることで、好みの濃さに調整できます。一般的には焼酎6：水4がおすすめです。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/mizuwari.png" alt="水割り">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/oyuwari.png" alt="お湯割り">
                         </div>
                     </div>
+                </div>
 
-                    <hr>
+                <hr>
 
-                    <!-- お湯割り -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>お湯割り</h3>
-                        </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>焼酎の香りが引き立ち、体が温まる飲み方。お湯を先に注ぎ、後から焼酎を注ぐと対流が起きて自然に混ざります。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/oyuwari.png" alt="お湯割り">
-                            </div>
-                        </div>
+                <!-- ロック -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>ロック</h3>
                     </div>
-
-                    <hr>
-
-                    <!-- ロック -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>ロック</h3>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>氷で冷やすことで、口当たりがまろやかになります。焼酎本来の味わいをダイレクトに楽しみたい方におすすめです。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>氷で冷やすことで、口当たりがまろやかになります。焼酎本来の味わいをダイレクトに楽しみたい方におすすめです。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/rock_glass.png" alt="ロック">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/rock_glass.png" alt="ロック">
                         </div>
                     </div>
                 </div>
@@ -207,7 +205,7 @@
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
                 </div>
-                 <a href="products_list.php?category=shochu" class="btn-all-products">焼酎一覧を見る</a>
+                 <a href="products_list.php?category=焼酎" class="btn-all-products">焼酎一覧を見る</a>
             </div>
         </section>
     </main>

@@ -79,43 +79,41 @@
         </section>
 
         <!-- おいしい飲み方を見つけよう -->
-        <section class="guide-section drink-section">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おいしい注ぎ方を見つけよう</h2>
-                    <p class="en">HOW TO POUR</p>
-                </div>
+        <section class="how-to-drink-section section-inner">
+            <div class="section-title">
+                <h2 class="ja">おいしい注ぎ方を見つけよう</h2>
+                <p class="en">HOW TO POUR</p>
+            </div>
 
-                <div class="drink-ways">
-                    <!-- 三度注ぎ -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>三度注ぎ</h3>
+            <div class="drink-ways">
+                <!-- 三度注ぎ -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>三度注ぎ</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>一度目は勢いよく注いで泡を作り、二度目はゆっくり注いで液体を増やし、三度目で泡を整える方法。ビールの炭酸と風味のバランスが絶妙になります。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>一度目は勢いよく注いで泡を作り、二度目はゆっくり注いで液体を増やし、三度目で泡を整える方法。ビールの炭酸と風味のバランスが絶妙になります。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/beer_bottle.png" alt="三度注ぎのイメージ">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/beer_bottle.png" alt="三度注ぎのイメージ">
                         </div>
                     </div>
+                </div>
 
-                    <hr>
+                <hr>
 
-                    <!-- グラス選び -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>グラス選び</h3>
+                <!-- グラス選び -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>グラス選び</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>ビールのスタイルに合わせてグラスを選ぶと、香りや味わいが一層引き立ちます。例えば、ピルスナーには細長いグラス、エールには丸みのあるグラスがおすすめです。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>ビールのスタイルに合わせてグラスを選ぶと、香りや味わいが一層引き立ちます。例えば、ピルスナーには細長いグラス、エールには丸みのあるグラスがおすすめです。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/beer_collection.png" alt="様々なビアグラス">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/beer_collection.png" alt="様々なビアグラス">
                         </div>
                     </div>
                 </div>
@@ -123,74 +121,74 @@
         </section>
 
         <!-- おすすめビールカルーセル -->
-        <section class="guide-section product-carousel-section">
+        <section class="guide-section recommended-sake">
             <div class="section-inner">
                 <div class="section-title">
                     <h2 class="ja">おすすめのビール</h2>
                     <p class="en">Recommended Beer</p>
                 </div>
-                <div class="swiper product-carousel">
+                <div class="swiper recommended-sake-swiper">
                     <div class="swiper-wrapper">
                         <!-- 商品1 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=201" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=201">
+                                <div class="product-item__img-wrap">
                                     <img src="img/yebisu.png" alt="ヱビスビール">
                                 </div>
-                                <h3 class="product-card__name">ヱビスビール</h3>
-                                <p class="product-card__price">¥ 350<span>(税込)</span></p>
-                                <p class="product-card__tag">#プレミアム #コク</p>
+                                <h3 class="product-item__name">ヱビスビール</h3>
+                                <p class="product-item__price">¥ 350<span>(税込)</span></p>
+                                <p class="product-item__tag">#プレミアム #コク</p>
                             </a>
                         </div>
                         <!-- 商品2 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=202" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=202">
+                                <div class="product-item__img-wrap">
                                     <img src="img/premium_malts.png" alt="ザ・プレミアム・モルツ">
                                 </div>
-                                <h3 class="product-card__name">ザ・プレミアム・モルツ</h3>
-                                <p class="product-card__price">¥ 340<span>(税込)</span></p>
-                                <p class="product-card__tag">#華やかな香り #深いコク</p>
+                                <h3 class="product-item__name">ザ・プレミアム・モルツ</h3>
+                                <p class="product-item__price">¥ 340<span>(税込)</span></p>
+                                <p class="product-item__tag">#華やかな香り #深いコク</p>
                             </a>
                         </div>
                         <!-- 商品3 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=203" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=203">
+                                <div class="product-item__img-wrap">
                                     <img src="img/indonoaooni.png" alt="インドの青鬼">
                                 </div>
-                                <h3 class="product-card__name">インドの青鬼</h3>
-                                <p class="product-card__price">¥ 450<span>(税込)</span></p>
-                                <p class="product-card__tag">#IPA #強烈な苦み</p>
+                                <h3 class="product-item__name">インドの青鬼</h3>
+                                <p class="product-item__price">¥ 450<span>(税込)</span></p>
+                                <p class="product-item__tag">#IPA #強烈な苦み</p>
                             </a>
                         </div>
                         <!-- 商品4 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=204" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=204">
+                                <div class="product-item__img-wrap">
                                     <img src="img/yonayona_ale.png" alt="よなよなエール">
                                 </div>
-                                <h3 class="product-card__name">よなよなエール</h3>
-                                <p class="product-card__price">¥ 420<span>(税込)</span></p>
-                                <p class="product-card__tag">#ペールエール #柑橘香</p>
+                                <h3 class="product-item__name">よなよなエール</h3>
+                                <p class="product-item__price">¥ 420<span>(税込)</span></p>
+                                <p class="product-item__tag">#ペールエール #柑橘香</p>
                             </a>
                         </div>
                         <!-- 商品5 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=205" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=205">
+                                <div class="product-item__img-wrap">
                                     <img src="img/orion.png" alt="オリオンビール">
                                 </div>
-                                <h3 class="product-card__name">オリオン ザ・ドラフト</h3>
-                                <p class="product-card__price">¥ 300<span>(税込)</span></p>
-                                <p class="product-card__tag">#沖縄 #爽快</p>
+                                <h3 class="product-item__name">オリオン ザ・ドラフト</h3>
+                                <p class="product-item__price">¥ 300<span>(税込)</span></p>
+                                <p class="product-item__tag">#沖縄 #爽快</p>
                             </a>
                         </div>
                     </div>
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
                 </div>
-                 <a href="products_list.php?category=beer" class="view-all-btn">ビール一覧を見る</a>
+                 <a href="products_list.php?category=ビール" class="btn-all-products">ビール一覧を見る</a>
             </div>
         </section>
     </main>

@@ -79,60 +79,58 @@
         </section>
 
         <!-- おいしい飲み方を見つけよう -->
-        <section class="guide-section drink-section">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おいしいペアリングを見つけよう</h2>
-                    <p class="en">HOW TO PAIRING</p>
+        <section class="how-to-drink-section section-inner">
+            <div class="section-title">
+                <h2 class="ja">おいしいペアリングを見つけよう</h2>
+                <p class="en">HOW TO PAIRING</p>
+            </div>
+
+            <div class="drink-ways">
+                <!-- 赤ワインと料理 -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>赤ワインと料理</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>フルボディの赤ワインにはステーキなどの濃厚な肉料理、ライトボディならトマトソースのパスタなどがおすすめです。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/red_wine.png" alt="赤ワインと料理">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="drink-ways">
-                    <!-- 赤ワインと料理 -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>赤ワインと料理</h3>
+                <hr>
+
+                <!-- 白ワインと料理 -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>白ワインと料理</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>辛口の白ワインは魚介類や鶏肉料理、甘口ならデザートやフルーツとよく合います。特に牡蠣とシャブリの組み合わせは有名です。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>フルボディの赤ワインにはステーキなどの濃厚な肉料理、ライトボディならトマトソースのパスタなどがおすすめです。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/red_wine.png" alt="赤ワインと料理">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/white_wine.png" alt="白ワインと料理">
                         </div>
                     </div>
+                </div>
 
-                    <hr>
+                <hr>
 
-                    <!-- 白ワインと料理 -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>白ワインと料理</h3>
-                        </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>辛口の白ワインは魚介類や鶏肉料理、甘口ならデザートやフルーツとよく合います。特に牡蠣とシャブリの組み合わせは有名です。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/white_wine.png" alt="白ワインと料理">
-                            </div>
-                        </div>
+                <!-- チーズとのペアリング -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>チーズとのペアリング</h3>
                     </div>
-
-                    <hr>
-
-                    <!-- チーズとのペアリング -->
-                    <div class="drink-way-item">
-                        <div class="drink-way-item__title">
-                            <h3>チーズとのペアリング</h3>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>ワインとチーズは最高の組み合わせ。産地を合わせるのが基本です。例えば、フランスのロックフォールには、同じ地方の甘口ワイン「ソーテルヌ」がよく合います。</p>
                         </div>
-                        <div class="drink-way-item__step">
-                            <div class="drink-way-item__description">
-                                <p>ワインとチーズは最高の組み合わせ。産地を合わせるのが基本です。例えば、フランスのロックフォールには、同じ地方の甘口ワイン「ソーテルヌ」がよく合います。</p>
-                            </div>
-                            <div class="drink-way-item__image">
-                                <img src="img/cheese.png" alt="ワインとチーズ">
-                            </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/cheese.png" alt="ワインとチーズ">
                         </div>
                     </div>
                 </div>
@@ -140,74 +138,74 @@
         </section>
 
         <!-- おすすめワインカルーセル -->
-        <section class="guide-section product-carousel-section">
+        <section class="guide-section recommended-sake">
             <div class="section-inner">
                 <div class="section-title">
                     <h2 class="ja">おすすめのワイン</h2>
                     <p class="en">Recommended Wine</p>
                 </div>
-                <div class="swiper product-carousel">
+                <div class="swiper recommended-sake-swiper">
                     <div class="swiper-wrapper">
                         <!-- 商品1 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=301" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=301">
+                                <div class="product-item__img-wrap">
                                     <img src="img/wine_red_bottle.png" alt="カサーレヴェッキオ">
                                 </div>
-                                <h3 class="product-card__name">カサーレ・ヴェッキオ モンテプルチアーノ</h3>
-                                <p class="product-card__price">¥ 2,500<span>(税込)</span></p>
-                                <p class="product-card__tag">#赤ワイン #フルボディ</p>
+                                <h3 class="product-item__name">カサーレ・ヴェッキオ モンテプルチアーノ</h3>
+                                <p class="product-item__price">¥ 2,500<span>(税込)</span></p>
+                                <p class="product-item__tag">#赤ワイン #フルボディ</p>
                             </a>
                         </div>
                         <!-- 商品2 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=302" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=302">
+                                <div class="product-item__img-wrap">
                                     <img src="img/wine_white_bottle.png" alt="クラウディベイ">
                                 </div>
-                                <h3 class="product-card__name">クラウディ・ベイ ソーヴィニヨン・ブラン</h3>
-                                <p class="product-card__price">¥ 4,800<span>(税込)</span></p>
-                                <p class="product-card__tag">#白ワイン #爽やか</p>
+                                <h3 class="product-item__name">クラウディ・ベイ ソーヴィニヨン・ブラン</h3>
+                                <p class="product-item__price">¥ 4,800<span>(税込)</span></p>
+                                <p class="product-item__tag">#白ワイン #爽やか</p>
                             </a>
                         </div>
                         <!-- 商品3 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=303" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=303">
+                                <div class="product-item__img-wrap">
                                     <img src="img/wine_sparkling_bottle.png" alt="モエ・エ・シャンドン">
                                 </div>
-                                <h3 class="product-card__name">モエ・エ・シャンドン ブリュット</h3>
-                                <p class="product-card__price">¥ 7,500<span>(税込)</span></p>
-                                <p class="product-card__tag">#シャンパン #辛口</p>
+                                <h3 class="product-item__name">モエ・エ・シャンドン ブリュット</h3>
+                                <p class="product-item__price">¥ 7,500<span>(税込)</span></p>
+                                <p class="product-item__tag">#シャンパン #辛口</p>
                             </a>
                         </div>
                         <!-- 商品4 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=304" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=304">
+                                <div class="product-item__img-wrap">
                                     <img src="img/wine_rose_bottle.png" alt="ミラヴァル・ロゼ">
                                 </div>
-                                <h3 class="product-card__name">ミラヴァル・ロゼ</h3>
-                                <p class="product-card__price">¥ 4,500<span>(税込)</span></p>
-                                <p class="product-card__tag">#ロゼ #プロヴァンス</p>
+                                <h3 class="product-item__name">ミラヴァル・ロゼ</h3>
+                                <p class="product-item__price">¥ 4,500<span>(税込)</span></p>
+                                <p class="product-item__tag">#ロゼ #プロヴァンス</p>
                             </a>
                         </div>
                         <!-- 商品5 -->
-                        <div class="swiper-slide">
-                            <a href="product.php?id=305" class="product-card">
-                                <div class="product-card__img-wrap">
+                        <div class="swiper-slide product-item">
+                            <a href="product.php?id=305">
+                                <div class="product-item__img-wrap">
                                     <img src="img/wine_orange_bottle.png" alt="オレンジワイン">
                                 </div>
-                                <h3 class="product-card__name">ラディコン ヤコット</h3>
-                                <p class="product-card__price">¥ 6,200<span>(税込)</span></p>
-                                <p class="product-card__tag">#オレンジワイン #自然派</p>
+                                <h3 class="product-item__name">ラディコン ヤコット</h3>
+                                <p class="product-item__price">¥ 6,200<span>(税込)</span></p>
+                                <p class="product-item__tag">#オレンジワイン #自然派</p>
                             </a>
                         </div>
                     </div>
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
                 </div>
-                 <a href="products_list.php?category=wine" class="view-all-btn">ワイン一覧を見る</a>
+                 <a href="products_list.php?category=ワイン" class="btn-all-products">ワイン一覧を見る</a>
             </div>
         </section>
     </main>

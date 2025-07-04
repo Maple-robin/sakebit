@@ -1,16 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('日本酒ガイドページが読み込まれました');
+    console.log('ガイドページが読み込まれました');
 
     // Swiper要素が存在する場合のみ初期化
-    const swiperContainer = document.querySelector('.recommended-sake-swiper');
-    if (swiperContainer) {
-        new Swiper(swiperContainer, {
+    const swipers = document.querySelectorAll('.swiper');
+    swipers.forEach(function(swiperElement) {
+        new Swiper(swiperElement, {
             loop: true,
             slidesPerView: 1,
             spaceBetween: 20,
             pagination: {
-                el: '.swiper-pagination',
+                el: swiperElement.querySelector('.swiper-pagination'),
                 clickable: true,
+            },
+            navigation: {
+                nextEl: swiperElement.querySelector('.swiper-button-next'),
+                prevEl: swiperElement.querySelector('.swiper-button-prev'),
             },
             breakpoints: {
                 768: {
@@ -23,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
             },
         });
-    }
+    });
 
     const cautionHeaders = document.querySelectorAll('.caution-item__header');
 

@@ -214,7 +214,20 @@
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
                 </div>
-                 <a href="products_list.php?category=liqueur" class="btn-all-products">リキュール一覧を見る</a>
+                 <a href="products_list.php?category=リキュール" class="btn-all-products">リキュール一覧を見る</a>
+            </div>
+        </section>
+
+        <!-- 注意事項 -->
+        <section class="guide-section caution-section">
+            <div class="section-inner">
+                <div class="section-title">
+                    <h2 class="ja">注意事項</h2>
+                    <p class="en">Caution</p>
+                </div>
+                <div class="caution-content">
+                    <p>リキュールはアルコール度数が高いため、飲みすぎに注意しましょう。また、妊娠中や授乳中の方は摂取を控えてください。</p>
+                </div>
             </div>
         </section>
     </main>
