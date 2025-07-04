@@ -80,7 +80,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const favoriteClass = product.isFavorite ? 'fas fa-heart is-favorite' : 'far fa-heart';
 
-                const tagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+                // ★★★ ここから修正 ★★★
+                const MAX_VISIBLE_TAGS = 4; // 表示するタグの最大数
+                let tagsHtml = '';
+                if (product.tags.length > MAX_VISIBLE_TAGS) {
+                    tagsHtml = product.tags.slice(0, MAX_VISIBLE_TAGS).map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+                    const remainingCount = product.tags.length - MAX_VISIBLE_TAGS;
+                    tagsHtml += `<span class="product-card__tag-more" data-product-id="${product.id}">+${remainingCount}</span>`;
+                } else {
+                    tagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+                }
+                // ★★★ ここまで修正 ★★★
 
                 productCard.innerHTML = `
                     <img src="${product.image}" alt="${product.name}" class="product-card__image">
@@ -97,23 +107,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 productList.appendChild(productCard);
             });
         }
-
-        document.querySelectorAll('.product-card__favorite').forEach(heartIcon => {
-            heartIcon.addEventListener('click', function() {
-                this.classList.toggle('far');
-                this.classList.toggle('fas');
-                this.classList.toggle('is-favorite');
-                
-                const productId = parseInt(this.dataset.productId);
-                const product = products.find(p => p.id === productId);
-                if (product) {
-                    product.isFavorite = !product.isFavorite;
-                }
-            });
-        });
-
         renderPagination(totalProducts);
     }
+
+    // ★★★ ここからイベントリスナー修正（ハートとおまとめ） ★★★
+    productList.addEventListener('click', function(e) {
+        // お気に入り（ハート）アイコンのクリック処理
+        if (e.target.classList.contains('product-card__favorite')) {
+            e.target.classList.toggle('far');
+            e.target.classList.toggle('fas');
+            e.target.classList.toggle('is-favorite');
+            
+            const productId = parseInt(e.target.dataset.productId);
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                product.isFavorite = !product.isFavorite;
+            }
+        }
+
+        // 「+〇」タグのクリック処理
+        if (e.target.classList.contains('product-card__tag-more')) {
+            const productId = parseInt(e.target.dataset.productId);
+            const product = products.find(p => p.id == productId);
+            if (product) {
+                const tagsContainer = e.target.parentElement;
+                const allTagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+                tagsContainer.innerHTML = allTagsHtml;
+            }
+        }
+    });
+    // ★★★ ここまでイベントリスナー修正 ★★★
+
 
     function renderPagination(totalProducts) {
         paginationContainer.innerHTML = '';
