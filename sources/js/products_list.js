@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case '中国酒':
                     enTitle = "CHINESE LIQUOR LIST";
                     jaTitle = "( 中国酒一覧 )";
-                    guideLink = "guide_chinese_liquor.php";
+                    guideLink = "guide_chinese_sake.php";
                     description = "<ruby>高粱<rt>こうりゃん</rt></ruby>などから<ruby>造<rt>つく</rt></ruby>られる、<ruby>中国<rt>ちゅうごく</rt></ruby><ruby>伝統<rt>でんとう</rt></ruby>の<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>。<ruby>独特<rt>どくとく</rt></ruby>の<ruby>香<rt>かお</rt></ruby>りが、<ruby>中華<rt>ちゅうか</rt></ruby><ruby>料理<rt>りょうり</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>を<ruby>引<rt>ひ</rt></ruby>き<ruby>立<rt>た</rt></ruby>てます。";
                     break;
                 default:

@@ -1,7 +1,7 @@
 <?php
 /*!
-@file guide_sake.php
-@brief 日本酒ガイドページ
+@file guide_umeshu.php
+@brief 梅酒ガイドページ
 @copyright Copyright (c) 2024 Your Name.
 */
 
@@ -14,18 +14,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日本酒ガイド | OUR BRAND</title>
+    <title>梅酒ガイド - SAKEBIT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap"
         rel="stylesheet">
-
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <link rel="stylesheet" href="css/top.css">
-    <link rel="stylesheet" href="css/guide.css"> 
+    <link rel="stylesheet" href="css/guide.css">
 </head>
 
 <body>
@@ -36,50 +34,50 @@
     
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/sake.png');">
+        <section class="guide-hero" style="background-image: url('img/umeshu_bg.png');">
             <div class="guide-hero__inner">
-                <h2 class="guide-hero__title">日本酒の世界へようこそ</h2>
-                <p class="guide-hero__subtitle">奥深い味わいの探求</p>
+                <h2 class="guide-hero__title">梅酒の世界へようこそ</h2>
+                <p class="guide-hero__subtitle">梅が織りなす、癒やしの甘み</p>
             </div>
         </section>
 
-        <!-- 日本酒って何？ -->
+        <!-- 梅酒って何？ -->
         <section class="guide-section intro-section">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">日本酒ってなんだろう？</h2>
-                    <p class="en">What is Japanese Sake?</p>
+                    <h2 class="ja">梅酒ってなんだろう？</h2>
+                    <p class="en">What is Umeshu?</p>
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/osake.png" alt="日本酒の紹介画像" class="intro-content__image">
+                        <img src="img/umeshu_making.png" alt="梅酒の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
-                            <p>日本酒は、米、米麹、水を主原料として発酵させて造られる、日本古来の醸造酒です。「清酒」とも呼ばれ、日本の食文化に深く根付いています。地域ごとの気候や水、米の違いが、多様な風味や香りを生み出します。</p>
+                            <p>梅酒は、青梅を氷砂糖と共に焼酎などの蒸留酒（または醸造酒）に漬け込んで造られる日本の伝統的なリキュールです。梅の爽やかな酸味と、氷砂糖の優しい甘みが調和した、親しみやすい味わいが特徴です。</p>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 初心者におすすめの日本酒 -->
+        <!-- 初心者におすすめの種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">初心者におすすめの種類</h2>
-                    <p class="en">For Beginners</p>
+                    <h2 class="ja">ベースのお酒で選ぶ</h2>
+                    <p class="en">Choose by Base Liquor</p>
                 </div>
                 <div class="alcohol-types">
                     <div class="type-card">
-                        <h4>純米酒</h4>
-                        <p>米と米麹、水だけで造られた、米本来の旨味やコクが味わえるタイプ。料理との相性も抜群です。</p>
+                        <h4>ホワイトリカーベース</h4>
+                        <p>最も一般的で、すっきりとクリアな味わい。梅本来の風味をストレートに楽しめます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/osyareOsake.png');">
-                        <h4>吟醸酒</h4>
-                        <p>よく磨いた米を低温でゆっくり発酵させて造られ、フルーティーで華やかな香りが特徴です。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/umeshu_glass.png');">
+                        <h4>ブランデーベース</h4>
+                        <p>ブランデーの芳醇な香りとコクが加わり、重厚で贅沢な味わいの梅酒になります。</p>
                     </div>
                     <div class="type-card">
-                        <h4>本醸造酒</h4>
-                        <p>すっきりとキレのある味わいが特徴。冷やしても燗にしても美味しく、日常的に楽しめます。</p>
+                        <h4>日本酒ベース</h4>
+                        <p>日本酒の米の旨味と梅の酸味が調和し、まろやかで深みのある味わいが楽しめます。</p>
                     </div>
                 </div>
             </div>
@@ -93,134 +91,131 @@
             </div>
 
             <div class="drink-ways">
-                <!-- 冷やして飲む -->
+                <!-- ソーダ割り -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>冷やして（冷酒）</h3>
+                        <h3>ソーダ割り</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>冷蔵庫で5〜10℃に冷やして。吟醸酒など香りの高いお酒は、その華やかさが引き立ちます。すっきりとした飲み口に。</p>
+                            <p>梅酒の甘みと酸味がソーダの炭酸で引き立ち、爽快なのどごしに。食前酒にもぴったりです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/sake-cold.jpg" alt="グラスに注がれた冷たい日本酒">
+                            <img src="img/umeshu_soda.png" alt="梅酒ソーダ割り">
                         </div>
                     </div>
                 </div>
 
                 <hr>
 
-                <!-- 常温で飲む -->
+                <!-- ロック -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>常温で（冷や）</h3>
+                        <h3>ロック</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>15〜20℃くらいの温度帯。お酒本来の味と香りが最もよくわかります。純米酒など、米の旨味をじっくり味わいたい時に。</p>
+                            <p>氷がゆっくり溶けることで、味わいの変化を楽しめます。梅酒本来の濃厚な味わいをじっくりと楽しみたい方へ。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/sake-normal.jpg" alt="常温の日本酒">
+                            <img src="img/umeshu_rock.png" alt="梅酒ロック">
                         </div>
                     </div>
                 </div>
 
                 <hr>
 
-                <!-- 温めて飲む -->
+                <!-- お湯割り -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>温めて（燗酒）</h3>
+                        <h3>お湯割り</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>徳利に入れて湯煎で温めます。温度によって「ぬる燗」「熱燗」など呼び名が変わり、風味も豊かになります。寒い日にぴったり。</p>
+                            <p>梅の香りがふわりと立ち上り、心も体も温まる飲み方。寝る前のリラックスタイムにもおすすめです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/sake-warm.jpg" alt="温かいお酒、熱燗">
+                            <img src="img/umeshu_oyuwari.png" alt="梅酒お湯割り">
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 初心者におすすめの日本酒カルーセル -->
+        <!-- おすすめ梅酒カルーセル -->
         <section class="guide-section recommended-sake">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">初心者におすすめの日本酒</h2>
-                    <p class="en">Recommended Sake for Beginners</p>
+                    <h2 class="ja">おすすめの梅酒</h2>
+                    <p class="en">Recommended Umeshu</p>
                 </div>
                 <div class="swiper recommended-sake-swiper">
                     <div class="swiper-wrapper">
                         <!-- 商品1 -->
                         <div class="swiper-slide product-item">
-                            <a href="product.php?id=1">
+                            <a href="product.php?id=701">
                                 <div class="product-item__img-wrap">
-                                    <img src="img/sake_1.jpg" alt="商品1">
+                                    <img src="img/梅酒原酒_image1.png" alt="特選梅酒うぐいすとまり 鶯とろ">
                                 </div>
-                                <h3 class="product-item__name">獺祭 純米大吟醸45</h3>
-                                <p class="product-item__price">¥ 3,300<span>(税込)</span></p>
-                                <p class="product-item__tag">#フルーティー #定番</p>
+                                <h3 class="product-item__name">特選梅酒うぐいすとまり 鶯とろ</h3>
+                                <p class="product-item__price">¥ 2,900<span>(税込)</span></p>
+                                <p class="product-item__tag">#濃厚 #トロリ</p>
                             </a>
                         </div>
                         <!-- 商品2 -->
                         <div class="swiper-slide product-item">
-                            <a href="product.php?id=2">
+                            <a href="product.php?id=702">
                                 <div class="product-item__img-wrap">
-                                    <img src="img/sake_2.jpg" alt="商品2">
+                                    <img src="img/苺梅酒2.png" alt="あまおう梅酒">
                                 </div>
-                                <h3 class="product-item__name">久保田 千寿</h3>
-                                <p class="product-item__price">¥ 2,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#すっきり #食事と</p>
+                                <h3 class="product-item__name">あまおう梅酒 あまおう、はじめました。</h3>
+                                <p class="product-item__price">¥ 3,200<span>(税込)</span></p>
+                                <p class="product-item__tag">#苺 #デザート</p>
                             </a>
                         </div>
                         <!-- 商品3 -->
                         <div class="swiper-slide product-item">
-                            <a href="product.php?id=3">
+                            <a href="product.php?id=703">
                                 <div class="product-item__img-wrap">
-                                    <img src="img/sake_3.jpg" alt="商品3">
+                                    <img src="img/choya.png" alt="チョーヤ梅酒">
                                 </div>
-                                <h3 class="product-item__name">八海山 普通酒</h3>
-                                <p class="product-item__price">¥ 2,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#淡麗辛口 #定番</p>
+                                <h3 class="product-item__name">チョーヤ The CHOYA SINGLE YEAR</h3>
+                                <p class="product-item__price">¥ 1,500<span>(税込)</span></p>
+                                <p class="product-item__tag">#定番 #紀州南高梅</p>
                             </a>
                         </div>
                         <!-- 商品4 -->
                         <div class="swiper-slide product-item">
-                            <a href="product.php?id=4">
+                            <a href="product.php?id=704">
                                 <div class="product-item__img-wrap">
-                                    <img src="img/sake_4.jpg" alt="商品4">
+                                    <img src="img/kokuto_umeshu.png" alt="黒糖梅酒">
                                 </div>
-                                <h3 class="product-item__name">出羽桜 桜花吟醸酒</h3>
-                                <p class="product-item__price">¥ 3,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#華やか #吟醸香</p>
+                                <h3 class="product-item__name">ヘリオス酒造 黒糖梅酒</h3>
+                                <p class="product-item__price">¥ 1,800<span>(税込)</span></p>
+                                <p class="product-item__tag">#黒糖 #コク</p>
                             </a>
                         </div>
                         <!-- 商品5 -->
                         <div class="swiper-slide product-item">
-                            <a href="product.php?id=5">
+                            <a href="product.php?id=705">
                                 <div class="product-item__img-wrap">
-                                    <img src="img/sake_5.jpg" alt="商品5">
+                                    <img src="img/sake_umeshu.png" alt="日本酒梅酒">
                                 </div>
-                                <h3 class="product-item__name">作 穂乃智</h3>
-                                <p class="product-item__price">¥ 2,700<span>(税込)</span></p>
-                                <p class="product-item__tag">#軽快 #透明感</p>
+                                <h3 class="product-item__name">八海山の原酒で仕込んだうめ酒</h3>
+                                <p class="product-item__price">¥ 2,600<span>(税込)</span></p>
+                                <p class="product-item__tag">#日本酒ベース #すっきり</p>
                             </a>
                         </div>
                     </div>
                     <!-- If we need pagination -->
                     <div class="swiper-pagination"></div>
                 </div>
-                 <a href="products_list.php?tag=初心者向け" class="btn-all-products">初心者向け一覧を見る</a>
+                 <a href="products_list.php?category=umeshu" class="btn-all-products">梅酒一覧を見る</a>
             </div>
         </section>
     </main>
 
-    <?php 
-    // 共通フッターを読み込む
-    require_once 'footer.php'; 
-    ?>
+    <?php require_once 'footer.php'; ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script src="js/script.js"></script>

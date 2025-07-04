@@ -83,6 +83,10 @@ main {
 }
 
 /* 導入セクション */
+.guide-section {
+    padding: 50px 0;
+}
+
 .intro-section .intro-content {
     display: flex;
     align-items: center;
@@ -169,55 +173,107 @@ main {
 
 .alcohol-types {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
 }
 
-/* 通常のカードスタイル */
 .type-card {
     background: #fff;
-    padding: 25px;
+    padding: 30px;
     border-radius: 8px;
-    text-align: center;
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.type-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
 .type-card h4 {
     font-family: 'Shippori Mincho', serif;
-    font-size: 1.7rem;
-    margin-bottom: 10px;
-    color: #333; /* 通常の文字色 */
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    color: #4a4a4a;
 }
 
 .type-card p {
     font-size: 1.4rem;
     line-height: 1.7;
-    color: #666; /* 通常の文字色 */
+    color: #666;
 }
 
-/* 背景画像を持つカード専用のスタイル */
-.type-card.type-card--bg {
+.type-card--bg {
+    position: relative;
+    color: #fff;
     background-size: cover;
     background-position: center;
-    position: relative;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 250px;
+    padding: 20px;
 }
 
-.type-card.type-card--bg::before {
+.type-card--bg::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 8px;
     z-index: 1;
 }
 
-.type-card.type-card--bg h4,
-.type-card.type-card--bg p {
+.type-card--bg h4,
+.type-card--bg p {
     position: relative;
     z-index: 2;
     color: #fff;
-    text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
 }
+
+/* おすすめカルーセル */
+.recommended-sake {
+    padding: 50px 0;
+}
+
+.recommended-sake .swiper {
+    padding-bottom: 50px; /* paginationのために余白確保 */
+}
+
+.recommended-sake .swiper-pagination {
+    bottom: 10px;
+}
+
+.recommended-sake .swiper-pagination-bullet {
+    background-color: #6c9a8b;
+}
+
+.btn-all-products {
+    display: block;
+    width: 280px;
+    margin: 30px auto 0;
+    padding: 15px;
+    background-color: #6c9a8b;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.6rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.btn-all-products:hover {
+    background-color: #5a8a7b;
+}
+
+/*----------------------------------------
+  how-to-drink-section
+----------------------------------------*/
 
 /* 飲み方セクション */
 .how-to-drink-section {
@@ -266,6 +322,9 @@ main {
 .drink-way-item__image {
     flex-basis: 120px; /* 画像の基本幅を小さく変更 */
     flex-shrink: 0;
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
 }
 
 /* PC用のスタイル */
@@ -425,5 +484,36 @@ h4.caution-item__title {
 
 .caution-item.open .caution-item__toggle {
     transform: rotate(0deg); /* 修正：回転は不要 */
+}
+
+/* 日本酒ガイドページの「初心者におすすめ」カルーセルセクションのタイトルスタイル調整 */
+/* top.cssのスタイルを上書きし、guide.cssの標準タイトルスタイルを適用する */
+.products.recommended-sake .section-title {
+    margin-bottom: 40px;
+}
+
+.products.recommended-sake .section-title .ja,
+.products.recommended-sake .section-title h2 { /* h2タグの場合も考慮 */
+    display: block;
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 2.4rem; /* guide.css のスタイル */
+    font-weight: bold; /* guide.css のスタイル */
+    color: #333; /* top.css の色を上書き */
+    letter-spacing: normal; /* top.css の letter-spacing をリセット */
+    padding-bottom: 0; /* top.css の padding をリセット */
+    margin-bottom: 8px; /* guide.css のスタイル */
+    position: static; /* top.css の position をリセット */
+}
+
+.products.recommended-sake .section-title .ja::after {
+    display: none; /* top.css の下線を削除 */
+}
+
+.products.recommended-sake .section-title .en,
+.products.recommended-sake .section-title p { /* pタグの場合も考慮 */
+    display: block;
+    font-size: 1.4rem; /* guide.css のスタイル */
+    color: #888; /* guide.css のスタイル */
+    letter-spacing: 0.1em; /* guide.css のスタイル */
 }
 

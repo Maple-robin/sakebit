@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log('日本酒ガイドページが読み込まれました');
 
     // Swiper要素が存在する場合のみ初期化
-    const swiperContainer = document.querySelector('.beginner-sake-swiper');
+    const swiperContainer = document.querySelector('.recommended-sake-swiper');
     if (swiperContainer) {
         new Swiper(swiperContainer, {
             loop: true,
