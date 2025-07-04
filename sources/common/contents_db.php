@@ -1766,3 +1766,72 @@ class cproduct_views extends crecord {
         parent::__destruct();
     }
 }
+class cproduct_favorites extends crecord {
+    public function __construct() {
+        parent::__construct();
+    }
+
+    /**
+     * ユーザーが商品をすでにお気に入り登録しているか確認する
+     * @param bool $debug デバッグモード
+     * @param int $user_id ユーザーID
+     * @param int $product_id 商品ID
+     * @return bool お気に入り済みの場合はtrue, そうでなければfalse
+     */
+    public function is_favorited($debug, $user_id, $product_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($product_id) || $product_id < 1) {
+            return false;
+        }
+        $query = "SELECT COUNT(*) AS count_result FROM product_favorites WHERE user_id = :user_id AND product_id = :product_id";
+        $this->select_query($debug, $query, [':user_id' => (int)$user_id, ':product_id' => (int)$product_id]);
+        $row = $this->fetch_assoc();
+        return $row && $row['count_result'] > 0;
+    }
+
+    /**
+     * お気に入りに追加する
+     * @param bool $debug デバッグモード
+     * @param int $user_id ユーザーID
+     * @param int $product_id 商品ID
+     * @return bool 成功した場合はtrue, 失敗した場合はfalse
+     */
+    public function add_favorite($debug, $user_id, $product_id) {
+        $query = "INSERT INTO product_favorites (user_id, product_id) VALUES (:user_id, :product_id)";
+        return $this->execute_query($debug, $query, [':user_id' => (int)$user_id, ':product_id' => (int)$product_id]);
+    }
+
+    /**
+     * お気に入りから削除する
+     * @param bool $debug デバッグモード
+     * @param int $user_id ユーザーID
+     * @param int $product_id 商品ID
+     * @return bool 成功した場合はtrue, 失敗した場合はfalse
+     */
+    public function remove_favorite($debug, $user_id, $product_id) {
+        $query = "DELETE FROM product_favorites WHERE user_id = :user_id AND product_id = :product_id";
+        return $this->execute_query($debug, $query, [':user_id' => (int)$user_id, ':product_id' => (int)$product_id]);
+    }
+
+    /**
+     * ユーザーのお気に入り商品IDリストを取得する
+     * @param bool $debug デバッグモード
+     * @param int $user_id ユーザーID
+     * @return array お気に入り商品IDの配列
+     */
+    public function get_favorite_product_ids_by_user_id($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "SELECT product_id FROM product_favorites WHERE user_id = :user_id ORDER BY created_at DESC";
+        $this->select_query($debug, $query, [':user_id' => (int)$user_id]);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row['product_id'];
+        }
+        return $arr;
+    }
+    
+    public function __destruct() {
+        parent::__destruct();
+    }
+}

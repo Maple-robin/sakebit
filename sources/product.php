@@ -1,11 +1,11 @@
 <?php
 /*!
 @file product.php
-@brief 商品詳細ページ (DB連携版)
+@brief 商品詳細ページ (DB連携・お気に入り機能付き)
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: このファイルでは、先にHTMLの骨格とヘッダーを読み込みます。
+// このファイルでは、先にHTMLの骨格とヘッダーを読み込みます。
 // DB関連の処理は、必要なクラスが定義された後に行うため、
 // <body> タグの中で header.php を読み込んだ後で実行します。
 
@@ -16,7 +16,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- ★ページタイトルは後ほどPHPで動的に設定しますが、一旦仮のタイトルを入れます -->
     <title>商品詳細 | OUR BRAND</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,31 +33,32 @@
 
     <?php 
     // 共通ヘッダーを読み込む
-    // このファイルの中で 'common/contents_db.php' が読み込まれます
     require_once 'header.php'; 
     
     // --- ★ここからPHP処理を開始 ---
     
-    // デバッグモードの定義（もし未定義の場合）
     if (!defined('DEBUG')) {
         define('DEBUG', true);
     }
 
-    // GETパラメータから商品IDを取得
     $product_id = $_GET['id'] ?? null;
     $product = null;
     $images = [];
     $tags = [];
+    $is_favorited = false; // ★お気に入り状態の初期値
 
-    // 商品IDが指定されていて、かつ数字であるかチェック
+    // ★ログイン状態のチェック
+    $is_logged_in = isset($_SESSION['user_id']);
+    $current_user_id = $_SESSION['user_id'] ?? null;
+
     if ($product_id && is_numeric($product_id)) {
         
-        // データベースクラスのインスタンスを生成
         $product_info_obj = new cproduct_info();
         $product_images_obj = new cproduct_images();
         $product_tags_relation_obj = new cproduct_tags_relation();
+        $product_views_obj = new cproduct_views();
+        $favorites_obj = new cproduct_favorites(); // ★お気に入りクラスのインスタンス化
         
-        // 商品情報を取得
         $product_data_list = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999);
         foreach ($product_data_list as $p) {
             if ($p['product_id'] == $product_id) {
@@ -68,21 +68,18 @@
         }
 
         if ($product) {
-            // 商品画像を取得
+            $product_views_obj->insert_product_view(DEBUG, $product_id);
             $images = $product_images_obj->get_images_by_product_id(DEBUG, $product_id);
-            // 商品タグを取得
             $tags = $product_tags_relation_obj->get_tags_by_product_id(DEBUG, $product_id);
+            
+            // ★ログイン中であれば、お気に入り状態をDBから取得
+            if ($is_logged_in) {
+                $is_favorited = $favorites_obj->is_favorited(DEBUG, $current_user_id, $product_id);
+            }
         }
-
-    }
-
-    // 商品が見つからなかった場合の処理
-    if (!$product) {
-        // header("HTTP/1.0 404 Not Found"); // ヘッダー出力後なのでコメントアウト
-        // メインコンテンツ部分でエラー表示を行う
     }
     
-    // ★動的にページタイトルを設定するためのJavaScript
+    // 動的にページタイトルを設定
     if ($product) {
         echo "<script>document.title = '" . htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') . " | OUR BRAND';</script>";
     }
@@ -90,7 +87,7 @@
     ?>
 
     <main>
-        <?php if ($product): // --- 商品が見つかった場合のみ表示 --- ?>
+        <?php if ($product): ?>
         <div class="breadcrumb">
             <div class="breadcrumb__inner common-inner">
                 <a href="index.php">HOME</a> &gt; <a href="products_list.php">商品一覧</a> &gt; <?= htmlspecialchars($product['product_name']) ?>
@@ -134,8 +131,10 @@
                                 </button>
                             </div>
                             <div class="product-info__favorite">
-                                <button class="btn-favorite">
-                                    <i class="far fa-heart"></i> <span class="favorite-text">お気に入りに追加</span>
+                                <!-- ★お気に入りボタンの初期状態をPHPで制御 -->
+                                <button class="btn-favorite <?= $is_favorited ? 'is-favorited' : '' ?>" data-product-id="<?= $product_id ?>">
+                                    <i class="<?= $is_favorited ? 'fas' : 'far' ?> fa-heart"></i>
+                                    <span class="favorite-text"><?= $is_favorited ? 'お気に入り済み' : 'お気に入りに追加' ?></span>
                                 </button>
                             </div>
                         </div>
@@ -169,28 +168,13 @@
                 <div class="paired-snacks">
                     <h3 class="paired-snacks__title">相性のいいおつまみ</h3>
                     <div class="swiper paired-snacks-swiper">
-                        <div class="swiper-wrapper">
-                            <!-- ここは後で動的にする部分（今は静的） -->
-                            <div class="swiper-slide">
-                                <div class="product-item">
-                                    <a href="otsumami.php">
-                                        <div class="product-item__img-wrap">
-                                            <img src="./img/otsumami1.jpg" alt="伊勢海老せんべい">
-                                        </div>
-                                        <h3 class="product-item__name">伊勢海老せんべい</h3>
-                                        <p class="product-item__price">¥ 1,200<span>(税込)</span></p>
-                                        <p class="product-item__tag">#海老 #香ばしい #お土産</p>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="swiper-wrapper"></div>
                         <div class="swiper-pagination"></div>
                     </div>
                 </div>
-
             </div>
         </section>
-        <?php else: // --- 商品が見つからなかった場合の表示 --- ?>
+        <?php else: ?>
             <section class="product-not-found" style="text-align: center; padding: 50px 20px;">
                 <p style="font-size: 1.8rem; margin-bottom: 30px;">指定された商品は見つかりませんでした。</p>
                 <a href="products_list.php" class="btn-primary" style="display:inline-block; padding: 10px 30px; background-color:#A0522D; color:white; border-radius:5px;">商品一覧へ戻る</a>
@@ -199,7 +183,6 @@
     </main>
 
     <?php 
-    // 共通フッターを読み込む
     require_once 'footer.php'; 
     ?>
 
@@ -207,25 +190,8 @@
     <script src="js/script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Swiper初期化
-            const pairedSwiper = new Swiper('.paired-snacks-swiper', {
-                slidesPerView: 1.2,
-                spaceBetween: 20,
-                centeredSlides: true,
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                breakpoints: {
-                    768: {
-                        slidesPerView: 3,
-                        spaceBetween: 30,
-                        centeredSlides: true,
-                    }
-                }
-            });
-
-            // アコーディオン
+            // Swiper, アコーディオン, 数量コントロール, 画像切り替えのコードは変更なし
+            const pairedSwiper = new Swiper('.paired-snacks-swiper', { slidesPerView: 1.2, spaceBetween: 20, centeredSlides: true, pagination: { el: '.swiper-pagination', clickable: true }, breakpoints: { 768: { slidesPerView: 3, spaceBetween: 30 } } });
             const accordionItems = document.querySelectorAll('.product-accordion-item');
             accordionItems.forEach(item => {
                 const title = item.querySelector('.product-accordion-item__title');
@@ -242,69 +208,67 @@
                     }
                 });
             });
-
-            // 数量コントロール
             const quantityMinusBtn = document.querySelector('.product-quantity-controls .quantity-minus');
             const quantityPlusBtn = document.querySelector('.product-quantity-controls .quantity-plus');
             const quantityInput = document.querySelector('.product-quantity-controls .quantity-input');
-
             if (quantityMinusBtn && quantityPlusBtn && quantityInput) {
-                quantityMinusBtn.addEventListener('click', function () {
-                    let quantity = parseInt(quantityInput.value);
-                    if (quantity > 1) {
-                        quantityInput.value = quantity - 1;
-                    }
-                });
-
-                quantityPlusBtn.addEventListener('click', function () {
-                    let quantity = parseInt(quantityInput.value);
-                    quantityInput.value = quantity + 1;
-                });
-
-                quantityInput.addEventListener('change', function () {
-                    let quantity = parseInt(this.value);
-                    if (isNaN(quantity) || quantity < 1) {
-                        this.value = 1;
-                    }
-                });
+                quantityMinusBtn.addEventListener('click', function () { let quantity = parseInt(quantityInput.value); if (quantity > 1) { quantityInput.value = quantity - 1; } });
+                quantityPlusBtn.addEventListener('click', function () { let quantity = parseInt(quantityInput.value); quantityInput.value = quantity + 1; });
+                quantityInput.addEventListener('change', function () { let quantity = parseInt(this.value); if (isNaN(quantity) || quantity < 1) { this.value = 1; } });
             }
-
-            // 「カートに入れる」ボタン（※機能は未実装）
             const addToCartBtn = document.getElementById('add-to-cart-btn');
-            if (addToCartBtn) {
-                addToCartBtn.addEventListener('click', function () {
-                    const selectedQuantity = parseInt(quantityInput.value);
-                    console.log(`カート追加処理（未実装）: 商品ID <?= $product_id ?>, 数量 ${selectedQuantity}`);
-                });
-            }
-            
-            // 画像切り替え機能
+            if (addToCartBtn) { addToCartBtn.addEventListener('click', function () { const selectedQuantity = parseInt(quantityInput.value); console.log(`カート追加処理（未実装）: 商品ID <?= $product_id ?>, 数量 ${selectedQuantity}`); }); }
             const mainImg = document.querySelector('.product-gallery__main img');
             const thumbs = document.querySelectorAll('.product-gallery__thumbnails img');
-            thumbs.forEach(thumb => {
-                thumb.addEventListener('click', function () {
-                    mainImg.src = this.src;
-                    mainImg.alt = this.alt;
-                    thumbs.forEach(t => t.classList.remove('is-active'));
-                    this.classList.add('is-active');
-                });
-            });
+            thumbs.forEach(thumb => { thumb.addEventListener('click', function () { mainImg.src = this.src; mainImg.alt = this.alt; thumbs.forEach(t => t.classList.remove('is-active')); this.classList.add('is-active'); }); });
 
-            // お気に入りボタン（※機能は未実装）
+            // ★★★ お気に入りボタンの処理を再実装 ★★★
             const favoriteBtn = document.querySelector('.btn-favorite');
             if (favoriteBtn) {
                 favoriteBtn.addEventListener('click', function () {
-                    this.classList.toggle('is-favorited');
-                    const icon = this.querySelector('i');
-                    const favoriteTextSpan = this.querySelector('.favorite-text');
-
-                    if (this.classList.contains('is-favorited')) {
-                        icon.classList.replace('far', 'fas');
-                        if (favoriteTextSpan) favoriteTextSpan.textContent = 'お気に入り済み';
-                    } else {
-                        icon.classList.replace('fas', 'far');
-                        if (favoriteTextSpan) favoriteTextSpan.textContent = 'お気に入りに追加';
+                    
+                    const isLoggedIn = <?= json_encode($is_logged_in) ?>;
+                    
+                    if (!isLoggedIn) {
+                        alert('お気に入り機能を利用するにはログインが必要です。');
+                        window.location.href = 'login.php?redirect_url=' + encodeURIComponent(window.location.href);
+                        return;
                     }
+
+                    const productId = this.dataset.productId;
+                    const isFavorited = this.classList.contains('is-favorited');
+                    const icon = this.querySelector('i');
+                    const text = this.querySelector('.favorite-text');
+
+                    fetch('api/api_toggle_favorite.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            is_favorited: isFavorited
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.classList.toggle('is-favorited');
+                            if (this.classList.contains('is-favorited')) {
+                                icon.classList.replace('far', 'fas');
+                                text.textContent = 'お気に入り済み';
+                            } else {
+                                icon.classList.replace('fas', 'far');
+                                text.textContent = 'お気に入りに追加';
+                            }
+                        } else {
+                            alert(data.message || 'エラーが発生しました。');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('通信エラーが発生しました。');
+                    });
                 });
             }
         });
