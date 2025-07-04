@@ -695,4 +695,85 @@ ul {
 }
 .sp-menu__sub-sub-list li a:hover {
     color: #A0522D;
+}/* ===============================================
+   ヘッダー共通スタイル (全ページ適用)
+   =============================================== */
+.header {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    padding: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
+.header__inner {
+    /* ★ロゴを中央に配置しつつ、左右の要素を両端に配置するレイアウト */
+    display: flex;
+    justify-content: space-between; /* ★キーとなるスタイル */
+    align-items: center;
+    height: 90px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px; /* ★左右の余白を確保。これでハンバーガーが左に寄りすぎない */
+}
+
+.header__logo {
+    /* ★ロゴのスタイル。position:absoluteを削除し、通常のflexアイテムに戻す */
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 2.4rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.header__nav {
+    display: flex; 
+    align-items: center;
+    gap: 20px; 
+}
+
+.header__icons {
+    display: flex;
+    gap: 15px; 
+    flex-shrink: 0; 
+}
+
+.header__icons .header__icon-link {
+    font-size: 2.2rem; 
+    color: #555;
+    padding: 5px; /* クリック領域を確保 */
+}
+
+/* ハンバーガーメニューアイコン */
+.hamburger-menu {
+    display: block; /* スマホで表示 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1000;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* ★左への寄りすぎを防ぐため、ネガティブマージンは削除 */
+}
+
+/* PC用ナビゲーション */
+@media (min-width: 768px) {
+    .header__nav .nav__list {
+        display: flex;
+        gap: 40px;
+    }
+    .header__nav .nav__list li a {
+        font-size: 1.5rem;
+    }
+    .hamburger-menu {
+        display: none;
+    }
 }

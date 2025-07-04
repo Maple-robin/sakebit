@@ -1,16 +1,14 @@
 <?php
 /*!
 @file product.php
-@brief 商品詳細ページ
+@brief 商品詳細ページ (DB連携版)
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、ここでの処理は不要です。
-// session_start();
-// require_once __DIR__ . '/common/contents_db.php';
+// ★注意: このファイルでは、先にHTMLの骨格とヘッダーを読み込みます。
+// DB関連の処理は、必要なクラスが定義された後に行うため、
+// <body> タグの中で header.php を読み込んだ後で実行します。
 
-// ここに商品詳細ページ固有のPHPロジックがあれば記述します。
-// (例: GETパラメータから商品IDを取得し、DBから商品情報を取得する処理など)
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -18,7 +16,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>純米大吟醸 麗し乃雫 | OUR BRAND</title>
+    <!-- ★ページタイトルは後ほどPHPで動的に設定しますが、一旦仮のタイトルを入れます -->
+    <title>商品詳細 | OUR BRAND</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -35,13 +34,66 @@
 
     <?php 
     // 共通ヘッダーを読み込む
+    // このファイルの中で 'common/contents_db.php' が読み込まれます
     require_once 'header.php'; 
+    
+    // --- ★ここからPHP処理を開始 ---
+    
+    // デバッグモードの定義（もし未定義の場合）
+    if (!defined('DEBUG')) {
+        define('DEBUG', true);
+    }
+
+    // GETパラメータから商品IDを取得
+    $product_id = $_GET['id'] ?? null;
+    $product = null;
+    $images = [];
+    $tags = [];
+
+    // 商品IDが指定されていて、かつ数字であるかチェック
+    if ($product_id && is_numeric($product_id)) {
+        
+        // データベースクラスのインスタンスを生成
+        $product_info_obj = new cproduct_info();
+        $product_images_obj = new cproduct_images();
+        $product_tags_relation_obj = new cproduct_tags_relation();
+        
+        // 商品情報を取得
+        $product_data_list = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999);
+        foreach ($product_data_list as $p) {
+            if ($p['product_id'] == $product_id) {
+                $product = $p;
+                break;
+            }
+        }
+
+        if ($product) {
+            // 商品画像を取得
+            $images = $product_images_obj->get_images_by_product_id(DEBUG, $product_id);
+            // 商品タグを取得
+            $tags = $product_tags_relation_obj->get_tags_by_product_id(DEBUG, $product_id);
+        }
+
+    }
+
+    // 商品が見つからなかった場合の処理
+    if (!$product) {
+        // header("HTTP/1.0 404 Not Found"); // ヘッダー出力後なのでコメントアウト
+        // メインコンテンツ部分でエラー表示を行う
+    }
+    
+    // ★動的にページタイトルを設定するためのJavaScript
+    if ($product) {
+        echo "<script>document.title = '" . htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') . " | OUR BRAND';</script>";
+    }
+
     ?>
 
     <main>
+        <?php if ($product): // --- 商品が見つかった場合のみ表示 --- ?>
         <div class="breadcrumb">
             <div class="breadcrumb__inner common-inner">
-                <a href="index.php">HOME</a> &gt; <a href="products_list.php">商品一覧</a> &gt; 純米大吟醸 麗し乃雫
+                <a href="index.php">HOME</a> &gt; <a href="products_list.php">商品一覧</a> &gt; <?= htmlspecialchars($product['product_name']) ?>
             </div>
         </div>
 
@@ -50,22 +102,23 @@
                 <div class="product-detail-content">
                     <div class="product-gallery">
                         <div class="product-gallery__main">
-                            <img src="img/gingerale.png" alt="純米大吟醸 麗し乃雫">
+                            <img src="<?= !empty($images) ? htmlspecialchars($images[0]['image_path']) : 'https://placehold.co/600x400?text=No+Image' ?>" alt="<?= htmlspecialchars($product['product_name']) ?>">
                         </div>
                         <div class="product-gallery__thumbnails">
-                            <img src="img/gingerale.png" alt="サムネイル1" class="is-active">
-                            <img src="img/osake.png" alt="サムネイル2">
-                            <img src="img/sake.png" alt="サムネイル3">
-                            <img src="img/sake.png" alt="サムネイル4">
+                            <?php if (!empty($images)): ?>
+                                <?php foreach ($images as $index => $image): ?>
+                                    <img src="<?= htmlspecialchars($image['image_path']) ?>" alt="サムネイル<?= $index + 1 ?>" class="<?= $index === 0 ? 'is-active' : '' ?>">
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <div class="product-info">
-                        <h2 class="product-info__name">純米大吟醸 麗し乃雫</h2>
-                        <p class="product-info__type">日本酒</p>
-                        <p class="product-info__company">三重酒造株式会社</p>
-                        <p class="product-info__catchcopy">伊勢の豊かな水と厳選米が織りなす、<br>芳醇な香りと透明感のある味わい。</p>
-                        <p class="product-info__price">¥ 5,800<span>(税込)</span></p>
+                        <h2 class="product-info__name"><?= htmlspecialchars($product['product_name']) ?></h2>
+                        <p class="product-info__type"><?= htmlspecialchars($product['category_name'] ?? 'カテゴリ未分類') ?></p>
+                        <p class="product-info__company"><?= htmlspecialchars($product['company_name'] ?? '製造元不明') ?></p>
+                        <p class="product-info__catchcopy"><?= nl2br(htmlspecialchars($product['product_description'] ?? '')) ?></p>
+                        <p class="product-info__price">¥ <?= number_format($product['product_price']) ?><span>(税込)</span></p>
                         <p class="product-info__tax-note">※送料別途</p>
 
                         <div class="product-info__buttons">
@@ -88,9 +141,11 @@
                         </div>
 
                         <ul class="product-info__tags">
-                            <li>#華やか</li>
-                            <li>#ギフト</li>
-                            <li>#純米大吟醸</li>
+                            <?php if (!empty($tags)): ?>
+                                <?php foreach ($tags as $tag): ?>
+                                    <li>#<?= htmlspecialchars($tag['tag_name']) ?></li>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>
@@ -99,16 +154,7 @@
                     <h3 class="product-accordion-item__title product-description__title">商品の特徴<span
                             class="accordion-icon"></span></h3>
                     <div class="product-accordion-item__content">
-                        <p>
-                            伊勢の清らかな伏流水と、契約農家で大切に育てられた最高級の酒米「山田錦」を贅沢に使用し、手間暇かけて醸し上げました。
-                            杜氏の技と情熱が凝縮された一本で、口に含むと華やかな吟醸香が広がり、米の旨味と清涼感が絶妙なバランスで溶け合います。
-                            後味はすっきりとキレが良く、心地よい余韻が長く続きます。
-                        </p>
-                        <p>
-                            特別な日の食卓を彩る一本として、また大切な方への贈り物としても最適です。
-                            冷酒で、ワイングラスでお楽しみいただくと、その真価がさらに引き出されます。
-                            より詳しい情報はECサイトの商品ページにてご確認いただけます。
-                        </p>
+                        <p><?= nl2br(htmlspecialchars($product['product_discription'] ?? '')) ?></p>
                     </div>
                 </div>
 
@@ -116,15 +162,7 @@
                     <h3 class="product-accordion-item__title product-description__title">おすすめの飲み方<span
                             class="accordion-icon"></span></h3>
                     <div class="product-accordion-item__content">
-                        <p>
-                            「純米大吟醸 麗し乃雫」を最大限に楽しむためには、冷酒でお召し上がりいただくのがおすすめです。特に、ワイングラスを使用することで、華やかな吟醸香がより一層引き立ちます。
-                        </p>
-                        <p>
-                            食事とのペアリングでは、白身魚の刺身や軽めの和食と相性抜群です。また、チーズやナッツなどの洋風のおつまみともよく合います。特別な日の乾杯酒としても最適です。
-                        </p>
-                        <p>
-                            冷蔵庫でしっかり冷やした後、グラスに注ぎ、ゆっくりと香りを楽しみながら味わってください。温度が少し上がると、米の旨味がさらに引き立つので、温度変化も楽しめます。
-                        </p>
+                        <p><?= nl2br(htmlspecialchars($product['product_How'] ?? '')) ?></p>
                     </div>
                 </div>
 
@@ -132,6 +170,7 @@
                     <h3 class="paired-snacks__title">相性のいいおつまみ</h3>
                     <div class="swiper paired-snacks-swiper">
                         <div class="swiper-wrapper">
+                            <!-- ここは後で動的にする部分（今は静的） -->
                             <div class="swiper-slide">
                                 <div class="product-item">
                                     <a href="otsumami.php">
@@ -144,42 +183,6 @@
                                     </a>
                                 </div>
                             </div>
-                            <div class="swiper-slide">
-                                <div class="product-item">
-                                    <a href="otsumami.php">
-                                        <div class="product-item__img-wrap">
-                                            <img src="./img/otsumami2.jpg" alt="松阪牛しぐれ煮">
-                                        </div>
-                                        <h3 class="product-item__name">松阪牛しぐれ煮</h3>
-                                        <p class="product-item__price">¥ 1,800<span>(税込)</span></p>
-                                        <p class="product-item__tag">#牛肉 #濃厚 #ご飯のお供</p>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="product-item">
-                                    <a href="otsumami.php">
-                                        <div class="product-item__img-wrap">
-                                            <img src="./img/otsumami3.jpg" alt="あおさ海苔の佃煮">
-                                        </div>
-                                        <h3 class="product-item__name">あおさ海苔の佃煮</h3>
-                                        <p class="product-item__price">¥ 800<span>(税込)</span></p>
-                                        <p class="product-item__tag">#海苔 #磯の香り #和食</p>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="swiper-slide">
-                                <div class="product-item">
-                                    <a href="otsumami.php">
-                                        <div class="product-item__img-wrap">
-                                            <img src="./img/otsumami4.jpg" alt="干物アソート">
-                                        </div>
-                                        <h3 class="product-item__name">干物アソート</h3>
-                                        <p class="product-item__price">¥ 2,500<span>(税込)</span></p>
-                                        <p class="product-item__tag">#海鮮 #シンプル #焼き魚</p>
-                                    </a>
-                                </div>
-                            </div>
                         </div>
                         <div class="swiper-pagination"></div>
                     </div>
@@ -187,7 +190,12 @@
 
             </div>
         </section>
-
+        <?php else: // --- 商品が見つからなかった場合の表示 --- ?>
+            <section class="product-not-found" style="text-align: center; padding: 50px 20px;">
+                <p style="font-size: 1.8rem; margin-bottom: 30px;">指定された商品は見つかりませんでした。</p>
+                <a href="products_list.php" class="btn-primary" style="display:inline-block; padding: 10px 30px; background-color:#A0522D; color:white; border-radius:5px;">商品一覧へ戻る</a>
+            </section>
+        <?php endif; ?>
     </main>
 
     <?php 
@@ -261,12 +269,12 @@
                 });
             }
 
-            // 「カートに入れる」ボタン
+            // 「カートに入れる」ボタン（※機能は未実装）
             const addToCartBtn = document.getElementById('add-to-cart-btn');
             if (addToCartBtn) {
                 addToCartBtn.addEventListener('click', function () {
                     const selectedQuantity = parseInt(quantityInput.value);
-                    // カート追加処理
+                    console.log(`カート追加処理（未実装）: 商品ID <?= $product_id ?>, 数量 ${selectedQuantity}`);
                 });
             }
             
@@ -282,7 +290,7 @@
                 });
             });
 
-            // お気に入りボタン
+            // お気に入りボタン（※機能は未実装）
             const favoriteBtn = document.querySelector('.btn-favorite');
             if (favoriteBtn) {
                 favoriteBtn.addEventListener('click', function () {
