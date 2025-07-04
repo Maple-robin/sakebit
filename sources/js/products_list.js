@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // PHPから渡された商品データを取得
+    // PHPから渡された商品データとログイン状態を取得
     let products = initialProductsData; 
+    const isLoggedIn = isUserLoggedIn;
 
     const filterButton = document.getElementById('filter-button');
     const sortButton = document.getElementById('sort-button');
@@ -70,12 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
             productList.innerHTML = '<p class="no-results">該当する商品が見つかりませんでした。</p>';
         } else {
             productsToRender.forEach(product => {
-                // ★★★ ここから修正 ★★★
-                // 商品カードを div から a タグに変更し、リンク先を設定
                 const productCard = document.createElement('a');
                 productCard.href = `product.php?id=${product.id}`;
-                // ★★★ ここまで修正 ★★★
-
                 productCard.classList.add('product-card');
                 productCard.dataset.productId = product.id;
 
@@ -117,25 +114,53 @@ document.addEventListener('DOMContentLoaded', function() {
     productList.addEventListener('click', function(e) {
         // お気に入り（ハート）アイコンのクリック処理
         if (e.target.classList.contains('product-card__favorite')) {
-            // ★★★ ここから修正 ★★★
             e.preventDefault(); // カード全体のリンク遷移をキャンセル
-            // ★★★ ここまで修正 ★★★
-            e.target.classList.toggle('far');
-            e.target.classList.toggle('fas');
-            e.target.classList.toggle('is-favorite');
-            
-            const productId = parseInt(e.target.dataset.productId);
-            const product = products.find(p => p.id === productId);
-            if (product) {
-                product.isFavorite = !product.isFavorite;
+
+            if (!isLoggedIn) {
+                alert('お気に入り機能を利用するにはログインが必要です。');
+                window.location.href = 'login.php?redirect_url=' + encodeURIComponent(window.location.href);
+                return;
             }
+
+            const icon = e.target;
+            const productId = parseInt(icon.dataset.productId);
+            const isFavorited = icon.classList.contains('is-favorite');
+
+            // APIを呼び出し
+            fetch('api/api_toggle_favorite.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    product_id: productId,
+                    is_favorited: isFavorited
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 表示を更新
+                    icon.classList.toggle('far');
+                    icon.classList.toggle('fas');
+                    icon.classList.toggle('is-favorite');
+                    
+                    // ローカルのデータも更新
+                    const product = products.find(p => p.id === productId);
+                    if (product) {
+                        product.isFavorite = !isFavorited;
+                    }
+                } else {
+                    alert(data.message || 'エラーが発生しました。');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('通信エラーが発生しました。');
+            });
         }
 
         // 「+〇」タグのクリック処理
         if (e.target.classList.contains('product-card__tag-more')) {
-            // ★★★ ここから修正 ★★★
             e.preventDefault(); // カード全体のリンク遷移をキャンセル
-            // ★★★ ここまで修正 ★★★
             const productId = parseInt(e.target.dataset.productId);
             const product = products.find(p => p.id == productId);
             if (product) {
@@ -307,7 +332,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case '中国酒':
                     enTitle = "CHINESE LIQUOR LIST";
                     jaTitle = "( 中国酒一覧 )";
-                    guideLink = "guide_chinese_sake.php";
+                    guideLink = "guide_chinese_liquor.php";
                     description = "<ruby>高粱<rt>こうりゃん</rt></ruby>などから<ruby>造<rt>つく</rt></ruby>られる、<ruby>中国<rt>ちゅうごく</rt></ruby><ruby>伝統<rt>でんとう</rt></ruby>の<ruby>蒸留酒<rt>じょうりゅうしゅ</rt></ruby>。<ruby>独特<rt>どくとく</rt></ruby>の<ruby>香<rt>かお</rt></ruby>りが、<ruby>中華<rt>ちゅうか</rt></ruby><ruby>料理<rt>りょうり</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>を<ruby>引<rt>ひ</rt></ruby>き<ruby>立<rt>た</rt></ruby>てます。";
                     break;
                 default:
@@ -320,7 +345,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         else if (currentFilters.tags.length === 1) {
             const selectedTag = currentFilters.tags[0];
-            switch (selectedTag) {                case '初心者向け':
+            switch (selectedTag) {
+                case '初心者向け':
                     enTitle = "FOR BEGINNERS";
                     jaTitle = "( 初めての方へおすすめの一杯 )";
                     description = "お<ruby>酒<rt>さけ</rt></ruby><ruby>初心者<rt>しょしんしゃ</rt></ruby>の<ruby>方<rt>かた</rt></ruby>でも<ruby>安心<rt>あんしん</rt></ruby>してお<ruby>楽<rt>たの</rt></ruby>しみいただける<ruby>商品<rt>しょうひん</rt></ruby>を<ruby>厳選<rt>げんせん</rt></ruby>しました。アルコール<ruby>度数<rt>どすう</rt></ruby>が<ruby>低<rt>ひく</rt></ruby>めで<ruby>飲<rt>の</rt></ruby>みやすく、クセの<ruby>少<rt>すく</rt></ruby>ない<ruby>味<rt>あじ</rt></ruby>わいのものを<ruby>中心<rt>ちゅうしん</rt></ruby>にラインナップ。まずはこちらから<ruby>始<rt>はじ</rt></ruby>めて、お<ruby>酒<rt>さけ</rt></ruby>の<ruby>世界<rt>せかい</rt></ruby>を<ruby>広<rt>ひろ</rt></ruby>げていきましょう。";
@@ -399,7 +425,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.add('no-scroll');
     });
 
-    // カテゴリチェックボックスの変更イベントリスナー
     document.querySelectorAll('#filter-overlay input[name="category"]').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const allCheckbox = document.querySelector('#filter-overlay input[name="category"][value="すべて"]');
@@ -411,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             otherCheckbox.checked = false;
                         }
                     });
-                    document.querySelectorAll('#filter-overlay input[name="tag"]').forEach(tagCheckbox => { // 「すべて」選択時はタグも解除
+                    document.querySelectorAll('#filter-overlay input[name="tag"]').forEach(tagCheckbox => {
                         tagCheckbox.checked = false;
                     });
                 }
@@ -429,11 +454,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // タグチェックボックスの変更イベントリスナー
     document.querySelectorAll('#filter-overlay input[name="tag"]').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
             const allCategoryCheckbox = document.querySelector('#filter-overlay input[name="category"][value="すべて"]');
-            if (this.checked && allCategoryCheckbox) { // タグが選択されたら「すべて」カテゴリを解除
+            if (this.checked && allCategoryCheckbox) {
                 allCategoryCheckbox.checked = false;
             }
             const checkedTags = Array.from(document.querySelectorAll('#filter-overlay input[name="tag"]:checked'));
@@ -470,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('#filter-overlay input[name="category"]:checked').forEach(checkbox => {
             currentFilters.categories.push(checkbox.value);
         });
-        document.querySelectorAll('#filter-overlay input[name="tag"]').forEach(checkbox => {
+        document.querySelectorAll('#filter-overlay input[name="tag"]:checked').forEach(checkbox => {
             currentFilters.tags.push(checkbox.value);
         });
 
@@ -546,7 +570,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    // 初期表示モードを決定
     if (window.innerWidth > 767) { 
         displayGridButton.classList.add('active');
         displayListButton.classList.remove('active');
@@ -557,7 +580,6 @@ document.addEventListener('DOMContentLoaded', function() {
         currentDisplayMode = 'list'; 
     }
 
-    // URLパラメータに基づく初期フィルター/ソートのUI同期
     if (queryParams.category) {
         const categoryCheckbox = document.querySelector(`#filter-overlay input[name="category"][value="${queryParams.category}"]`);
         if (categoryCheckbox) {
@@ -566,16 +588,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (allCategoryCheckbox) allCategoryCheckbox.checked = false;
         }
     } else if (queryParams.tag) {
-        // URLパラメータにタグがある場合、対応するタグのチェックボックスを探してチェックする
         const tagCheckbox = document.querySelector(`#filter-overlay input[name="tag"][value="${queryParams.tag}"]`);
         if (tagCheckbox) {
             tagCheckbox.checked = true;
-            // 該当するタグの<details>要素を開く (この時点では<details>はproducts_list.phpのHTMLに存在しません)
-            // このロジックは、products_list.phpが動的なタグ表示を行うまで影響しません
-            // const detailsElement = tagCheckbox.closest('details');
-            // if (detailsElement) {
-            //     detailsElement.open = true;
-            // }
         }
     } else {
         const allCategoryCheckbox = document.querySelector('#filter-overlay input[name="category"][value="すべて"]');
@@ -585,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     if (queryParams.sort) {
-        const sortRadio = document.querySelector(`#sort-overlay input[name="sort_order"]:checked`); // valueでなく直接選択
+        const sortRadio = document.querySelector(`#sort-overlay input[name="sort_order"]:checked`);
         if (sortRadio) {
             sortRadio.checked = true;
         }
@@ -614,5 +629,5 @@ document.addEventListener('DOMContentLoaded', function() {
         applyFiltersAndSort(false); 
     });
 
-    applyFiltersAndSort(); // 初期表示
+    applyFiltersAndSort();
 });
