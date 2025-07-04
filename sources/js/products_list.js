@@ -70,7 +70,12 @@ document.addEventListener('DOMContentLoaded', function() {
             productList.innerHTML = '<p class="no-results">該当する商品が見つかりませんでした。</p>';
         } else {
             productsToRender.forEach(product => {
-                const productCard = document.createElement('div');
+                // ★★★ ここから修正 ★★★
+                // 商品カードを div から a タグに変更し、リンク先を設定
+                const productCard = document.createElement('a');
+                productCard.href = `product.php?id=${product.id}`;
+                // ★★★ ここまで修正 ★★★
+
                 productCard.classList.add('product-card');
                 productCard.dataset.productId = product.id;
 
@@ -80,17 +85,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const favoriteClass = product.isFavorite ? 'fas fa-heart is-favorite' : 'far fa-heart';
 
-                // ★★★ ここから修正 ★★★
-                const MAX_VISIBLE_TAGS = 4; // 表示するタグの最大数
+                const MAX_VISIBLE_TAGS = 4;
                 let tagsHtml = '';
                 if (product.tags.length > MAX_VISIBLE_TAGS) {
                     tagsHtml = product.tags.slice(0, MAX_VISIBLE_TAGS).map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
                     const remainingCount = product.tags.length - MAX_VISIBLE_TAGS;
-                    tagsHtml += `<span class="product-card__tag-more" data-product-id="${product.id}">+${remainingCount}</span>`;
+                    tagsHtml += `<span class="product-card__tag product-card__tag-more" data-product-id="${product.id}">+${remainingCount}</span>`;
                 } else {
                     tagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
                 }
-                // ★★★ ここまで修正 ★★★
 
                 productCard.innerHTML = `
                     <img src="${product.image}" alt="${product.name}" class="product-card__image">
@@ -110,10 +113,13 @@ document.addEventListener('DOMContentLoaded', function() {
         renderPagination(totalProducts);
     }
 
-    // ★★★ ここからイベントリスナー修正（ハートとおまとめ） ★★★
+    // イベントリスナーの修正
     productList.addEventListener('click', function(e) {
         // お気に入り（ハート）アイコンのクリック処理
         if (e.target.classList.contains('product-card__favorite')) {
+            // ★★★ ここから修正 ★★★
+            e.preventDefault(); // カード全体のリンク遷移をキャンセル
+            // ★★★ ここまで修正 ★★★
             e.target.classList.toggle('far');
             e.target.classList.toggle('fas');
             e.target.classList.toggle('is-favorite');
@@ -127,6 +133,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 「+〇」タグのクリック処理
         if (e.target.classList.contains('product-card__tag-more')) {
+            // ★★★ ここから修正 ★★★
+            e.preventDefault(); // カード全体のリンク遷移をキャンセル
+            // ★★★ ここまで修正 ★★★
             const productId = parseInt(e.target.dataset.productId);
             const product = products.find(p => p.id == productId);
             if (product) {
@@ -136,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    // ★★★ ここまでイベントリスナー修正 ★★★
 
 
     function renderPagination(totalProducts) {
