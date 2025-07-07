@@ -52,7 +52,7 @@
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/spirits_gin.png');">
                         <h4>ジン</h4>
                         <p>ジュニパーベリーの香りが特徴。ジントニックが有名で、ボタニカルの複雑な香りを楽しめます。</p>
                     </div>
@@ -60,7 +60,7 @@
                         <h4>ウォッカ</h4>
                         <p>クリアでクセのない味わいが特徴。様々なジュースやリキュールと相性が良く、カクテルの幅を広げます。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/spirits_rum.png');">
                         <h4>ラム</h4>
                         <p>サトウキビを原料とし、甘い香りとコクが特徴。コーラで割るキューバリブレや、ミントと合わせるモヒートが人気です。</p>
                     </div>
