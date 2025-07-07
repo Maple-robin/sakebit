@@ -33,10 +33,10 @@
                     <h2 class="ja">中国酒ってなんだろう？</h2>
                     <p class="en">What is Chinese Liquor?</p>
                 </div>
-                <div class="guide-intro-content">
-                    <div class="guide-intro-content__image-container">
-                        <img src="img/国花瓷.png" alt="中国酒の紹介画像" class="guide-intro-content__image">
-                        <div class="guide-intro-content__overlay">
+                <div class="intro-content">
+                    <div class="intro-content__image-container">
+                        <img src="img/国花瓷.png" alt="中国酒の紹介画像" class="intro-content__image">
+                        <div class="intro-content__overlay">
                             <p>中国酒は、数千年の歴史を持つ中国伝統のお酒の総称です。広大な国土と多様な気候風土を背景に、穀物を主原料とした白酒（バイチュウ）、もち米などを原料とする黄酒（ホアンチュウ）など、多種多様なお酒が造られています。</p>
                         </div>
                     </div>
@@ -51,16 +51,16 @@
                     <h2 class="ja">代表的な中国酒</h2>
                     <p class="en">Major Types</p>
                 </div>
-                <div class="guide-types">
-                    <div class="guide-type-card">
+                <div class="alcohol-types">
+                    <div class="type-card type-card--bg" style="background-image: url('img/baijiu_glass.png');">
                         <h4>白酒（バイチュウ）</h4>
                         <p>高粱（こうりゃん）などを原料とする蒸留酒。アルコール度数が高く、独特の強い香りが特徴です。</p>
                     </div>
-                    <div class="guide-type-card guide-type-card--bg" style="background-image: url('img/shaoxing_wine.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/shaoxing_wine.png');">
                         <h4>黄酒（ホアンチュウ）</h4>
                         <p>もち米やうるち米を原料とする醸造酒。紹興酒が有名で、まろやかな口当たりと深いコクが特徴です。</p>
                     </div>
-                    <div class="guide-type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/xinglujiu.png');">
                         <h4>果酒（カシュ）</h4>
                         <p>果実を原料としたお酒。杏露酒（シンルチュウ）などが知られ、フルーティーで甘い味わいが楽しめます。</p>
                     </div>
