@@ -52,7 +52,7 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/whisky_scotch.png');">
                         <h4>スコッチウィスキー</h4>
                         <p>スモーキーな香りが特徴ですが、華やかで飲みやすいタイプも多数。バニラのような甘い香りも楽しめます。</p>
                     </div>
@@ -60,7 +60,7 @@
                         <h4>ジャパニーズウィスキー</h4>
                         <p>繊細でバランスの取れた味わいが特徴。ハイボールにすると、その良さが一層引き立ちます。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/whisky_bourbon.png');">
                         <h4>バーボンウィスキー</h4>
                         <p>トウモロコシを主原料とし、甘く華やかな香りが特徴。コーラで割るのもおすすめです。</p>
                     </div>
