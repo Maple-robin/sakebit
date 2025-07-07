@@ -52,7 +52,7 @@
                     <p class="en">Popular Flavors</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/lemon_sour.png');">
                         <h4>レモンサワー</h4>
                         <p>定番中の定番。甘さ控えめのドライなものから、はちみつレモンのような甘いものまで様々です。</p>
                     </div>
@@ -60,7 +60,7 @@
                         <h4>グレープフルーツ</h4>
                         <p>爽やかな酸味とほろ苦さが特徴。食事にも合わせやすく、さっぱりと飲みたいときにおすすめです。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/horoyoi.png');">
                         <h4>ピーチ・ブドウ</h4>
                         <p>果物の甘みをしっかりと感じられるフレーバー。ジュース感覚で飲めるため、女性にも人気です。</p>
                     </div>
