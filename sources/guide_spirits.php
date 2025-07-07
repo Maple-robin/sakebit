@@ -48,7 +48,7 @@
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">代表的なスピリッツ</h2>
+                    <h2 class="ja">主な種類</h2>
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
@@ -71,11 +71,28 @@
         <!-- おいしい飲み方を見つけよう -->
         <section class="how-to-drink-section section-inner">
             <div class="section-title">
-                <h2 class="ja">定番カクテルを楽しもう</h2>
-                <p class="en">CLASSIC COCKTAILS</p>
+                <h2 class="ja">おすすめの飲み方</h2>
+                <p class="en">HOW TO DRINK</p>
             </div>
 
             <div class="drink-ways">
+                <!-- カシスオレンジ -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>カシスオレンジ</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>カシスリキュールをオレンジジュースで割り、フルーティーでジュースのように甘く飲みやすいカクテルです。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/cassis_orange.png" alt="カシスオレンジ">
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
                 <!-- ジントニック -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
@@ -83,44 +100,27 @@
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>ジンの爽やかな香りとトニックウォーターのほろ苦さが絶妙にマッチした、世界中で愛されるカクテル。ライムを搾ってどうぞ。</p>
+                            <p>ジンをトニックウォーターで割り、爽やかな香りとすっきりとしたほろ苦さが楽しめる定番カクテルです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/gin_and_tonic.png" alt="ジントニック">
+                            <img src="img/gin_tonic.png" alt="ジントニック">
                         </div>
                     </div>
                 </div>
 
                 <hr>
 
-                <!-- モスコミュール -->
+                <!-- スクリュードライバー -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>モスコミュール</h3>
+                        <h3>スクリュードライバー</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>ウォッカをジンジャーエールで割り、ライムジュースを加えたカクテル。銅製のマグカップで飲むのが伝統的なスタイルです。</p>
+                            <p>ウォッカをオレンジジュースで割り、オレンジの甘みでアルコール感をほとんど感じさせない飲みやすいカクテルです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/moscow_mule.png" alt="モスコミュール">
-                        </div>
-                    </div>
-                </div>
-
-                <hr>
-
-                <!-- モヒート -->
-                <div class="drink-way-item">
-                    <div class="drink-way-item__title">
-                        <h3>モヒート</h3>
-                    </div>
-                    <div class="drink-way-item__step">
-                        <div class="drink-way-item__description">
-                            <p>ラムをベースに、ミントの葉、ライム、砂糖、ソーダ水を加えた、清涼感あふれるカクテル。夏にぴったりの一杯です。</p>
-                        </div>
-                        <div class="drink-way-item__image">
-                            <img src="img/mojito.png" alt="モヒート">
+                            <img src="img/screwdriver.png" alt="スクリュードライバー">
                         </div>
                     </div>
                 </div>

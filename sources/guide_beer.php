@@ -58,21 +58,21 @@
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">初心者におすすめの種類</h2>
-                    <p class="en">Easy to Drink</p>
+                    <h2 class="ja">主な種類</h2>
+                    <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/beer_pilsner.png');">
                         <h4>ピルスナー</h4>
-                        <p>世界で最も普及しているスタイル。すっきりとしたのどごしと爽やかなホップの苦みが特徴です。</p>
+                        <p>世界で最も普及しているスタイルで、アサヒスーパードライやキリン一番搾りなど、日本で売られているビールのほとんどがこれに当たります。すっきりとしたのどごしと爽やかなホップの苦みが特徴です。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/beer_glass.png');">
                         <h4>ヴァイツェン</h4>
-                        <p>小麦を主原料とした、フルーティーでバナナのような香りが特徴の白ビール。苦みが少なくまろやかです。</p>
+                        <p>小麦を主原料とした、フルーティーでバナナのような香りが特徴の白ビールです。苦みが少なくまろやかな口当たりで、酵母の働きによる独特の風味が楽しめます。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/beer_ale.png');">
                         <h4>ペールエール</h4>
-                        <p>豊かなホップの香りと程よい苦みが特徴。クラフトビールの入門としても人気です。</p>
+                        <p>ホップを豊富に使うことで、柑橘系やフローラルな華やかな香りと程よい苦みが特徴です。クラフトビールの入門としても人気が高く、香りを楽しむことに重点を置いたスタイルです。</p>
                     </div>
                 </div>
             </div>
@@ -81,39 +81,56 @@
         <!-- おいしい飲み方を見つけよう -->
         <section class="how-to-drink-section section-inner">
             <div class="section-title">
-                <h2 class="ja">おいしい注ぎ方を見つけよう</h2>
-                <p class="en">HOW TO POUR</p>
+                <h2 class="ja">ビールの飲み方</h2>
+                <p class="en">HOW TO BEER</p>
             </div>
 
             <div class="drink-ways">
-                <!-- 三度注ぎ -->
+                <!-- 適温で風味を最大限に -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>三度注ぎ</h3>
+                        <h3>適温で風味を最大限に</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>一度目は勢いよく注いで泡を作り、二度目はゆっくり注いで液体を増やし、三度目で泡を整える方法。ビールの炭酸と風味のバランスが絶妙になります。</p>
+                            <p>冷やしすぎず適温で飲むことで、ビールの持つ豊かな香りと味わいをしっかり楽しめます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/beer_bottle.png" alt="三度注ぎのイメージ">
+                            <img src="img/beer_bottle.png" alt="適温で風味を最大限に">
                         </div>
                     </div>
                 </div>
 
                 <hr>
 
-                <!-- グラス選び -->
+                <!-- グラスに注いで香り立ちを -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>グラス選び</h3>
+                        <h3>グラスに注いで香り立ちを</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>ビールのスタイルに合わせてグラスを選ぶと、香りや味わいが一層引き立ちます。例えば、ピルスナーには細長いグラス、エールには丸みのあるグラスがおすすめです。</p>
+                            <p>グラスに注ぐと泡立ちが良くなり、香りが広がりやすくなります。見た目も美しく、より美味しく感じられます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/beer_collection.png" alt="様々なビアグラス">
+                            <img src="img/beer_collection.png" alt="グラスに注いで香り立ちを">
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- 料理との相性で深みを -->
+                <div class="drink-way-item">
+                    <div class="drink-way-item__title">
+                        <h3>料理との相性で深みを</h3>
+                    </div>
+                    <div class="drink-way-item__step">
+                        <div class="drink-way-item__description">
+                            <p>ビールと料理を合わせることで、互いの美味しさが引き立ちます。すっきり系は揚げ物、フルーティー系はサラダなどがおすすめです。</p>
+                        </div>
+                        <div class="drink-way-item__image">
+                            <img src="img/red_wine.png" alt="料理との相性で深みを">
                         </div>
                     </div>
                 </div>

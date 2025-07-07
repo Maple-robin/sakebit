@@ -117,7 +117,7 @@
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>ウィスキーと常温の水を1:1で割る飲み方。香りが最も開き、ブレンダーがテイスティングする際にも用いる方法です。</p>
+                            <p>ウイスキーと水を1:1で混ぜて飲む方法です。ウイスキーの良い香りが一番よくわかる飲み方です。</p>
                         </div>
                         <div class="drink-way-item__image">
                             <img src="img/twice_up.png" alt="トワイスアップ">

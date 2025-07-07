@@ -48,21 +48,21 @@
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">人気のフレーバー</h2>
-                    <p class="en">Popular Flavors</p>
+                    <h2 class="ja">主な種類/h2>
+                    <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/lemon_sour.png');">
                         <h4>レモンサワー</h4>
-                        <p>定番中の定番。甘さ控えめのドライなものから、はちみつレモンのような甘いものまで様々です。</p>
+                        <p>定番の味で、甘いものから甘くないものまで種類が豊富です。食事にも合わせやすく、迷ったらこれを選ぶのがおすすめです。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/chuhai_glass.png');">
-                        <h4>グレープフルーツ</h4>
-                        <p>爽やかな酸味とほろ苦さが特徴。食事にも合わせやすく、さっぱりと飲みたいときにおすすめです。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/grapefruit_sour.png');">
+                        <h4>グレープフルーツサワー</h4>
+                        <p>爽やかな酸味と少し苦い味が特徴です。口の中をさっぱりさせたい時や、食事と一緒に飲むのにぴったりです。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/horoyoi.png');">
-                        <h4>ピーチ・ブドウ</h4>
-                        <p>果物の甘みをしっかりと感じられるフレーバー。ジュース感覚で飲めるため、女性にも人気です。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/strong_zero.png');">
+                        <h4>ストロング系</h4>
+                        <p>甘さがなく、アルコール度数が高めです。キリッとした飲みごたえがあり、甘くない味を好む方におすすめです。</p>
                     </div>
                 </div>
             </div>
