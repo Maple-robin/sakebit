@@ -62,7 +62,7 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/wine_sauvignon.png');">
                         <h4>ソーヴィニヨン・ブラン</h4>
                         <p>爽やかな柑橘系の香りと軽快な酸味が特徴の白ワイン。シーフードなどと相性抜群です。</p>
                     </div>
@@ -70,7 +70,7 @@
                         <h4>メルロー</h4>
                         <p>渋みが少なく、果実味豊かでまろやかな口当たりの赤ワイン。肉料理全般によく合います。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/wine_prosecco.png');">
                         <h4>プロセッコ</h4>
                         <p>イタリア産のスパークリングワイン。フルーティーで飲みやすく、お祝いの席にもぴったりです。</p>
                     </div>
