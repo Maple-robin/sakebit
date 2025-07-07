@@ -62,7 +62,7 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/shochu_mugi.png');">
                         <h4>麦焼酎</h4>
                         <p>麦を原料とし、軽やかで香ばしい風味が特徴。クセが少なく、すっきりとした味わいで飲みやすいです。</p>
                     </div>
@@ -70,7 +70,7 @@
                         <h4>米焼酎</h4>
                         <p>日本酒のような吟醸香と、まろやかで上品な甘みが特徴。フルーティーで飲みやすいものも多いです。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/shochu_imo.png');">
                         <h4>芋焼酎</h4>
                         <p>さつまいもを原料とし、独特の甘く華やかな香りが魅力。近年は飲みやすく改良されたものも増えています。</p>
                     </div>
