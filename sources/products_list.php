@@ -5,13 +5,65 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続、セッション開始、DEBUG定数の定義はすべて header.php (またはそれが読み込むファイル) で行われます。
-// このファイルでの個別の定義は不要です。
+// 共通ヘッダーを読み込む（この中でセッションが開始され、DBクラスが使えるようになります）
+require_once 'header.php';
 
-// このページで必要なDB処理は、<html>タグ以降、
-// header.php を読み込んだ後で行います。
-// なぜなら、クラス定義が header.php 内で読み込まれるためです。
+// --- ★ここからPHP処理を開始 ---
 
+if (!defined('DEBUG')) {
+    define('DEBUG', true);
+}
+
+// ログイン状態をチェック
+$is_logged_in = isset($_SESSION['user_id']);
+$current_user_id = $_SESSION['user_id'] ?? null;
+
+// DBクラスのインスタンスを生成
+$product_info_obj = new cproduct_info();
+$tags_obj = new ctags_for_products();
+$favorites_db = new cproduct_favorites();
+
+// ★ログイン中であれば、お気に入り商品IDのリストを取得
+$favorite_product_ids = [];
+if ($is_logged_in) {
+    $favorite_product_ids = $favorites_db->get_favorite_product_ids_by_user_id(DEBUG, $current_user_id);
+}
+
+// 全ての商品を取得
+$products_from_db = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999); 
+if ($products_from_db === false) {
+    $products_from_db = [];
+    error_log("Failed to fetch all product data.");
+}
+
+// JavaScriptに渡すための商品データを整形
+$products_for_js = [];
+if (!empty($products_from_db)) {
+    foreach ($products_from_db as $product) {
+        $created_at = $product['created_at'] ?? date('Y-m-d H:i:s'); 
+        $image_paths_str = $product['image_paths'] ?? '';
+        $image_paths = !empty($image_paths_str) ? explode(';', $image_paths_str) : [];
+        $main_image = !empty($image_paths[0]) ? htmlspecialchars($image_paths[0]) : 'https://placehold.co/300x200?text=NoImage';
+        $tags_array = !empty($product['tags_concat']) ? array_map('trim', explode(',', $product['tags_concat'])) : [];
+
+        $products_for_js[] = [
+            'id' => (int)$product['product_id'],
+            'name' => htmlspecialchars($product['product_name']),
+            'image' => $main_image,
+            'volume' => htmlspecialchars($product['product_Contents']),
+            'price' => (float)$product['product_price'],
+            'tags' => $tags_array,
+            'category' => htmlspecialchars($product['category_name']),
+            'releaseDate' => date('Y-m-d', strtotime($created_at)),
+            'rankingScore' => 100, // 仮のランキングスコア
+            // ★各商品がお気に入りされているかどうかの判定結果を追加
+            'isFavorite' => in_array($product['product_id'], $favorite_product_ids)
+        ];
+    }
+}
+
+// フィルターパネル用にタグカテゴリを取得
+$grouped_tags_for_panel = $tags_obj->get_all_tags_grouped_by_category(DEBUG);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -32,51 +84,7 @@
 
 <body>
 
-    <?php 
-    // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
-
-    // --- ここから、このページ固有のPHP処理 ---
-
-    // データベースクラスのインスタンスを生成
-    $product_info_obj = new cproduct_info();
-    $tags_obj = new ctags_for_products();
-
-    // 全ての商品を取得
-    $products_from_db = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999); 
-    if ($products_from_db === false) {
-        $products_from_db = []; // 取得失敗時は空の配列を設定
-        error_log("Failed to fetch all product data.");
-    }
-
-    // JavaScriptに渡すための商品データを整形
-    $products_for_js = [];
-    if (!empty($products_from_db)) {
-        foreach ($products_from_db as $product) {
-            $created_at = $product['created_at'] ?? date('Y-m-d H:i:s'); 
-            $image_paths_str = $product['image_paths'] ?? '';
-            $image_paths = !empty($image_paths_str) ? explode(';', $image_paths_str) : [];
-            $main_image = !empty($image_paths[0]) ? htmlspecialchars($image_paths[0]) : 'https://placehold.co/300x200?text=NoImage';
-            $tags_array = !empty($product['tags_concat']) ? array_map('trim', explode(',', $product['tags_concat'])) : [];
-
-            $products_for_js[] = [
-                'id' => (int)$product['product_id'],
-                'name' => htmlspecialchars($product['product_name']),
-                'image' => $main_image,
-                'volume' => htmlspecialchars($product['product_Contents']),
-                'price' => (float)$product['product_price'],
-                'tags' => $tags_array,
-                'category' => htmlspecialchars($product['category_name']),
-                'releaseDate' => date('Y-m-d', strtotime($created_at)),
-                'rankingScore' => 100, // 仮のランキングスコア
-                'isFavorite' => false // 初期値
-            ];
-        }
-    }
-
-    // フィルターパネル用にタグカテゴリを取得
-    $grouped_tags_for_panel = $tags_obj->get_all_tags_grouped_by_category(DEBUG);
-    ?>
+    <?php // ヘッダーは読み込み済み ?>
 
     <main>
         <div class="ranking-container">
@@ -188,8 +196,9 @@
     ?>
 
     <script>
-        // PHPから商品データをJSON形式でJavaScriptの変数に渡す
-        const initialProductsData = <?php echo json_encode($products_for_js, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); ?>;
+        // PHPからJavaScriptへデータを渡す
+        const initialProductsData = <?= json_encode($products_for_js, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); ?>;
+        const isUserLoggedIn = <?= json_encode($is_logged_in); ?>;
     </script>
     <script src="js/products_list.js"></script>
     <script src="js/sticky-controls.js"></script>
