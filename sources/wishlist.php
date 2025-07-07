@@ -5,18 +5,27 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// 共通ヘッダーを読み込む（この中でセッションが開始され、DBクラスが使えるようになります）
-require_once 'header.php';
+// ★★★ ここから修正 ★★★
+// ヘッダー(HTML)を読み込む前に、まずPHPの処理を先に実行します。
 
-// --- ★ここからPHP処理を開始 ---
+// データベース接続情報やクラス定義を先に読み込む
+require_once __DIR__ . '/common/contents_db.php';
 
-// ログインしていない場合は、ログインページにリダイレクト
+// セッションを開始 (header.phpでも呼ばれますが、チェックのためにここで先に開始します)
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// ログインチェック
 if (!isset($_SESSION['user_id'])) {
-    // ログイン後の戻り先として、このページのURLを渡す
+    // ログインしていなければ、リダイレクトして処理を完全に終了
     header('Location: login.php?redirect_url=wishlist.php');
     exit();
 }
 
+// --- これ以降はログインしているユーザー向けの処理 ---
+
+// ログインしているユーザーのIDを取得
 $current_user_id = $_SESSION['user_id'];
 $debug_mode = defined('DEBUG') ? DEBUG : false;
 
@@ -31,14 +40,12 @@ $favorite_products_for_js = [];
 
 // お気に入り商品が1つ以上ある場合のみ、商品情報を取得
 if (!empty($favorite_ids)) {
-    // 全商品情報を取得（本来はID指定で取得する方が効率的ですが、既存の作りに合わせます）
+    // 全商品情報を取得
     $all_products = $product_info_obj->get_product_list_for_admin($debug_mode, null, 0, 99999);
     
     $favorited_products_map = [];
     foreach ($all_products as $product) {
-        // 全商品の中から、お気に入りIDに合致するものだけを抽出
         if (in_array($product['product_id'], $favorite_ids)) {
-            // JavaScriptで使いやすいようにデータを整形
             $tags_array = !empty($product['tags_concat']) ? array_map('trim', explode(',', $product['tags_concat'])) : [];
             $image_paths = !empty($product['image_paths']) ? explode(';', $product['image_paths']) : [];
             $main_image = !empty($image_paths[0]) ? htmlspecialchars($image_paths[0]) : 'https://placehold.co/300x200?text=NoImage';
@@ -50,12 +57,12 @@ if (!empty($favorite_ids)) {
                 'volume' => htmlspecialchars($product['product_Contents']),
                 'price' => (float)$product['product_price'],
                 'tags' => $tags_array,
-                'isFavorite' => true // お気に入りページなので常にtrue
+                'isFavorite' => true
             ];
         }
     }
     
-    // お気に入りに追加した最新の順序を維持して最終的な配列を作成
+    // お気に入りに追加した最新の順序を維持
     foreach($favorite_ids as $id) {
         if(isset($favorited_products_map[$id])) {
             $favorite_products_for_js[] = $favorited_products_map[$id];
@@ -63,6 +70,7 @@ if (!empty($favorite_ids)) {
     }
 }
 
+// ★★★ ここまでがPHPの事前処理 ★★★
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -83,7 +91,8 @@ if (!empty($favorite_ids)) {
 
 <body>
     <?php 
-    // 共通ヘッダーは既に読み込み済み
+    // 共通ヘッダーを読み込む
+    require_once 'header.php'; 
     ?>
 
     <main>
@@ -107,8 +116,8 @@ if (!empty($favorite_ids)) {
     require_once 'footer.php'; 
     ?>
 
-    <!-- ★PHPからJavaScriptへお気に入り商品データを渡す -->
     <script>
+        // PHPからJavaScriptへお気に入り商品データを渡す
         const initialFavoriteProducts = <?= json_encode($favorite_products_for_js, JSON_UNESCAPED_UNICODE); ?>;
     </script>
     <script src="js/wishlist.js"></script>
