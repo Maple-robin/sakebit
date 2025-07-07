@@ -67,7 +67,7 @@
                     <p class="en">Choose by Base Liquor</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/umeshu_white.png');">
                         <h4>ホワイトリカーベース</h4>
                         <p>最も一般的で、すっきりとクリアな味わい。梅本来の風味をストレートに楽しめます。</p>
                     </div>
@@ -75,7 +75,7 @@
                         <h4>ブランデーベース</h4>
                         <p>ブランデーの芳醇な香りとコクが加わり、重厚で贅沢な味わいの梅酒になります。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/umeshu_sake.png');">
                         <h4>日本酒ベース</h4>
                         <p>日本酒の米の旨味と梅の酸味が調和し、まろやかで深みのある味わいが楽しめます。</p>
                     </div>
