@@ -69,7 +69,7 @@
                     <p class="en">For Beginners</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/sake_rice.png');">
                         <h4>純米酒</h4>
                         <p>米と米麹、水だけで造られた、米本来の旨味やコクが味わえるタイプ。料理との相性も抜群です。</p>
                     </div>
@@ -77,7 +77,7 @@
                         <h4>吟醸酒</h4>
                         <p>よく磨いた米を低温でゆっくり発酵させて造られ、フルーティーで華やかな香りが特徴です。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/sake_bottle.png');">
                         <h4>本醸造酒</h4>
                         <p>すっきりとキレのある味わいが特徴。冷やしても燗にしても美味しく、日常的に楽しめます。</p>
                     </div>
