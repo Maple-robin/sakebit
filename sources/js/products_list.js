@@ -274,7 +274,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (currentFilters.categories.length === 1 && currentFilters.categories[0] !== 'すべて') {
             const selectedCategory = currentFilters.categories[0];
-            switch (selectedCategory) {                case '日本酒':
+            switch (selectedCategory) {
+                case '日本酒':
                     enTitle = "SAKE LIST";
                     jaTitle = "( 日本酒一覧 )";
                     guideLink = "guide_sake.php";
