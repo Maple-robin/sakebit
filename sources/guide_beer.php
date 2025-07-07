@@ -62,7 +62,7 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/beer_pilsner.png');">
                         <h4>ピルスナー</h4>
                         <p>世界で最も普及しているスタイル。すっきりとしたのどごしと爽やかなホップの苦みが特徴です。</p>
                     </div>
@@ -70,7 +70,7 @@
                         <h4>ヴァイツェン</h4>
                         <p>小麦を主原料とした、フルーティーでバナナのような香りが特徴の白ビール。苦みが少なくまろやかです。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/beer_ale.png');">
                         <h4>ペールエール</h4>
                         <p>豊かなホップの香りと程よい苦みが特徴。クラフトビールの入門としても人気です。</p>
                     </div>
