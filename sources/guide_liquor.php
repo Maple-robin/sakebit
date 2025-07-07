@@ -69,7 +69,7 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/soda.png');">
                         <h4>ソーダ割り</h4>
                         <p>最もシンプルで爽やかな飲み方。リキュールの持つ本来の風味を軽やに楽しめます。</p>
                     </div>
@@ -77,7 +77,7 @@
                         <h4>ジュース割り</h4>
                         <p>オレンジやグレープフルーツジュースで割れば、フルーティーで飲みやすいカクテルが完成します。</p>
                     </div>
-                    <div class="type-card">
+                    <div class="type-card type-card--bg" style="background-image: url('img/rock.png');">
                         <h4>ロック</h4>
                         <p>氷を入れたグラスに注ぐだけ。リキュール本来の濃厚な味わいをじっくりと楽しめます。</p>
                     </div>
@@ -218,18 +218,7 @@
             </div>
         </section>
 
-        <!-- 注意事項 -->
-        <section class="guide-section caution-section">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">注意事項</h2>
-                    <p class="en">Caution</p>
-                </div>
-                <div class="caution-content">
-                    <p>リキュールはアルコール度数が高いため、飲みすぎに注意しましょう。また、妊娠中や授乳中の方は摂取を控えてください。</p>
-                </div>
-            </div>
-        </section>
+        
     </main>
 
     <?php 
