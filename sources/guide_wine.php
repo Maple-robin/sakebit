@@ -62,17 +62,17 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/wine_sauvignon.png');">
-                        <h4>ソーヴィニヨン・ブラン</h4>
-                        <p>爽やかな柑橘系の香りと軽快な酸味が特徴の白ワイン。シーフードなどと相性抜群です。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/wine_red_bottle.png');">
+                        <h4>赤ワイン</h4>
+                        <p>ブドウの皮や種を発酵させて作られる。<br>渋みとコクがある味わいが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/wine_glass.png');">
-                        <h4>メルロー</h4>
-                        <p>渋みが少なく、果実味豊かでまろやかな口当たりの赤ワイン。肉料理全般によく合います。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/wine_white_bottle.png');">
+                        <h4>白ワイン</h4>
+                        <p>ブドウの果汁のみを発酵させて作られる。<br>爽やかな酸味と果実のような香りが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/wine_prosecco.png');">
-                        <h4>プロセッコ</h4>
-                        <p>イタリア産のスパークリングワイン。フルーティーで飲みやすく、お祝いの席にもぴったりです。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/wine_rose_bottle.png');">
+                        <h4>ロゼ</h4>
+                        <p>ブドウの皮を少しだけ使って作るワインです。<br>すっきりとしたブドウの風味と後味が特徴です。</p>
                     </div>
                 </div>
             </div>
@@ -81,56 +81,57 @@
         <!-- おいしい飲み方を見つけよう -->
         <section class="how-to-drink-section section-inner">
             <div class="section-title">
-                <h2 class="ja">おいしいペアリングを見つけよう</h2>
-                <p class="en">HOW TO PAIRING</p>
+                <h2 class="ja">ワインの飲み方</h2>
+                <p class="en">HOW TO WINE</p>
             </div>
 
             <div class="drink-ways">
-                <!-- 赤ワインと料理 -->
+                <!-- 料理との相性を楽しむ -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>赤ワインと料理</h3>
+                        <h3>料理との相性を楽しむ</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>フルボディの赤ワインにはステーキなどの濃厚な肉料理、ライトボディならトマトソースのパスタなどがおすすめです。</p>
+                            <p>まずは料理との相性を楽しみましょう。
+                                ワインが料理の風味を広げ、新たな味わいが生まれます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/red_wine.png" alt="赤ワインと料理">
+                            <img src="img/red_wine.png" alt="料理との相性を楽しむ">
                         </div>
                     </div>
                 </div>
 
                 <hr>
 
-                <!-- 白ワインと料理 -->
+                <!-- 香りを意識する -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>白ワインと料理</h3>
+                        <h3>香りを意識する</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>辛口の白ワインは魚介類や鶏肉料理、甘口ならデザートやフルーツとよく合います。特に牡蠣とシャブリの組み合わせは有名です。</p>
+                            <p>飲むだけでなく、香りにも意識を向けてみましょう。いつもと違うワインの魅力が見つかります。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/white_wine.png" alt="白ワインと料理">
+                            <img src="img/white_wine.png" alt="香りを意識する">
                         </div>
                     </div>
                 </div>
 
                 <hr>
 
-                <!-- チーズとのペアリング -->
+                <!-- グラスに注いで楽しむ -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>チーズとのペアリング</h3>
+                        <h3>グラスに注いで楽しむ</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>ワインとチーズは最高の組み合わせ。産地を合わせるのが基本です。例えば、フランスのロックフォールには、同じ地方の甘口ワイン「ソーテルヌ」がよく合います。</p>
+                            <p>グラスに注ぐことでワインの香りがより引き立ち、見た目も美しく楽しめます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/cheese.png" alt="ワインとチーズ">
+                            <img src="img/cheese.png" alt="グラスに注いで楽しむ">
                         </div>
                     </div>
                 </div>
