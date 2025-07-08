@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
         productList.innerHTML = ''; // 一旦リストを空にする
         productList.className = 'product-grid'; // PC/スマホ共通でグリッド表示
 
-        // 既存の「お気に入りはありません」メッセージを削除
         const existingMsg = document.querySelector('.no-favorites-message');
         if (existingMsg) {
             existingMsg.remove();
@@ -20,32 +19,32 @@ document.addEventListener('DOMContentLoaded', function() {
             const msg = document.createElement('p');
             msg.className = 'no-favorites-message';
             msg.textContent = 'お気に入りの商品はありません。';
-            productList.insertAdjacentElement('afterend', msg); // リストの後ろにメッセージを挿入
+            // productList自体が空になるので、その親要素の後ろにメッセージを挿入
+            if(productList.parentNode) {
+                 productList.parentNode.insertBefore(msg, productList.nextSibling);
+            }
             return;
         }
 
         productsToRender.forEach(product => {
-            // 商品カード全体を詳細ページへのリンクにする
             const productCardLink = document.createElement('a');
             productCardLink.href = `product.php?id=${product.id}`;
             productCardLink.classList.add('product-card');
             productCardLink.dataset.productId = product.id;
 
-            // isFavoriteがtrueなので、ハートは常に塗りつぶしで表示
             const favoriteClass = 'fas fa-heart is-favorite';
 
-            // タグの最大表示数
+            // タグ表示制限のロジックを追加
             const MAX_VISIBLE_TAGS = 4;
             let tagsHtml = '';
-            if (product.tags.length > MAX_VISIBLE_TAGS) {
+            if (product.tags && product.tags.length > MAX_VISIBLE_TAGS) {
                 tagsHtml = product.tags.slice(0, MAX_VISIBLE_TAGS).map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
                 const remainingCount = product.tags.length - MAX_VISIBLE_TAGS;
                 tagsHtml += `<span class="product-card__tag product-card__tag-more" data-product-id="${product.id}">+${remainingCount}</span>`;
-            } else {
+            } else if (product.tags) {
                 tagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
             }
 
-            // 例：products_list.jsのカードHTML
             productCardLink.innerHTML = `
                 <img src="${product.image}" alt="${product.name}" class="product-card__image">
                 <i class="${favoriteClass} product-card__favorite" data-product-id="${product.id}"></i>
@@ -62,10 +61,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ハートアイコンのクリックイベント（お気に入り解除）
+    // ★★★ イベントリスナーを修正 ★★★
     productList.addEventListener('click', function(e) {
-        if (e.target.classList.contains('product-card__favorite')) {
-            e.preventDefault(); // 詳細ページへの遷移をキャンセル
+        
+        // 「+〇」タグのクリック処理
+        if (e.target.classList.contains('product-card__tag-more')) {
+            e.preventDefault(); // ★重要：リンク遷移をキャンセル
+            
+            const productId = parseInt(e.target.dataset.productId);
+            const product = favoriteProducts.find(p => p.id == productId);
+            
+            if (product) {
+                const tagsContainer = e.target.parentElement;
+                const allTagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+                tagsContainer.innerHTML = allTagsHtml;
+            }
+        }
+        
+        // お気に入り（ハート）アイコンのクリック処理
+        else if (e.target.classList.contains('product-card__favorite')) {
+            e.preventDefault(); // ★重要：リンク遷移をキャンセル
 
             const card = e.target.closest('.product-card');
             const productId = parseInt(card.dataset.productId);
@@ -76,21 +91,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     product_id: productId,
-                    is_favorited: true // 現在お気に入りなので、解除するためにtrueを送る
+                    is_favorited: true // お気に入りページでは常に解除操作
                 })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // 成功したら、見た目上もカードを削除
                     card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
                     card.style.opacity = '0';
                     card.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         card.remove();
-                        // ローカルのデータからも削除
                         favoriteProducts = favoriteProducts.filter(p => p.id !== productId);
-                        // もし商品がなくなったらメッセージを表示
                         if (productList.children.length === 0) {
                            renderProducts([]);
                         }

@@ -1,7 +1,7 @@
 <?php
 /*!
 @file product.php
-@brief 商品詳細ページ (DB連携・お気に入り機能付き)
+@brief 商品詳細ページ (DB連携版)
 @copyright Copyright (c) 2024 Your Name.
 */
 
@@ -45,9 +45,8 @@
     $product = null;
     $images = [];
     $tags = [];
-    $is_favorited = false; // ★お気に入り状態の初期値
+    $is_favorited = false;
 
-    // ★ログイン状態のチェック
     $is_logged_in = isset($_SESSION['user_id']);
     $current_user_id = $_SESSION['user_id'] ?? null;
 
@@ -57,7 +56,7 @@
         $product_images_obj = new cproduct_images();
         $product_tags_relation_obj = new cproduct_tags_relation();
         $product_views_obj = new cproduct_views();
-        $favorites_obj = new cproduct_favorites(); // ★お気に入りクラスのインスタンス化
+        $favorites_obj = new cproduct_favorites();
         
         $product_data_list = $product_info_obj->get_product_list_for_admin(DEBUG, null, 0, 9999);
         foreach ($product_data_list as $p) {
@@ -72,7 +71,6 @@
             $images = $product_images_obj->get_images_by_product_id(DEBUG, $product_id);
             $tags = $product_tags_relation_obj->get_tags_by_product_id(DEBUG, $product_id);
             
-            // ★ログイン中であれば、お気に入り状態をDBから取得
             if ($is_logged_in) {
                 $is_favorited = $favorites_obj->is_favorited(DEBUG, $current_user_id, $product_id);
             }
@@ -131,7 +129,6 @@
                                 </button>
                             </div>
                             <div class="product-info__favorite">
-                                <!-- ★お気に入りボタンの初期状態をPHPで制御 -->
                                 <button class="btn-favorite <?= $is_favorited ? 'is-favorited' : '' ?>" data-product-id="<?= $product_id ?>">
                                     <i class="<?= $is_favorited ? 'fas' : 'far' ?> fa-heart"></i>
                                     <span class="favorite-text"><?= $is_favorited ? 'お気に入り済み' : 'お気に入りに追加' ?></span>
@@ -216,19 +213,17 @@
                 quantityPlusBtn.addEventListener('click', function () { let quantity = parseInt(quantityInput.value); quantityInput.value = quantity + 1; });
                 quantityInput.addEventListener('change', function () { let quantity = parseInt(this.value); if (isNaN(quantity) || quantity < 1) { this.value = 1; } });
             }
-            const addToCartBtn = document.getElementById('add-to-cart-btn');
-            if (addToCartBtn) { addToCartBtn.addEventListener('click', function () { const selectedQuantity = parseInt(quantityInput.value); console.log(`カート追加処理（未実装）: 商品ID <?= $product_id ?>, 数量 ${selectedQuantity}`); }); }
             const mainImg = document.querySelector('.product-gallery__main img');
             const thumbs = document.querySelectorAll('.product-gallery__thumbnails img');
             thumbs.forEach(thumb => { thumb.addEventListener('click', function () { mainImg.src = this.src; mainImg.alt = this.alt; thumbs.forEach(t => t.classList.remove('is-active')); this.classList.add('is-active'); }); });
+            
+            // ★★★ ここから修正 ★★★
 
-            // ★★★ お気に入りボタンの処理を再実装 ★★★
+            // お気に入りボタンの処理
             const favoriteBtn = document.querySelector('.btn-favorite');
             if (favoriteBtn) {
                 favoriteBtn.addEventListener('click', function () {
-                    
                     const isLoggedIn = <?= json_encode($is_logged_in) ?>;
-                    
                     if (!isLoggedIn) {
                         alert('お気に入り機能を利用するにはログインが必要です。');
                         window.location.href = 'login.php?redirect_url=' + encodeURIComponent(window.location.href);
@@ -242,13 +237,8 @@
 
                     fetch('api/api_toggle_favorite.php', {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            product_id: productId,
-                            is_favorited: isFavorited
-                        })
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product_id: productId, is_favorited: isFavorited })
                     })
                     .then(response => response.json())
                     .then(data => {
@@ -268,6 +258,51 @@
                     .catch(error => {
                         console.error('Error:', error);
                         alert('通信エラーが発生しました。');
+                    });
+                });
+            }
+
+            // カートに入れるボタンの処理
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+            if (addToCartBtn) {
+                addToCartBtn.addEventListener('click', function() {
+                    const isLoggedIn = <?= json_encode($is_logged_in) ?>;
+                    if (!isLoggedIn) {
+                        alert('カート機能を利用するにはログインが必要です。');
+                        window.location.href = 'login.php?redirect_url=' + encodeURIComponent(window.location.href);
+                        return;
+                    }
+
+                    const productId = <?= json_encode($product_id) ?>;
+                    const quantityInput = document.querySelector('.product-quantity-controls .quantity-input');
+                    const selectedQuantity = parseInt(quantityInput.value);
+
+                    fetch('api/api_cart_manager.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'add',
+                            product_id: productId,
+                            quantity: selectedQuantity
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // script.js にある displayMessage 関数を呼び出す
+                        if (typeof displayMessage === 'function') {
+                            displayMessage(data.message, data.success ? 'success' : 'error');
+                        } else {
+                            // フォールバックとして alert を使用
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        if (typeof displayMessage === 'function') {
+                            displayMessage('通信エラーが発生しました。', 'error');
+                        } else {
+                            alert('通信エラーが発生しました。');
+                        }
                     });
                 });
             }
