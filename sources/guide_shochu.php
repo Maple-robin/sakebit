@@ -64,15 +64,15 @@
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/shochu_mugi.png');">
                         <h4>麦焼酎</h4>
-                        <p>麦を原料とし、軽やかで香ばしい風味が特徴。クセが少なく、すっきりとした味わいで飲みやすいです。</p>
+                        <p>麦を原料とし、軽やかで香ばしい風味が特徴。<br>クセが少なく、すっきりとした味わいです。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/shochu_glass.png');">
                         <h4>米焼酎</h4>
-                        <p>日本酒のような吟醸香と、まろやかで上品な甘みが特徴。フルーティーで飲みやすいものも多いです。</p>
+                        <p>日本酒のような香りと、上品な甘みが特徴。<br>フルーティーで飲みやすいものも多いです。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/shochu_imo.png');">
                         <h4>芋焼酎</h4>
-                        <p>さつまいもを原料とし、独特の甘く華やかな香りが魅力。近年は飲みやすく改良されたものも増えています。</p>
+                        <p>さつまいもを原料とし、華やかな香りが魅力。<br>近年は飲みやすくされたものも増えています。</p>
                     </div>
                 </div>
             </div>
@@ -93,7 +93,7 @@
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>焼酎の定番の飲み方。焼酎と水の割合を変えることで、好みの濃さに調整できます。一般的には焼酎6：水4がおすすめです。</p>
+                            <p>焼酎と水を6:4で割ります。焼酎本来の味わいを楽しみながら、さっぱりとした飲み口に仕上げます。</p>
                         </div>
                         <div class="drink-way-item__image">
                             <img src="img/mizuwari.png" alt="水割り">
@@ -110,7 +110,7 @@
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>焼酎の香りが引き立ち、体が温まる飲み方。お湯を先に注ぎ、後から焼酎を注ぐと対流が起きて自然に混ざります。</p>
+                            <p>水ではなくお湯で割ることで、焼酎の香りがより一層引き立ち、焼酎本来の深みが際立つ飲み方です。</p>
                         </div>
                         <div class="drink-way-item__image">
                             <img src="img/oyuwari.png" alt="お湯割り">
@@ -127,7 +127,7 @@
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>氷で冷やすことで、口当たりがまろやかになります。焼酎本来の味わいをダイレクトに楽しみたい方におすすめです。</p>
+                            <p>焼酎を氷とグラスに注ぎシンプルに味わう飲み方です。時間と共に味が変化し、焼酎本来の味を楽しめます。</p>
                         </div>
                         <div class="drink-way-item__image">
                             <img src="img/rock_glass.png" alt="ロック">
