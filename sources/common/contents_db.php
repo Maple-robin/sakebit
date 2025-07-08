@@ -1505,43 +1505,29 @@ class cotumami_otumami_tags extends crecord {
         parent::__destruct();
     }
 }
-
 class ccarts extends crecord {
     public function __construct() {
         parent::__construct();
     }
-
-    public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) AS total_count FROM carts WHERE 1";
-        $prep_arr = array();
-        $this->select_query($debug, $query, $prep_arr);
-        if ($row = $this->fetch_assoc()) {
-            return $row['total_count'];
-        }
-        return 0;
-    }
-
-    public function get_all($debug, $from, $limit) {
-        $arr = array();
-        $query = "SELECT * FROM carts WHERE 1 ORDER BY cart_id ASC LIMIT :from, :limit";
-        $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
-        $this->select_query($debug, $query, $prep_arr);
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row;
-        }
-        return $arr;
-    }
-
-    public function get_tgt($debug, $id) {
-        if (!cutil::is_number($id) || $id < 1) {
+    public function get_or_create_cart_by_user_id($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
-        $query = "SELECT * FROM carts WHERE cart_id = :cart_id";
-        $prep_arr = array(':cart_id' => (int)$id);
-        $this->select_query($debug, $query, $prep_arr);
-        return $this->fetch_assoc();
-    }
+        $query = "SELECT cart_id FROM carts WHERE user_id = :user_id";
+        $this->select_query($debug, $query, [':user_id' => (int)$user_id]);
+        $cart = $this->fetch_assoc();
 
+        if ($cart) {
+            return $cart['cart_id'];
+        } else {
+            $query = "INSERT INTO carts (user_id) VALUES (:user_id)";
+            $result = $this->execute_query($debug, $query, [':user_id' => (int)$user_id]);
+            if ($result) {
+                return $this->last_insert_id();
+            }
+        }
+        return false;
+    }
     public function __destruct() {
         parent::__destruct();
     }
@@ -1551,37 +1537,92 @@ class ccart_items extends crecord {
     public function __construct() {
         parent::__construct();
     }
-
-    public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) AS total_count FROM cart_items WHERE 1";
-        $prep_arr = array();
-        $this->select_query($debug, $query, $prep_arr);
-        if ($row = $this->fetch_assoc()) {
-            return $row['total_count'];
+    public function add_or_update_item($debug, $cart_id, $product_id, $quantity, $price) {
+        if (!cutil::is_number($cart_id) || !cutil::is_number($product_id) || !cutil::is_number($quantity)) {
+            return false;
         }
-        return 0;
-    }
+        $query = "SELECT cart_item_id, cart_quantity FROM cart_items WHERE cart_id = :cart_id AND product_id = :product_id";
+        $this->select_query($debug, $query, [':cart_id' => (int)$cart_id, ':product_id' => (int)$product_id]);
+        $existing_item = $this->fetch_assoc();
 
-    public function get_all($debug, $from, $limit) {
-        $arr = array();
-        $query = "SELECT * FROM cart_items WHERE 1 ORDER BY cart_item_id ASC LIMIT :from, :limit";
-        $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
-        $this->select_query($debug, $query, $prep_arr);
+        if ($existing_item) {
+            $new_quantity = $existing_item['cart_quantity'] + $quantity;
+            $query = "UPDATE cart_items SET cart_quantity = :quantity WHERE cart_item_id = :cart_item_id";
+            return $this->execute_query($debug, $query, [
+                ':quantity' => $new_quantity,
+                ':cart_item_id' => $existing_item['cart_item_id']
+            ]);
+        } else {
+            $query = "INSERT INTO cart_items (cart_id, product_id, cart_quantity, cart_price_at_add) VALUES (:cart_id, :product_id, :quantity, :price)";
+            return $this->execute_query($debug, $query, [
+                ':cart_id' => (int)$cart_id,
+                ':product_id' => (int)$product_id,
+                ':quantity' => (int)$quantity,
+                ':price' => (float)$price
+            ]);
+        }
+    }
+    
+    public function get_items_by_cart_id($debug, $cart_id) {
+        if (!cutil::is_number($cart_id) || $cart_id < 1) {
+            return [];
+        }
+        $arr = [];
+        $query = "
+            SELECT
+                ci.cart_item_id,
+                ci.cart_id,
+                ci.product_id,
+                ci.cart_quantity,
+                ci.cart_price_at_add,
+                p.product_name,
+                p.product_Contents,
+                (SELECT image_path FROM product_images WHERE product_id = p.product_id ORDER BY display_order ASC, image_id ASC LIMIT 1) AS image_path
+            FROM
+                cart_items ci
+            JOIN
+                product_info p ON ci.product_id = p.product_id
+            WHERE
+                ci.cart_id = :cart_id
+            ORDER BY
+                ci.cart_added_at DESC
+        ";
+        $this->select_query($debug, $query, [':cart_id' => (int)$cart_id]);
         while ($row = $this->fetch_assoc()) {
             $arr[] = $row;
         }
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
-        if (!cutil::is_number($id) || $id < 1) {
+    /**
+     * ★★★【新規追加】★★★
+     * カート内の特定の商品の数量を更新する
+     */
+    public function update_item_quantity($debug, $cart_item_id, $quantity) {
+        if (!cutil::is_number($cart_item_id) || $cart_item_id < 1 || !cutil::is_number($quantity) || $quantity < 1) {
             return false;
         }
-        $query = "SELECT * FROM cart_items WHERE cart_item_id = :cart_item_id";
-        $prep_arr = array(':cart_item_id' => (int)$id);
-        $this->select_query($debug, $query, $prep_arr);
-        return $this->fetch_assoc();
+        $query = "UPDATE cart_items SET cart_quantity = :quantity WHERE cart_item_id = :cart_item_id";
+        $prep_arr = [
+            ':quantity' => (int)$quantity,
+            ':cart_item_id' => (int)$cart_item_id
+        ];
+        return $this->execute_query($debug, $query, $prep_arr);
     }
+
+    /**
+     * ★★★【新規追加】★★★
+     * カート内の特定の商品を削除する
+     */
+    public function remove_item($debug, $cart_item_id) {
+        if (!cutil::is_number($cart_item_id) || $cart_item_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM cart_items WHERE cart_item_id = :cart_item_id";
+        $prep_arr = [':cart_item_id' => (int)$cart_item_id];
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
 
     public function __destruct() {
         parent::__destruct();
@@ -1835,3 +1876,4 @@ class cproduct_favorites extends crecord {
         parent::__destruct();
     }
 }
+

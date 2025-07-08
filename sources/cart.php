@@ -5,13 +5,40 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、ここでの処理は不要です。
-// session_start();
-// require_once __DIR__ . '/common/contents_db.php';
+// ログインチェックとDB処理をHTML出力の前に行う
+require_once __DIR__ . '/common/contents_db.php';
 
-// ここに買い物かごページ固有のPHPロジックがあれば記述します。
-// (例: カート内の商品情報をDBから取得する処理など)
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
+// ログインしていない場合はログインページへリダイレクト
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php?redirect_url=cart.php');
+    exit();
+}
+
+$current_user_id = $_SESSION['user_id'];
+$debug_mode = defined('DEBUG') ? DEBUG : false;
+
+// DBクラスのインスタンスを生成
+$carts_db = new ccarts();
+$cart_items_db = new ccart_items();
+
+// ユーザーのカートIDを取得（なければ作成）
+$cart_id = $carts_db->get_or_create_cart_by_user_id($debug_mode, $current_user_id);
+
+$cart_items = [];
+$total_price = 0;
+
+if ($cart_id) {
+    // カート内の商品情報を取得
+    $cart_items = $cart_items_db->get_items_by_cart_id($debug_mode, $cart_id);
+    // 合計金額を計算
+    foreach ($cart_items as $item) {
+        $total_price += $item['cart_price_at_add'] * $item['cart_quantity'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -54,50 +81,41 @@
 
                 <div class="cart-main-container">
                     <div class="cart-items" id="cart-items-container">
-                        <!-- カート内の商品はJavaScriptまたはサーバーサイドのPHPで動的に生成される想定 -->
-                        <div class="cart-item">
-                            <div class="cart-item__image">
-                                <img src="img/gingerale.png" alt="イセ ポメロモ ヒート">
-                            </div>
-                            <div class="cart-item__details">
-                                <h3 class="cart-item__name">【販売再開】イセ ポメロモ ヒート</h3>
-                                <p class="cart-item__size">200ml</p>
-                                <p class="cart-item__price">¥ 1,750</p>
-                                <div class="cart-item__quantity-controls">
-                                    <button class="quantity-minus" data-id="product-1">-</button>
-                                    <input type="number" class="quantity-input" value="1" min="1" data-id="product-1">
-                                    <button class="quantity-plus" data-id="product-1">+</button>
+                        
+                        <?php if (empty($cart_items)): ?>
+                            <p class="cart-empty-message">カートに商品がありません。</p>
+                        <?php else: ?>
+                            <?php foreach ($cart_items as $item): ?>
+                                <!-- ★★★ data-item-id を修正 ★★★ -->
+                                <div class="cart-item" data-item-id="<?= $item['cart_item_id'] ?>">
+                                    <div class="cart-item__image">
+                                        <img src="<?= htmlspecialchars($item['image_path'] ?? 'https://placehold.co/100x100?text=NoImage') ?>" alt="<?= htmlspecialchars($item['product_name']) ?>">
+                                    </div>
+                                    <div class="cart-item__details">
+                                        <h3 class="cart-item__name"><?= htmlspecialchars($item['product_name']) ?></h3>
+                                        <p class="cart-item__size"><?= htmlspecialchars($item['product_Contents']) ?></p>
+                                        <p class="cart-item__price">¥ <?= number_format($item['cart_price_at_add']) ?></p>
+                                        <div class="cart-item__quantity-controls">
+                                            <!-- ★★★ 各ボタンと入力欄に data-id を設定 ★★★ -->
+                                            <button class="quantity-minus" data-id="<?= $item['cart_item_id'] ?>">-</button>
+                                            <input type="number" class="quantity-input" value="<?= $item['cart_quantity'] ?>" min="1" data-id="<?= $item['cart_item_id'] ?>">
+                                            <button class="quantity-plus" data-id="<?= $item['cart_item_id'] ?>">+</button>
+                                        </div>
+                                    </div>
+                                    <button class="cart-item__remove" data-id="<?= $item['cart_item_id'] ?>">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
                                 </div>
-                            </div>
-                            <button class="cart-item__remove" data-id="product-1">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
-                        <div class="cart-item">
-                            <div class="cart-item__image">
-                                <img src="img/berry.png" alt="セレンディピティ・レモン">
-                            </div>
-                            <div class="cart-item__details">
-                                <h3 class="cart-item__name">セレンディピティ・レモン</h3>
-                                <p class="cart-item__size">300ml</p>
-                                <p class="cart-item__price">¥ 2,500</p>
-                                <div class="cart-item__quantity-controls">
-                                    <button class="quantity-minus" data-id="product-2">-</button>
-                                    <input type="number" class="quantity-input" value="1" min="1" data-id="product-2">
-                                    <button class="quantity-plus" data-id="product-2">+</button>
-                                </div>
-                            </div>
-                            <button class="cart-item__remove" data-id="product-2">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+
                     </div>
 
                     <div class="cart-summary">
                         <p class="cart-summary__shipping-info">税込 5,200 円 以上 購入 で 送料 無料 に なり ます。</p>
                         <div class="cart-summary__subtotal">
                             <p>小計</p>
-                            <p class="subtotal-price" id="total-price">¥ 4,250<span> JPY</span></p>
+                            <p class="subtotal-price" id="total-price">¥ <?= number_format($total_price) ?><span> JPY</span></p>
                         </div>
                         <p class="cart-summary__tax-info">送料と税金はチェックアウト時に計算されます</p>
 
@@ -131,7 +149,6 @@
     </main>
 
     <?php 
-    // 共通フッターを読み込む
     require_once 'footer.php'; 
     ?>
 

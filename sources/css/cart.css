@@ -494,3 +494,78 @@ hr {
     color: #A0522D; /* ブランドカラーに合わせた色 */
     font-weight: bold; /* 強調表示 */
 }
+/* ===============================================
+   カスタム確認モーダル
+   =============================================== */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 10001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.custom-modal-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-modal-content {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.custom-modal-overlay.is-active .custom-modal-content {
+    transform: scale(1);
+}
+
+.custom-modal-content p {
+    font-size: 1.8rem;
+    margin: 0 0 25px;
+    color: #333;
+    line-height: 1.6;
+}
+
+.custom-modal-buttons button {
+    margin: 0 10px;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.6rem;
+    font-weight: 700;
+    transition: all 0.2s ease;
+}
+
+.custom-modal-buttons .btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+.custom-modal-buttons .btn-danger:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+.custom-modal-buttons .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.custom-modal-buttons .btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-1px);
+}
