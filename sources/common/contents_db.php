@@ -7,11 +7,13 @@
 
 require_once __DIR__ . '/config.php';
 
-class crecord {
+class crecord
+{
     protected $pdo;
     protected $stmt;
 
-    public function __construct() {
+    public function __construct()
+    {
         try {
             $dsn = DB_RDBMS . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
             $user = DB_USER;
@@ -24,7 +26,6 @@ class crecord {
             if (defined('DB_MYSQL_SET_NAMES') && DB_MYSQL_SET_NAMES === '1') {
                 $this->pdo->exec("SET NAMES " . DB_CHARSET);
             }
-
         } catch (PDOException $e) {
             if (defined('DEBUG') && DEBUG) {
                 echo "DB接続エラー: " . htmlspecialchars($e->getMessage());
@@ -34,7 +35,8 @@ class crecord {
         }
     }
 
-    protected function select_query($debug, $query, $prep_arr) {
+    protected function select_query($debug, $query, $prep_arr)
+    {
         if ($debug) {
             error_log("Debug SQL (select_query): " . $query);
             error_log("Debug Params (select_query): " . print_r($prep_arr, true));
@@ -43,7 +45,8 @@ class crecord {
         $this->stmt->execute($prep_arr);
     }
 
-    protected function execute_query($debug, $query, $prep_arr = array()) {
+    protected function execute_query($debug, $query, $prep_arr = array())
+    {
         if ($debug) {
             error_log("Debug SQL (execute_query): " . $query);
             error_log("Debug Params (execute_query): " . print_r($prep_arr, true));
@@ -58,11 +61,11 @@ class crecord {
             return $result;
         } catch (PDOException $e) {
             $error_message_log = "Database Error: " . $e->getMessage() .
-                                 " SQLSTATE: " . ($e->errorInfo[0] ?? 'N/A') .
-                                 " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') .
-                                 " Driver Message: " . ($e->errorInfo[2] ?? 'N/A') .
-                                 " Query: " . $query .
-                                 " Params: . " . json_encode($prep_arr);
+                " SQLSTATE: " . ($e->errorInfo[0] ?? 'N/A') .
+                " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') .
+                " Driver Message: " . ($e->errorInfo[2] ?? 'N/A') .
+                " Query: " . $query .
+                " Params: . " . json_encode($prep_arr);
             error_log($error_message_log);
 
             if (defined('DEBUG') && DEBUG) {
@@ -80,39 +83,48 @@ class crecord {
         }
     }
 
-    public function fetch_assoc() {
+    public function fetch_assoc()
+    {
         if ($this->stmt) {
             return $this->stmt->fetch(PDO::FETCH_ASSOC);
         }
         return false;
     }
 
-    public function last_insert_id() {
+    public function last_insert_id()
+    {
         return $this->pdo->lastInsertId();
     }
 
-    public function get_pdo() {
+    public function get_pdo()
+    {
         return $this->pdo;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->stmt = null;
         $this->pdo = null;
     }
 }
 
-class cutil {
-    public static function is_number($value) {
+class cutil
+{
+    public static function is_number($value)
+    {
         return is_numeric($value);
     }
 }
 
-class cuser_info extends crecord {
-    public function __construct() {
+class cuser_info extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM user_info WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -122,7 +134,8 @@ class cuser_info extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM user_info WHERE 1 ORDER BY user_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -133,7 +146,8 @@ class cuser_info extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -143,7 +157,8 @@ class cuser_info extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function insert_user($debug, $user_name, $user_email, $user_pass_hashed, $user_age) {
+    public function insert_user($debug, $user_name, $user_email, $user_pass_hashed, $user_age)
+    {
         $query = "INSERT INTO user_info (user_name, user_email, user_pass, user_age) VALUES (:user_name, :user_email, :user_pass, :user_age)";
         $prep_arr = array(
             ':user_name' => $user_name,
@@ -158,21 +173,24 @@ class cuser_info extends crecord {
         return false;
     }
 
-    public function get_user_by_email($debug, $email) {
+    public function get_user_by_email($debug, $email)
+    {
         $query = "SELECT * FROM user_info WHERE user_email = :user_email";
         $prep_arr = array(':user_email' => $email);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
 
-    public function get_user_by_email_for_login($debug, $email) {
+    public function get_user_by_email_for_login($debug, $email)
+    {
         $query = "SELECT user_id, user_name, user_email, user_pass, user_age FROM user_info WHERE user_email = :user_email";
         $prep_arr = array(':user_email' => $email);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
 
-    public function delete_user($debug, $user_id) {
+    public function delete_user($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
@@ -181,7 +199,8 @@ class cuser_info extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function update_user_name($debug, $user_id, $user_name) {
+    public function update_user_name($debug, $user_id, $user_name)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
@@ -193,17 +212,21 @@ class cuser_info extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cclient_user_info extends crecord {
-    public function __construct() {
+class cclient_user_info extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_client_user($debug, $company_name, $representative_name, $email, $phone, $address, $password_hash) {
+    public function insert_client_user($debug, $company_name, $representative_name, $email, $phone, $address, $password_hash)
+    {
         $query = "INSERT INTO client_user_info (company_name, representative_name, email, phone, address, password_hash) VALUES (:company_name, :representative_name, :email, :phone, :address, :password_hash)";
         $prep_arr = array(
             ':company_name' => $company_name,
@@ -220,31 +243,37 @@ class cclient_user_info extends crecord {
         return false;
     }
 
-    public function get_client_user_by_email($debug, $email) {
+    public function get_client_user_by_email($debug, $email)
+    {
         $query = "SELECT * FROM client_user_info WHERE email = :email";
         $prep_arr = array(':email' => $email);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
 
-    public function get_client_user_by_email_for_login($debug, $email) {
+    public function get_client_user_by_email_for_login($debug, $email)
+    {
         $query = "SELECT client_id, company_name, representative_name, email, phone, address, password_hash FROM client_user_info WHERE email = :email";
         $prep_arr = array(':email' => $email);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cuser_profiles extends crecord {
-    public function __construct() {
+class cuser_profiles extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_profile($debug, $user_id, $profile_icon_url, $profile_text) {
+    public function insert_profile($debug, $user_id, $profile_icon_url, $profile_text)
+    {
         $query = "INSERT INTO user_profiles (user_id, profile_icon_url, profile_text) VALUES (:user_id, :profile_icon_url, :profile_text)";
         $prep_arr = array(
             ':user_id' => (int)$user_id,
@@ -254,7 +283,8 @@ class cuser_profiles extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function get_profile_by_user_id($debug, $user_id) {
+    public function get_profile_by_user_id($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
@@ -264,7 +294,8 @@ class cuser_profiles extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function update_profile($debug, $user_id, $profile_icon_url, $profile_text) {
+    public function update_profile($debug, $user_id, $profile_icon_url, $profile_text)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
@@ -277,13 +308,16 @@ class cuser_profiles extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cproduct_info extends crecord {
-    public function __construct() {
+class cproduct_info extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -291,7 +325,8 @@ class cproduct_info extends crecord {
      * 【修正】新しい商品情報をデータベースに挿入するメソッド
      * client_id を引数に追加し、SQLに含めるように修正
      */
-    public function insert_product($debug, $client_id, $product_name, $product_price, $product_category, $product_description, $product_discription, $product_How, $product_Contents, $product_stock, $product_degree) {
+    public function insert_product($debug, $client_id, $product_name, $product_price, $product_category, $product_description, $product_discription, $product_How, $product_Contents, $product_stock, $product_degree)
+    {
         $query = "INSERT INTO product_info (client_id, product_name, product_price, product_category, product_description, product_discription, product_How, product_Contents, product_stock, product_degree) VALUES (:client_id, :product_name, :product_price, :product_category, :product_description, :product_discription, :product_How, :product_Contents, :product_stock, :product_degree)";
         $prep_arr = array(
             ':client_id' => (int)$client_id,
@@ -312,7 +347,8 @@ class cproduct_info extends crecord {
         return false;
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM product_info WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -322,7 +358,8 @@ class cproduct_info extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM product_info WHERE 1 ORDER BY product_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -333,7 +370,8 @@ class cproduct_info extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -408,7 +446,7 @@ class cproduct_info extends crecord {
 
         $prep_arr[':from']  = (int)$from;
         $prep_arr[':limit'] = (int)$limit;
-        
+
         $arr = [];
         $this->select_query($debug, $query, $prep_arr);
         while ($row = $this->fetch_assoc()) {
@@ -417,17 +455,21 @@ class cproduct_info extends crecord {
         return $arr;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cproduct_images extends crecord {
-    public function __construct() {
+class cproduct_images extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_image($debug, $product_id, $image_path, $image_type, $display_order) {
+    public function insert_image($debug, $product_id, $image_path, $image_type, $display_order)
+    {
         $query = "INSERT INTO product_images (product_id, image_path, image_type, display_order) VALUES (:product_id, :image_path, :image_type, :display_order)";
         $prep_arr = array(
             ':product_id' => (int)$product_id,
@@ -442,7 +484,8 @@ class cproduct_images extends crecord {
         return false;
     }
 
-    public function get_images_by_product_id($debug, $product_id) {
+    public function get_images_by_product_id($debug, $product_id)
+    {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             return [];
         }
@@ -455,7 +498,8 @@ class cproduct_images extends crecord {
         return [];
     }
 
-    public function delete_images_by_product_id($debug, $product_id) {
+    public function delete_images_by_product_id($debug, $product_id)
+    {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             return false;
         }
@@ -464,17 +508,21 @@ class cproduct_images extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class ccategories extends crecord {
-    public function __construct() {
+class ccategories extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -484,7 +532,8 @@ class ccategories extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM categories WHERE 1 ORDER BY category_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -495,7 +544,8 @@ class ccategories extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -505,17 +555,21 @@ class ccategories extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class ctags_for_products extends crecord {
-    public function __construct() {
+class ctags_for_products extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_tags_with_category($debug) {
+    public function get_all_tags_with_category($debug)
+    {
         $query = "SELECT t.tag_id, t.tag_category_id, t.tag_name, tc.tag_category_name
                   FROM tags t
                   JOIN tag_categories tc ON t.tag_category_id = tc.tag_category_id
@@ -532,7 +586,8 @@ class ctags_for_products extends crecord {
      * @param bool $debug デバッグモード
      * @return array タグカテゴリごとにグループ化されたタグの配列
      */
-    public function get_all_tags_grouped_by_category($debug) {
+    public function get_all_tags_grouped_by_category($debug)
+    {
         $query = "
             SELECT
                 tc.tag_category_id,
@@ -552,7 +607,7 @@ class ctags_for_products extends crecord {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $category_id = $row['tag_category_id'];
                 $category_name = $row['tag_category_name'];
-                
+
                 if (!isset($grouped_tags[$category_id])) {
                     $grouped_tags[$category_id] = [
                         'tag_category_id' => $category_id,
@@ -574,7 +629,8 @@ class ctags_for_products extends crecord {
     }
 
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM tags WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -584,7 +640,8 @@ class ctags_for_products extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM tags WHERE 1 ORDER BY tag_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -595,7 +652,8 @@ class ctags_for_products extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -605,17 +663,21 @@ class ctags_for_products extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class ctag_categories_for_products extends crecord {
-    public function __construct() {
+class ctag_categories_for_products extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_tag_categories($debug) {
+    public function get_all_tag_categories($debug)
+    {
         $query = "SELECT * FROM tag_categories ORDER BY tag_category_id ASC";
         $stmt = $this->execute_query($debug, $query);
         if ($stmt) {
@@ -624,7 +686,8 @@ class ctag_categories_for_products extends crecord {
         return false;
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM faq_categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -634,7 +697,8 @@ class ctag_categories_for_products extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM faq_categories WHERE 1 ORDER BY faq_category_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -645,7 +709,8 @@ class ctag_categories_for_products extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -656,17 +721,21 @@ class ctag_categories_for_products extends crecord {
     }
 
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cproduct_tags_relation extends crecord {
-    public function __construct() {
+class cproduct_tags_relation extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_product_tag_relation($debug, $product_id, $tag_id) {
+    public function insert_product_tag_relation($debug, $product_id, $tag_id)
+    {
         $query = "INSERT INTO product_tags_relation (product_id, tag_id) VALUES (:product_id, :tag_id)";
         $prep_arr = array(
             ':product_id' => (int)$product_id,
@@ -675,7 +744,8 @@ class cproduct_tags_relation extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function get_tags_by_product_id($debug, $product_id) {
+    public function get_tags_by_product_id($debug, $product_id)
+    {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             return [];
         }
@@ -693,7 +763,8 @@ class cproduct_tags_relation extends crecord {
         return [];
     }
 
-    public function delete_product_tags_by_product_id($debug, $product_id) {
+    public function delete_product_tags_by_product_id($debug, $product_id)
+    {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             return false;
         }
@@ -702,17 +773,21 @@ class cproduct_tags_relation extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cposts extends crecord {
-    public function __construct() {
+class cposts extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM posts WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -722,7 +797,8 @@ class cposts extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM posts WHERE 1 ORDER BY post_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -733,7 +809,8 @@ class cposts extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -743,7 +820,8 @@ class cposts extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function insert_post($debug, $user_id, $post_title, $post_content) {
+    public function insert_post($debug, $user_id, $post_title, $post_content)
+    {
         $query = "INSERT INTO posts (user_id, post_title, post_content) VALUES (:user_id, :post_title, :post_content)";
         $prep_arr = array(
             ':user_id' => (int)$user_id,
@@ -757,7 +835,8 @@ class cposts extends crecord {
         return false;
     }
 
-    public function get_posts_by_user_id($debug, $user_id) {
+    public function get_posts_by_user_id($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
@@ -770,7 +849,8 @@ class cposts extends crecord {
         return $arr;
     }
 
-    public function get_posts_by_ids($debug, $post_ids) {
+    public function get_posts_by_ids($debug, $post_ids)
+    {
         if (empty($post_ids)) {
             return [];
         }
@@ -788,7 +868,8 @@ class cposts extends crecord {
         return $arr;
     }
 
-    public function delete_post($debug, $post_id, $user_id) {
+    public function delete_post($debug, $post_id, $user_id)
+    {
         if (!cutil::is_number($post_id) || $post_id < 1 || !cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
@@ -800,17 +881,21 @@ class cposts extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cpost_images extends crecord {
-    public function __construct() {
+class cpost_images extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_image($debug, $post_id, $image_path, $display_order) {
+    public function insert_image($debug, $post_id, $image_path, $display_order)
+    {
         $query = "INSERT INTO post_images (post_id, image_path, display_order) VALUES (:post_id, :image_path, :display_order)";
         $prep_arr = array(
             ':post_id' => (int)$post_id,
@@ -824,7 +909,8 @@ class cpost_images extends crecord {
         return false;
     }
 
-    public function get_images_by_post_id($debug, $post_id) {
+    public function get_images_by_post_id($debug, $post_id)
+    {
         if (!cutil::is_number($post_id) || $post_id < 1) {
             return [];
         }
@@ -837,7 +923,8 @@ class cpost_images extends crecord {
         return [];
     }
 
-    public function delete_images_by_post_id($debug, $post_id) {
+    public function delete_images_by_post_id($debug, $post_id)
+    {
         if (!cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
@@ -846,17 +933,21 @@ class cpost_images extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class ccontacts extends crecord {
-    public function __construct() {
+class ccontacts extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM contacts WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -866,7 +957,8 @@ class ccontacts extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM contacts WHERE 1 ORDER BY contact_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -877,7 +969,8 @@ class ccontacts extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -887,17 +980,21 @@ class ccontacts extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cfaqs extends crecord {
-    public function __construct() {
+class cfaqs extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM faqs WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -907,7 +1004,8 @@ class cfaqs extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM faqs WHERE 1 ORDER BY faq_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -918,7 +1016,8 @@ class cfaqs extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -928,17 +1027,21 @@ class cfaqs extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cfaq_categories extends crecord {
-    public function __construct() {
+class cfaq_categories extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM faq_categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -948,7 +1051,8 @@ class cfaq_categories extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM faq_categories WHERE 1 ORDER BY faq_category_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -959,7 +1063,8 @@ class cfaq_categories extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -970,17 +1075,21 @@ class cfaq_categories extends crecord {
     }
 
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cMypage extends crecord {
-    public function __construct() {
+class cMypage extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM Mypage WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -990,7 +1099,8 @@ class cMypage extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM Mypage WHERE 1 ORDER BY profile_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1001,7 +1111,8 @@ class cMypage extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -1011,17 +1122,21 @@ class cMypage extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class creport_info extends crecord {
-    public function __construct() {
+class creport_info extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM report_info WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -1031,7 +1146,8 @@ class creport_info extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM report_info WHERE 1 ORDER BY report_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1042,7 +1158,8 @@ class creport_info extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -1052,17 +1169,21 @@ class creport_info extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cgood extends crecord {
-    public function __construct() {
+class cgood extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_good($debug, $user_id, $post_id) {
+    public function insert_good($debug, $user_id, $post_id)
+    {
         $query = "INSERT INTO good (user_id, post_id) VALUES (:user_id, :post_id)";
         $prep_arr = array(
             ':user_id' => (int)$user_id,
@@ -1071,7 +1192,8 @@ class cgood extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function delete_good($debug, $user_id, $post_id) {
+    public function delete_good($debug, $user_id, $post_id)
+    {
         $query = "DELETE FROM good WHERE user_id = :user_id AND post_id = :post_id";
         $prep_arr = array(
             ':user_id' => (int)$user_id,
@@ -1080,7 +1202,8 @@ class cgood extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function count_good_by_post_id($debug, $post_id) {
+    public function count_good_by_post_id($debug, $post_id)
+    {
         if (!cutil::is_number($post_id) || $post_id < 1) {
             return 0;
         }
@@ -1090,7 +1213,8 @@ class cgood extends crecord {
         return $row ? (int)$row['good_count'] : 0;
     }
 
-    public function is_good_by_user($debug, $user_id, $post_id) {
+    public function is_good_by_user($debug, $user_id, $post_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
@@ -1103,7 +1227,8 @@ class cgood extends crecord {
         return $row && $row['count_result'] > 0;
     }
 
-    public function get_liked_post_ids_by_user_id($debug, $user_id) {
+    public function get_liked_post_ids_by_user_id($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
@@ -1116,7 +1241,8 @@ class cgood extends crecord {
         return $arr;
     }
 
-    public function delete_all_goods_by_post_id($debug, $post_id) {
+    public function delete_all_goods_by_post_id($debug, $post_id)
+    {
         if (!cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
@@ -1125,17 +1251,21 @@ class cgood extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cheart extends crecord {
-    public function __construct() {
+class cheart extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_heart($debug, $user_id, $post_id) {
+    public function insert_heart($debug, $user_id, $post_id)
+    {
         $query = "INSERT INTO heart (user_id, post_id) VALUES (:user_id, :post_id)";
         $prep_arr = array(
             ':user_id' => (int)$user_id,
@@ -1144,7 +1274,8 @@ class cheart extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function delete_heart($debug, $user_id, $post_id) {
+    public function delete_heart($debug, $user_id, $post_id)
+    {
         $query = "DELETE FROM heart WHERE user_id = :user_id AND post_id = :post_id";
         $prep_arr = array(
             ':user_id' => (int)$user_id,
@@ -1153,7 +1284,8 @@ class cheart extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function count_heart_by_post_id($debug, $post_id) {
+    public function count_heart_by_post_id($debug, $post_id)
+    {
         if (!cutil::is_number($post_id) || $post_id < 1) {
             return 0;
         }
@@ -1163,7 +1295,8 @@ class cheart extends crecord {
         return $row ? (int)$row['heart_count'] : 0;
     }
 
-    public function is_heart_by_user($debug, $user_id, $post_id) {
+    public function is_heart_by_user($debug, $user_id, $post_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
@@ -1176,7 +1309,8 @@ class cheart extends crecord {
         return $row && $row['count_result'] > 0;
     }
 
-    public function get_hearted_post_ids_by_user_id($debug, $user_id) {
+    public function get_hearted_post_ids_by_user_id($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
@@ -1189,7 +1323,8 @@ class cheart extends crecord {
         return $arr;
     }
 
-    public function delete_all_hearts_by_post_id($debug, $post_id) {
+    public function delete_all_hearts_by_post_id($debug, $post_id)
+    {
         if (!cutil::is_number($post_id) || $post_id < 1) {
             return false;
         }
@@ -1198,17 +1333,21 @@ class cheart extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class ccontacts_reply extends crecord {
-    public function __construct() {
+class ccontacts_reply extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM contacts_reply WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -1218,7 +1357,8 @@ class ccontacts_reply extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM contacts_reply WHERE 1 ORDER BY contact_reply_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1229,7 +1369,8 @@ class ccontacts_reply extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -1239,17 +1380,21 @@ class ccontacts_reply extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cotumami_categories extends crecord {
-    public function __construct() {
+class cotumami_categories extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_categories($debug) {
+    public function get_all_categories($debug)
+    {
         $query = "SELECT * FROM otumami_categories ORDER BY category_id ASC";
         $stmt = $this->execute_query($debug, $query);
         if ($stmt) {
@@ -1258,7 +1403,8 @@ class cotumami_categories extends crecord {
         return false;
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM otumami_categories WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -1268,7 +1414,8 @@ class cotumami_categories extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM otumami_categories WHERE 1 ORDER BY category_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1279,7 +1426,8 @@ class cotumami_categories extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -1289,17 +1437,21 @@ class cotumami_categories extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cotumami_tags extends crecord {
-    public function __construct() {
+class cotumami_tags extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_tags($debug) {
+    public function get_all_tags($debug)
+    {
         $query = "SELECT * FROM otumami_tags ORDER BY tag_id ASC";
         $stmt = $this->execute_query($debug, $query);
         if ($stmt) {
@@ -1308,7 +1460,8 @@ class cotumami_tags extends crecord {
         return false;
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM otumami_tags WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -1318,7 +1471,8 @@ class cotumami_tags extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM otumami_tags WHERE 1 ORDER BY tag_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1329,7 +1483,8 @@ class cotumami_tags extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -1339,17 +1494,21 @@ class cotumami_tags extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cotumami extends crecord {
-    public function __construct() {
+class cotumami extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_otumami($debug, $combi_category_id, $otumami_name, $otumami_price, $otumami_description, $otumami_discription, $otumami_stock) {
+    public function insert_otumami($debug, $combi_category_id, $otumami_name, $otumami_price, $otumami_description, $otumami_discription, $otumami_stock)
+    {
         $query = "INSERT INTO otumami (combi_category_id, otumami_name, otumami_price, otumami_description, otumami_discription, otumami_stock) VALUES (:combi_category_id, :otumami_name, :otumami_price, :otumami_description, :otumami_discription, :otumami_stock)";
         $prep_arr = array(
             ':combi_category_id' => (int)$combi_category_id,
@@ -1366,7 +1525,8 @@ class cotumami extends crecord {
         return false;
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM otumami WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -1376,7 +1536,8 @@ class cotumami extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM otumami WHERE 1 ORDER BY otumami_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1387,7 +1548,8 @@ class cotumami extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -1397,17 +1559,21 @@ class cotumami extends crecord {
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cotumami_images extends crecord {
-    public function __construct() {
+class cotumami_images extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_image($debug, $otumami_id, $image_path, $image_type, $display_order) {
+    public function insert_image($debug, $otumami_id, $image_path, $image_type, $display_order)
+    {
         $query = "INSERT INTO otumami_images (otumami_id, image_path, image_type, display_order) VALUES (:otumami_id, :image_path, :image_type, :display_order)";
         $prep_arr = array(
             ':otumami_id' => (int)$otumami_id,
@@ -1422,7 +1588,8 @@ class cotumami_images extends crecord {
         return false;
     }
 
-    public function get_images_by_otumami_id($debug, $otumami_id) {
+    public function get_images_by_otumami_id($debug, $otumami_id)
+    {
         if (!cutil::is_number($otumami_id) || $otumami_id < 1) {
             return [];
         }
@@ -1435,17 +1602,21 @@ class cotumami_images extends crecord {
         return [];
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cotumami_otumami_tags extends crecord {
-    public function __construct() {
+class cotumami_otumami_tags extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_otumami_tag_relation($debug, $otumami_id, $tag_id) {
+    public function insert_otumami_tag_relation($debug, $otumami_id, $tag_id)
+    {
         $query = "INSERT INTO otumami_otumami_tags (otumami_id, tag_id) VALUES (:otumami_id, :tag_id)";
         $prep_arr = array(
             ':otumami_id' => (int)$otumami_id,
@@ -1454,7 +1625,8 @@ class cotumami_otumami_tags extends crecord {
         return $this->execute_query($debug, $query, $prep_arr);
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM otumami_otumami_tags WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -1464,7 +1636,8 @@ class cotumami_otumami_tags extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM otumami_otumami_tags WHERE 1 ORDER BY otumami_id ASC, tag_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1475,7 +1648,8 @@ class cotumami_otumami_tags extends crecord {
         return $arr;
     }
 
-    public function get_by_otumami_id($debug, $otumami_id) {
+    public function get_by_otumami_id($debug, $otumami_id)
+    {
         if (!cutil::is_number($otumami_id) || $otumami_id < 1) {
             return false;
         }
@@ -1488,7 +1662,8 @@ class cotumami_otumami_tags extends crecord {
         return [];
     }
 
-    public function get_by_tag_id($debug, $tag_id) {
+    public function get_by_tag_id($debug, $tag_id)
+    {
         if (!cutil::is_number($tag_id) || $tag_id < 1) {
             return false;
         }
@@ -1501,15 +1676,19 @@ class cotumami_otumami_tags extends crecord {
         return [];
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
-class ccarts extends crecord {
-    public function __construct() {
+class ccarts extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
-    public function get_or_create_cart_by_user_id($debug, $user_id) {
+    public function get_or_create_cart_by_user_id($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return false;
         }
@@ -1528,16 +1707,20 @@ class ccarts extends crecord {
         }
         return false;
     }
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class ccart_items extends crecord {
-    public function __construct() {
+class ccart_items extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
-    public function add_or_update_item($debug, $cart_id, $product_id, $quantity, $price) {
+    public function add_or_update_item($debug, $cart_id, $product_id, $quantity, $price)
+    {
         if (!cutil::is_number($cart_id) || !cutil::is_number($product_id) || !cutil::is_number($quantity)) {
             return false;
         }
@@ -1562,8 +1745,9 @@ class ccart_items extends crecord {
             ]);
         }
     }
-    
-    public function get_items_by_cart_id($debug, $cart_id) {
+
+    public function get_items_by_cart_id($debug, $cart_id)
+    {
         if (!cutil::is_number($cart_id) || $cart_id < 1) {
             return [];
         }
@@ -1598,7 +1782,8 @@ class ccart_items extends crecord {
      * ★★★【新規追加】★★★
      * カート内の特定の商品の数量を更新する
      */
-    public function update_item_quantity($debug, $cart_item_id, $quantity) {
+    public function update_item_quantity($debug, $cart_item_id, $quantity)
+    {
         if (!cutil::is_number($cart_item_id) || $cart_item_id < 1 || !cutil::is_number($quantity) || $quantity < 1) {
             return false;
         }
@@ -1614,7 +1799,8 @@ class ccart_items extends crecord {
      * ★★★【新規追加】★★★
      * カート内の特定の商品を削除する
      */
-    public function remove_item($debug, $cart_item_id) {
+    public function remove_item($debug, $cart_item_id)
+    {
         if (!cutil::is_number($cart_item_id) || $cart_item_id < 1) {
             return false;
         }
@@ -1622,19 +1808,31 @@ class ccart_items extends crecord {
         $prep_arr = [':cart_item_id' => (int)$cart_item_id];
         return $this->execute_query($debug, $query, $prep_arr);
     }
+        public function clear_items_by_cart_id($debug, $cart_id)
+    {
+        if (!cutil::is_number($cart_id) || $cart_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM cart_items WHERE cart_id = :cart_id";
+        $prep_arr = [':cart_id' => (int)$cart_id];
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
 
-
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class corders extends crecord {
-    public function __construct() {
+class corders extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
+    public function get_all_count($debug)
+    {
         $query = "SELECT COUNT(*) AS total_count FROM orders WHERE 1";
         $prep_arr = array();
         $this->select_query($debug, $query, $prep_arr);
@@ -1644,7 +1842,8 @@ class corders extends crecord {
         return 0;
     }
 
-    public function get_all($debug, $from, $limit) {
+    public function get_all($debug, $from, $limit)
+    {
         $arr = array();
         $query = "SELECT * FROM orders WHERE 1 ORDER BY order_id ASC LIMIT :from, :limit";
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
@@ -1655,7 +1854,8 @@ class corders extends crecord {
         return $arr;
     }
 
-    public function get_tgt($debug, $id) {
+    public function get_tgt($debug, $id)
+    {
         if (!cutil::is_number($id) || $id < 1) {
             return false;
         }
@@ -1664,8 +1864,9 @@ class corders extends crecord {
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
-    
-    public function get_orders_by_user_id($debug, $user_id) {
+
+    public function get_orders_by_user_id($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
@@ -1674,7 +1875,7 @@ class corders extends crecord {
         // 注文を新しい順に取得
         $query = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_date DESC";
         $prep_arr = [':user_id' => (int)$user_id];
-        
+
         $this->select_query($debug, $query, $prep_arr);
 
         while ($row = $this->fetch_assoc()) {
@@ -1682,7 +1883,7 @@ class corders extends crecord {
         }
         return $arr;
     }
-    
+
     /**
      * ★★★【新規追加】★★★
      * 新しい注文をデータベースに作成する
@@ -1692,7 +1893,8 @@ class corders extends crecord {
      * @param string $shipping_address 配送先住所
      * @return int|false 作成された注文のID、失敗した場合はfalse
      */
-    public function create_order($debug, $user_id, $total_amount, $shipping_address) {
+    public function create_order($debug, $user_id, $total_amount, $shipping_address)
+    {
         $query = "
             INSERT INTO orders (user_id, total_amount, shipping_address, order_status) 
             VALUES (:user_id, :total_amount, :shipping_address, 'pending')
@@ -1702,7 +1904,7 @@ class corders extends crecord {
             ':total_amount' => (float)$total_amount,
             ':shipping_address' => $shipping_address
         ];
-        
+
         $result = $this->execute_query($debug, $query, $prep_arr);
         if ($result) {
             return $this->last_insert_id(); // 作成された注文のIDを返す
@@ -1710,48 +1912,76 @@ class corders extends crecord {
         return false;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class corder_items extends crecord {
-    public function __construct() {
+class corder_items extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function get_all_count($debug) {
-        $query = "SELECT COUNT(*) AS total_count FROM order_items WHERE 1";
-        $prep_arr = array();
-        $this->select_query($debug, $query, $prep_arr);
-        if ($row = $this->fetch_assoc()) {
-            return $row['total_count'];
-        }
-        return 0;
-    }
+    // ... (get_all_count, get_all, get_tgt, get_items_by_order_id は変更なし) ...
 
-    public function get_all($debug, $from, $limit) {
-        $arr = array();
-        $query = "SELECT * FROM order_items WHERE 1 ORDER BY order_item_id ASC LIMIT :from, :limit";
-        $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
-        $this->select_query($debug, $query, $prep_arr);
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row;
-        }
-        return $arr;
-    }
-
-    public function get_tgt($debug, $id) {
-        if (!cutil::is_number($id) || $id < 1) {
+    /**
+     * ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+     * ★★★ ここを修正しました (商品を1件ずつ登録する方式に変更) ★★★
+     * ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+     * 注文に紐づく商品をまとめて登録する
+     * @param bool $debug デバッグモード
+     * @param int $order_id 注文ID
+     * @param array $items 登録する商品の配列 (カートアイテム)
+     * @return bool 成功した場合はtrue, 失敗した場合はfalse
+     */
+    public function add_items_to_order($debug, $order_id, $items)
+    {
+        if (empty($items)) {
             return false;
         }
-        $query = "SELECT * FROM order_items WHERE order_item_id = :order_item_id";
-        $prep_arr = array(':order_item_id' => (int)$id);
-        $this->select_query($debug, $query, $prep_arr);
-        return $this->fetch_assoc();
-    }
 
-    public function get_items_by_order_id($debug, $order_id) {
+        // 1件ずつ商品を登録する（デバッグのため）
+        foreach ($items as $item) {
+            $query = "
+                INSERT INTO order_items (order_id, product_id, otumami_id, quantity, price_at_purchase) 
+                VALUES (:order_id, :product_id, :otumami_id, :quantity, :price_at_purchase)
+            ";
+
+            $product_id = isset($item['product_id']) ? (int)$item['product_id'] : null;
+            $otumami_id = isset($item['otumami_id']) ? (int)$item['otumami_id'] : null; // おつまみ商品にも対応できるよう準備
+
+            // product_id と otumami_id のどちらかが必須
+            if ($product_id === null && $otumami_id === null) {
+                error_log("add_items_to_order: product_idとotumami_idが両方nullです。 Item: " . print_r($item, true));
+                return false; 
+            }
+
+            $prep_arr = [
+                ':order_id'           => (int)$order_id,
+                ':product_id'         => $product_id,
+                ':otumami_id'         => $otumami_id,
+                ':quantity'           => (int)$item['cart_quantity'],
+                ':price_at_purchase'  => (float)$item['cart_price_at_add']
+            ];
+
+            // 1件でも失敗したら、全体を失敗としてトランザクションがロールバックされる
+            $result = $this->execute_query($debug, $query, $prep_arr);
+            if (!$result) {
+                // execute_query内で既に詳細なエラーログは出力されているはず
+                error_log("Failed to insert order_item. Order ID: {$order_id}, Details: " . print_r($item, true));
+                return false;
+            }
+        }
+
+        // すべてのループが成功した場合
+        return true;
+    }
+    
+    public function get_items_by_order_id($debug, $order_id)
+    {
         if (!cutil::is_number($order_id) || $order_id < 1) {
             return [];
         }
@@ -1765,12 +1995,15 @@ class corder_items extends crecord {
                 oi.otumami_id,
                 oi.quantity,
                 oi.price_at_purchase,
+                -- 商品かおつまみかによって名前を切り替える
+                COALESCE(p.product_name, o.otumami_name) AS item_name,
+                -- 商品かおつまみかを示すタイプを追加
                 CASE
                     WHEN oi.product_id IS NOT NULL THEN 'product'
                     WHEN oi.otumami_id IS NOT NULL THEN 'otumami'
                     ELSE 'unknown'
                 END AS item_type,
-                COALESCE(p.product_name, o.otumami_name) AS item_name,
+                -- 商品かおつまみかによって画像パスを切り替える
                 COALESCE(
                     (SELECT image_path FROM product_images WHERE product_id = oi.product_id ORDER BY display_order ASC, image_id ASC LIMIT 1),
                     (SELECT image_path FROM otumami_images WHERE otumami_id = oi.otumami_id ORDER BY display_order ASC, image_id ASC LIMIT 1)
@@ -1786,9 +2019,9 @@ class corder_items extends crecord {
             ORDER BY
                 oi.order_item_id ASC
         ";
-        
+
         $prep_arr = [':order_id' => (int)$order_id];
-        
+
         $this->select_query($debug, $query, $prep_arr);
 
         while ($row = $this->fetch_assoc()) {
@@ -1797,58 +2030,8 @@ class corder_items extends crecord {
         return $arr;
     }
 
-    /**
-     * ★★★【新規追加】★★★
-     * 注文に紐づく商品をまとめて登録する
-     * @param bool $debug デバッグモード
-     * @param int $order_id 注文ID
-     * @param array $items 登録する商品の配列
-     * @return bool 成功した場合はtrue, 失敗した場合はfalse
-     */
-    public function add_items_to_order($debug, $order_id, $items) {
-        if (empty($items)) {
-            return false;
-        }
-
-        // 複数の商品を一度のクエリで挿入する準備
-        $query = "
-            INSERT INTO order_items (order_id, product_id, otumami_id, quantity, price_at_purchase) 
-            VALUES 
-        ";
-        $query_parts = [];
-        $prep_arr = [];
-        $i = 0;
-
-        foreach ($items as $item) {
-            $product_id = null;
-            $otumami_id = null;
-            
-            // cart.phpから渡された$item['product_id']等を想定
-            // otumamiの場合も考慮が必要な場合は、cart.phpのデータ構造に合わせて調整
-            if (isset($item['product_id'])) {
-                $product_id = $item['product_id'];
-            }
-            // otumamiのIDキーが 'otumami_id' の場合
-            if (isset($item['otumami_id'])) {
-                $otumami_id = $item['otumami_id'];
-            }
-
-            $query_parts[] = "(:order_id_{$i}, :product_id_{$i}, :otumami_id_{$i}, :quantity_{$i}, :price_at_purchase_{$i})";
-            
-            $prep_arr[":order_id_{$i}"] = (int)$order_id;
-            $prep_arr[":product_id_{$i}"] = $product_id ? (int)$product_id : null;
-            $prep_arr[":otumami_id_{$i}"] = $otumami_id ? (int)$otumami_id : null;
-            $prep_arr[":quantity_{$i}"] = (int)$item['cart_quantity'];
-            $prep_arr[":price_at_purchase_{$i}"] = (float)$item['cart_price_at_add'];
-            $i++;
-        }
-
-        $query .= implode(', ', $query_parts);
-
-        return $this->execute_query($debug, $query, $prep_arr);
-    }
-
-    public function get_total_sold_count_by_product_id($debug, $product_id) {
+    public function get_total_sold_count_by_product_id($debug, $product_id)
+    {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             return 0;
         }
@@ -1859,17 +2042,21 @@ class corder_items extends crecord {
         return $row ? (int)$row['total_sold_count'] : 0;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
 
-class cadmin_user_info extends crecord {
-    public function __construct() {
+class cadmin_user_info extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    public function insert_admin_user($debug, $admin_user_name, $admin_user_pass_hashed) {
+    public function insert_admin_user($debug, $admin_user_name, $admin_user_pass_hashed)
+    {
         $query = "INSERT INTO admin_user_info (admin_user_name, admin_user_pass) VALUES (:admin_user_name, :admin_user_pass)";
         $prep_arr = array(
             ':admin_user_name' => $admin_user_name,
@@ -1882,14 +2069,16 @@ class cadmin_user_info extends crecord {
         return false;
     }
 
-    public function get_admin_user_by_name($debug, $admin_user_name) {
+    public function get_admin_user_by_name($debug, $admin_user_name)
+    {
         $query = "SELECT admin_user_id, admin_user_name, admin_user_pass FROM admin_user_info WHERE admin_user_name = :admin_user_name";
         $prep_arr = array(':admin_user_name' => (string)$admin_user_name);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
@@ -1897,8 +2086,10 @@ class cadmin_user_info extends crecord {
 /**
  * 【新規追加】商品詳細ページの訪問数を管理するクラス
  */
-class cproduct_views extends crecord {
-    public function __construct() {
+class cproduct_views extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -1908,7 +2099,8 @@ class cproduct_views extends crecord {
      * @param int $product_id 訪問された商品ID
      * @return int|false 挿入された行のID、または失敗した場合はfalse
      */
-    public function insert_product_view($debug, $product_id) {
+    public function insert_product_view($debug, $product_id)
+    {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             error_log("Invalid product_id for insert_product_view: " . $product_id);
             return false;
@@ -1928,7 +2120,8 @@ class cproduct_views extends crecord {
      * @param int $product_id 商品ID
      * @return int 総訪問数
      */
-    public function get_product_view_count($debug, $product_id) {
+    public function get_product_view_count($debug, $product_id)
+    {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             return 0;
         }
@@ -1939,12 +2132,15 @@ class cproduct_views extends crecord {
         return $row ? (int)$row['total_view_count'] : 0;
     }
 
-    public function __destruct() {
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
-class cproduct_favorites extends crecord {
-    public function __construct() {
+class cproduct_favorites extends crecord
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
@@ -1955,7 +2151,8 @@ class cproduct_favorites extends crecord {
      * @param int $product_id 商品ID
      * @return bool お気に入り済みの場合はtrue, そうでなければfalse
      */
-    public function is_favorited($debug, $user_id, $product_id) {
+    public function is_favorited($debug, $user_id, $product_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1 || !cutil::is_number($product_id) || $product_id < 1) {
             return false;
         }
@@ -1972,7 +2169,8 @@ class cproduct_favorites extends crecord {
      * @param int $product_id 商品ID
      * @return bool 成功した場合はtrue, 失敗した場合はfalse
      */
-    public function add_favorite($debug, $user_id, $product_id) {
+    public function add_favorite($debug, $user_id, $product_id)
+    {
         $query = "INSERT INTO product_favorites (user_id, product_id) VALUES (:user_id, :product_id)";
         return $this->execute_query($debug, $query, [':user_id' => (int)$user_id, ':product_id' => (int)$product_id]);
     }
@@ -1984,7 +2182,8 @@ class cproduct_favorites extends crecord {
      * @param int $product_id 商品ID
      * @return bool 成功した場合はtrue, 失敗した場合はfalse
      */
-    public function remove_favorite($debug, $user_id, $product_id) {
+    public function remove_favorite($debug, $user_id, $product_id)
+    {
         $query = "DELETE FROM product_favorites WHERE user_id = :user_id AND product_id = :product_id";
         return $this->execute_query($debug, $query, [':user_id' => (int)$user_id, ':product_id' => (int)$product_id]);
     }
@@ -1995,7 +2194,8 @@ class cproduct_favorites extends crecord {
      * @param int $user_id ユーザーID
      * @return array お気に入り商品IDの配列
      */
-    public function get_favorite_product_ids_by_user_id($debug, $user_id) {
+    public function get_favorite_product_ids_by_user_id($debug, $user_id)
+    {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
@@ -2007,9 +2207,9 @@ class cproduct_favorites extends crecord {
         }
         return $arr;
     }
-    
-    public function __destruct() {
+
+    public function __destruct()
+    {
         parent::__destruct();
     }
 }
-
