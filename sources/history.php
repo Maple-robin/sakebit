@@ -5,12 +5,40 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、ここでの処理は不要です。
-// session_start();
-// require_once __DIR__ . '/common/contents_db.php';
+// ★★★【最重要】ここから修正 ★★★
+// session_start()を、全ての処理の一番最初に呼び出す
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-// ここに購入履歴ページ固有のPHPロジックがあれば記述します。
-// (例: ログインユーザーの購入履歴をDBから取得する処理など)
+// ログイン状態を確認
+// session_start()が実行された後なので、正しく判定できる
+if (!isset($_SESSION['user_id'])) {
+    // ログインしていなければ、ログインページにリダイレクト
+    header('Location: login.php');
+    exit;
+}
+
+// DB接続ファイルを読み込む
+require_once __DIR__ . '/common/contents_db.php';
+// ★★★ ここまで修正 ★★★
+
+
+// ログインユーザーのIDを取得
+$user_id = $_SESSION['user_id'];
+$debug = false; // デバッグモード（必要に応じてtrueに変更）
+
+// データベース操作クラスのインスタンスを作成
+$orders_db = new corders();
+$order_items_db = new corder_items();
+
+// ユーザーの注文履歴を取得
+$orders = $orders_db->get_orders_by_user_id($debug, $user_id);
+
+// 各注文に紐づく商品情報を取得して、注文データに格納する
+foreach ($orders as $key => $order) {
+    $orders[$key]['items'] = $order_items_db->get_items_by_order_id($debug, $order['order_id']);
+}
 
 ?>
 <!DOCTYPE html>
@@ -32,12 +60,11 @@
 </head>
 
 <body>
-    <?php 
+    <?php
     // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    require_once 'header.php';
     ?>
 
-    <!-- メインコンテンツ -->
     <main>
         <section class="history">
             <div class="history__inner">
@@ -45,33 +72,77 @@
                     <span class="en">PURCHASE HISTORY</span>
                     <span class="ja">( 購入履歴 )</span>
                 </h2>
-                <ul class="history-list">
-                    <li class="history-item">
-                        <img src="img/sake.png" alt="商品画像" class="history-item__img">
-                        <div class="history-item__details">
-                            <h3 class="history-item__name">純米大吟醸 麗し乃雫</h3>
-                            <p class="history-item__date">購入日: 2025年6月1日</p>
-                            <p class="history-item__price">¥ 5,800 (税込)</p>
-                        </div>
-                    </li>
-                    <li class="history-item">
-                        <img src="img/osake.png" alt="商品画像" class="history-item__img">
-                        <div class="history-item__details">
-                            <h3 class="history-item__name">果実酒 桃源郷の誘い</h3>
-                            <p class="history-item__date">購入日: 2025年5月20日</p>
-                            <p class="history-item__price">¥ 3,200 (税込)</p>
-                        </div>
-                    </li>
-                </ul>
-                <!-- マイページへ戻るボタン -->
+
+                <?php if (empty($orders)): ?>
+                    <p class="no-history">購入履歴はまだありません。</p>
+                <?php else: ?>
+                    <div class="history-list">
+                        <?php foreach ($orders as $order): ?>
+                            <div class="history-order-card">
+                                <div class="card-header">
+                                    <div class="order-date">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <?php echo htmlspecialchars(date('Y年m月d日', strtotime($order['order_date'])), ENT_QUOTES, 'UTF-8'); ?>
+                                    </div>
+                                    <div class="order-meta">
+                                        <span class="order-total">合計: &yen;<?php echo htmlspecialchars(number_format($order['total_amount']), ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <?php
+                                        // 注文状況に応じてCSSクラスを切り替える
+                                        $status_class = '';
+                                        switch ($order['order_status']) {
+                                            case 'shipped':
+                                                $status_class = 'status-shipped';
+                                                break;
+                                            case 'delivered':
+                                                $status_class = 'status-delivered';
+                                                break;
+                                            case 'pending':
+                                                $status_class = 'status-pending';
+                                                break;
+                                            case 'cancelled':
+                                                $status_class = 'status-cancelled';
+                                                break;
+                                        }
+                                        ?>
+                                        <span class="status-badge <?php echo $status_class; ?>"><?php echo htmlspecialchars($order['order_status'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <?php foreach ($order['items'] as $item): ?>
+                                        <div class="history-item">
+                                            <?php
+                                            $image_path = !empty($item['image_path']) ? htmlspecialchars($item['image_path'], ENT_QUOTES, 'UTF-8') : 'img/no-image.png';
+                                            ?>
+                                            <img src="<?php echo $image_path; ?>" alt="<?php echo htmlspecialchars($item['item_name'], ENT_QUOTES, 'UTF-8'); ?>" class="history-item__img">
+                                            <div class="history-item__details">
+                                                <h3 class="history-item__name">
+                                                    <a href="<?php echo ($item['item_type'] === 'product' ? 'product.php?id=' . $item['product_id'] : 'otumami.php?id=' . $item['otumami_id']); ?>">
+                                                        <?php echo htmlspecialchars($item['item_name'], ENT_QUOTES, 'UTF-8'); ?>
+                                                    </a>
+                                                </h3>
+                                                <p class="history-item__price">
+                                                    &yen;<?php echo htmlspecialchars(number_format($item['price_at_purchase']), ENT_QUOTES, 'UTF-8'); ?> (購入時単価)
+                                                </p>
+                                                <p class="history-item__quantity">
+                                                    数量: <?php echo htmlspecialchars($item['quantity'], ENT_QUOTES, 'UTF-8'); ?>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+
                 <button class="return-button" onclick="window.location.href='MyPage.php'">マイページへ戻る</button>
             </div>
         </section>
     </main>
 
-    <?php 
+    <?php
     // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    require_once 'footer.php';
     ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>

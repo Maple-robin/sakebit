@@ -27,6 +27,7 @@ $cart_items_db = new ccart_items();
 
 // ユーザーのカートIDを取得（なければ作成）
 $cart_id = $carts_db->get_or_create_cart_by_user_id($debug_mode, $current_user_id);
+$_SESSION['cart_id'] = $cart_id;
 
 $cart_items = [];
 $total_price = 0;
@@ -61,9 +62,9 @@ if ($cart_id) {
 
 <body>
 
-    <?php 
+    <?php
     // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    require_once 'header.php';
     ?>
 
     <main>
@@ -81,7 +82,7 @@ if ($cart_id) {
 
                 <div class="cart-main-container">
                     <div class="cart-items" id="cart-items-container">
-                        
+
                         <?php if (empty($cart_items)): ?>
                             <p class="cart-empty-message">カートに商品がありません。</p>
                         <?php else: ?>
@@ -139,7 +140,7 @@ if ($cart_id) {
                             </div>
                         </div>
 
-                        <button class="btn-checkout">チェックアウト</button>
+                        <a href="checkout.php" class="btn-checkout">チェックアウト</a>
                     </div>
                 </div>
 
@@ -148,8 +149,8 @@ if ($cart_id) {
 
     </main>
 
-    <?php 
-    require_once 'footer.php'; 
+    <?php
+    require_once 'footer.php';
     ?>
 
     <script src="js/script.js"></script>

@@ -1,10 +1,16 @@
 <?php
 /*!
-@file process_login.php
+@file process_client_login.php
 @brief ログインフォームからのデータを受け取り、ユーザー認証を行う
 @copyright Copyright (c) 2024 Your Name.
 */
-
+// セッションを開始
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// 既存のセッション情報を一度すべて破棄して、セッションIDを再生成
+session_unset();
+session_regenerate_id(true);
 // config.php と contents_db.php をインクルード
 // パスはprocess_signup.phpと同じルールで設定
 require_once __DIR__ . '/../common/config.php';
@@ -15,7 +21,7 @@ $debug_mode = false;
 
 // POSTリクエスト以外からのアクセスを拒否
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: login.php');
+    header('Location: client_login.php');
     exit();
 }
 
@@ -50,7 +56,6 @@ if (empty($errors)) {
         // パスワードの照合
         if (password_verify($password, $user_data['password_hash'])) {
             // ログイン成功
-            session_start();
             $_SESSION['client_id'] = $user_data['client_id'];
             $_SESSION['client_email'] = $user_data['email'];
             $_SESSION['company_name'] = $user_data['company_name'];
@@ -71,10 +76,8 @@ if (empty($errors)) {
 
 // 認証失敗またはエラーがある場合、エラーメッセージをセッションに保存してログインページに戻す
 if (!empty($errors)) {
-    session_start();
     $_SESSION['login_error'] = implode('<br>', $errors); // 複数のエラーを改行で結合して表示
     $_SESSION['login_old_username'] = $username; // 入力されたユーザー名を保持
-    header('Location: login.php');
+    header('Location: client_login.php');
     exit();
 }
-?>

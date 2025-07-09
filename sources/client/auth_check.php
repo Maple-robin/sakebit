@@ -10,8 +10,8 @@ if (session_status() === PHP_SESSION_NONE) {
 $client_id = $_SESSION['client_id'] ?? 0;
 
 if (empty($client_id)) {
-    // ログインしていない場合はlogin.phpへリダイレクト
-    header('Location: login.php');
+    // ログインしていない場合はclient_login.phpへリダイレクト
+    header('Location: client_login.php');
     exit();
 }
 

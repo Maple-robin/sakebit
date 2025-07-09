@@ -1,4 +1,12 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    // 配送希望日の設定
+    const deliveryDateInput = document.getElementById('delivery-date');
+    if (deliveryDateInput) {
+        // 今日の日付を YYYY-MM-DD 形式で取得
+        const today = new Date().toISOString().split('T')[0];
+        // input type="date" の min 属性に今日の日付を設定
+        deliveryDateInput.setAttribute('min', today);
+    }
     const cartItemsContainer = document.getElementById('cart-items-container');
     const totalPriceEl = document.getElementById('total-price');
 
@@ -21,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // カート全体のクリックイベントを監視（イベント委任）
     if (cartItemsContainer) {
-        cartItemsContainer.addEventListener('click', function(e) {
+        cartItemsContainer.addEventListener('click', function (e) {
             const target = e.target;
-            
+
             // --- 削除ボタンの処理 ---
             const removeButton = target.closest('.cart-item__remove');
             if (removeButton) {
@@ -58,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 数量入力欄の直接変更を監視
-        cartItemsContainer.addEventListener('change', function(e) {
+        cartItemsContainer.addEventListener('change', function (e) {
             if (e.target.matches('.quantity-input')) {
                 const input = e.target;
                 const cartItemId = input.dataset.id;
@@ -77,60 +85,64 @@ document.addEventListener('DOMContentLoaded', function() {
     // API呼び出し：数量更新
     const updateCartItem = (itemId, quantity) => {
         fetch('api/api_cart_manager.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'update',
-                cart_item_id: itemId,
-                quantity: quantity
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'update',
+                    cart_item_id: itemId,
+                    quantity: quantity
+                })
             })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                updateTotalPrice();
-            } else {
-                alert(data.message || '数量の更新に失敗しました。');
-                location.reload(); 
-            }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('通信エラーが発生しました。');
-        });
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    updateTotalPrice();
+                } else {
+                    alert(data.message || '数量の更新に失敗しました。');
+                    location.reload();
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('通信エラーが発生しました。');
+            });
     };
-    
+
     // API呼び出し：商品削除
     const deleteCartItem = (itemId, itemElement) => {
         fetch('api/api_cart_manager.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                action: 'delete',
-                cart_item_id: itemId
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: 'delete',
+                    cart_item_id: itemId
+                })
             })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                itemElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-                itemElement.style.opacity = '0';
-                itemElement.style.transform = 'translateX(-20px)';
-                setTimeout(() => {
-                    itemElement.remove();
-                    updateTotalPrice();
-                    if (cartItemsContainer.children.length === 0) {
-                        cartItemsContainer.innerHTML = '<p class="cart-empty-message">カートに商品がありません。</p>';
-                    }
-                }, 300);
-            } else {
-                alert(data.message || '商品の削除に失敗しました。');
-            }
-        })
-        .catch(err => {
-            console.error('Error:', err);
-            alert('通信エラーが発生しました。');
-        });
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    itemElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    itemElement.style.opacity = '0';
+                    itemElement.style.transform = 'translateX(-20px)';
+                    setTimeout(() => {
+                        itemElement.remove();
+                        updateTotalPrice();
+                        if (cartItemsContainer.children.length === 0) {
+                            cartItemsContainer.innerHTML = '<p class="cart-empty-message">カートに商品がありません。</p>';
+                        }
+                    }, 300);
+                } else {
+                    alert(data.message || '商品の削除に失敗しました。');
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('通信エラーが発生しました。');
+            });
     };
 
     // カスタム確認モーダル表示関数
@@ -160,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newYesBtn = yesBtn.cloneNode(true);
         yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
-        
+
         const newNoBtn = noBtn.cloneNode(true);
         noBtn.parentNode.replaceChild(newNoBtn, noBtn);
 

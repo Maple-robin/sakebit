@@ -63,7 +63,7 @@
     <div class="success-container">
         <h1>登録が完了しました！</h1>
         <p>ご登録ありがとうございます。これでサービスをご利用いただけます。</p>
-        <a href="login.php">ログインページへ</a>
+        <a href="client_login.php">ログインページへ</a>
     </div>
 </body>
 </html>
