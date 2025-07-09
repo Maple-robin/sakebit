@@ -19,7 +19,7 @@
 
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/chinese_lantern.png');">
+        <section class="guide-hero" style="background-image: url('img/Chinese_hukei.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">中国酒の世界へようこそ</h2>
                 <p class="guide-hero__subtitle">悠久の歴史と多様な香り</p>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/国花瓷.png" alt="中国酒の紹介画像" class="intro-content__image">
+                        <img src="img/Chinese_sake_all.png" alt="中国酒の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>中国酒は、数千年の歴史を持つ中国伝統のお酒の総称です。広大な国土と多様な気候風土を背景に、穀物を主原料とした白酒（バイチュウ）、もち米などを原料とする黄酒（ホアンチュウ）など、多種多様なお酒が造られています。</p>
                         </div>
@@ -52,15 +52,15 @@
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/baijiu_glass.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/白酒.png');">
                         <h4>白酒（バイチュウ）</h4>
                         <p>高粱（こうりゃん）などを原料とする蒸留酒。アルコール度数が高く、独特の強い香りが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/shaoxing_wine.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/黄酒.png');">
                         <h4>黄酒（ホアンチュウ）</h4>
                         <p>もち米やうるち米を原料とする醸造酒。紹興酒が有名で、まろやかな口当たりと深いコクが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/xinglujiu.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/果酒.png');">
                         <h4>果酒（カシュ）</h4>
                         <p>果実を原料としたお酒。杏露酒（シンルチュウ）などが知られ、フルーティーで甘い味わいが楽しめます。</p>
                     </div>
