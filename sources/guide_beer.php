@@ -89,11 +89,11 @@
                 <!-- 適温で風味を最大限に -->
                 <div class="drink-way-item">
                     <div class="drink-way-item__title">
-                        <h3>適温で風味を最大限に</h3>
+                        <h3>ビールの温度</h3>
                     </div>
                     <div class="drink-way-item__step">
                         <div class="drink-way-item__description">
-                            <p>冷やしすぎず適温で飲むことで、ビールの持つ豊かな香りと味わいをしっかり楽しめます。</p>
+                            <p>ビールの温度<br>冷蔵庫で冷やすとすっきり。少し温めると、香りが際立ち、ビールの奥深さが感じられます。</p>
                         </div>
                         <div class="drink-way-item__image">
                             <img src="img/beer_bottle.png" alt="適温で風味を最大限に">
