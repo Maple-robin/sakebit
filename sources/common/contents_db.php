@@ -60,6 +60,7 @@ class crecord
             }
             return $result;
         } catch (PDOException $e) {
+            // エラーをログに記録
             $error_message_log = "Database Error: " . $e->getMessage() .
                 " SQLSTATE: " . ($e->errorInfo[0] ?? 'N/A') .
                 " SQLSTATE Code: " . ($e->errorInfo[1] ?? 'N/A') .
@@ -67,19 +68,9 @@ class crecord
                 " Query: " . $query .
                 " Params: . " . json_encode($prep_arr);
             error_log($error_message_log);
-
-            if (defined('DEBUG') && DEBUG) {
-                echo "<div style='background-color:#ffe6e6; border:1px solid #ffb3b3; padding:10px; margin-bottom:10px; color:#cc0000; font-family:monospace;'>";
-                echo "<strong>データベースエラーが発生しました（DEBUGモード）:</strong><br>";
-                echo "メッセージ: " . htmlspecialchars($e->getMessage()) . "<br>";
-                echo "SQLSTATE: " . htmlspecialchars($e->errorInfo[0] ?? 'N/A') . "<br>";
-                echo "ドライバエラーコード: " . htmlspecialchars($e->errorInfo[1] ?? 'N/A') . "<br>";
-                echo "ドライバメッセージ: " . htmlspecialchars($e->errorInfo[2] ?? 'N/A') . "<br>";
-                echo "クエリ: <pre>" . htmlspecialchars($query) . "</pre>";
-                echo "パラメータ: <pre>" . htmlspecialchars(json_encode($prep_arr, JSON_UNESCAPED_UNICODE)) . "</pre>";
-                echo "</div>";
-            }
-            return false;
+            
+            // トランザクション処理を正しく行うため、例外を再度スローして呼び出し元にエラーを伝播させる
+            throw $e;
         }
     }
 
@@ -502,7 +493,7 @@ class cproduct_info extends crecord
             throw $e;
         }
     }
-    
+
     public function __destruct()
     {
         parent::__destruct();
