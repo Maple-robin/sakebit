@@ -40,9 +40,9 @@
                     <h3><i class="fas fa-chart-line"></i> サイト全体の閲覧情報 (直近30日間)</h3>
                     <ul class="stats-list">
                         <li><strong>総アクセス数:</strong> 15,234</li>
-                        <li><strong>ユニークユーザー数:</strong> 8,912</li>
-                        <li><strong>平均滞在時間:</strong> 00:03:45</li>
-                        <li><strong>直帰率:</strong> 45.2%</li>
+                        <li><strong>ユニークユーザー数:</strong> 8,912
+                            <br><span>※ユニークユーザー数とは、同じ期間内にサイトを訪れた重複しない利用者の数です。1人が複数回アクセスしても1人としてカウントされます。</span>
+                        </li>
                     </ul>
                 </div>
 

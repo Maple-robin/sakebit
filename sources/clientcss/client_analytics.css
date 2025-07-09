@@ -39,11 +39,22 @@
     margin: 0;
 }
 
+
 .stats-list li {
     font-size: 1.6rem;
     color: #555;
-    padding: 10px 0;
+    padding: 14px 0 10px 0;
     border-bottom: 1px dashed #eee; /* 各項目の区切り線 */
+    line-height: 1.7;
+}
+
+/* ユニークユーザー数の説明文スタイル */
+.stats-list li span {
+    display: block;
+    margin-top: 7px;
+    font-size: 1.3rem;
+    color: #888;
+    line-height: 1.6;
 }
 
 .stats-list li:last-child {
