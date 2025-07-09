@@ -128,7 +128,7 @@ $product_db = null;
                                     <td><?= htmlspecialchars($product['product_stock'], ENT_QUOTES, 'UTF-8') ?></td>
                                     <td>
                                         <div class="admin-action-buttons-group">
-                                            <a href="client_add_product.php?id=<?= $product['product_id'] ?>" class="admin-action-button admin-action-button--edit"><i class="fas fa-edit"></i> 編集</a>
+                                            <a href="client_edit_product.php?id=<?= $product['product_id'] ?>" class="admin-action-button admin-action-button--edit"><i class="fas fa-edit"></i> 編集</a>
                                             <a href="client_preview.php?id=<?= $product['product_id'] ?>" class="admin-action-button admin-action-button--preview"><i class="fas fa-eye"></i> プレビュー</a>
                                             <a href="#" class="admin-action-button admin-action-button--delete" onclick="return confirm('「<?= htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?>」を本当に削除しますか？');"><i class="fas fa-trash-alt"></i> 削除</a>
                                         </div>
