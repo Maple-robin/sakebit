@@ -68,7 +68,7 @@ class crecord
                 " Query: " . $query .
                 " Params: . " . json_encode($prep_arr);
             error_log($error_message_log);
-            
+
             // トランザクション処理を正しく行うため、例外を再度スローして呼び出し元にエラーを伝播させる
             throw $e;
         }
@@ -445,7 +445,7 @@ class cproduct_info extends crecord
         }
         return $arr;
     }
-    
+
     public function decrease_stock($debug, $product_id, $quantity)
     {
         if (!cutil::is_number($product_id) || $product_id < 1 || !cutil::is_number($quantity) || $quantity < 1) {
@@ -483,15 +483,194 @@ class cproduct_info extends crecord
                 ':new_stock' => $new_stock,
                 ':product_id' => (int)$product_id
             ]);
-            
-            return $update_success;
 
+            return $update_success;
         } catch (PDOException $e) {
             // エラーが発生した場合、呼び出し元のcatchブロックでトランザクションがロールバックされるように例外をスローする
             $error_message_log = "Database Error in decrease_stock: " . $e->getMessage();
             error_log($error_message_log);
             throw $e;
         }
+    }
+    public function get_top_selling_products($debug, $limit = 3)
+    {
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                SUM(oi.quantity) AS total_sold,
+                (
+                    SELECT pi.image_path 
+                    FROM product_images pi 
+                    WHERE pi.product_id = p.product_id 
+                    AND pi.image_type = 'main' 
+                    ORDER BY pi.display_order ASC, pi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path
+            FROM
+                order_items oi
+            JOIN
+                product_info p ON oi.product_id = p.product_id
+            WHERE
+                oi.product_id IS NOT NULL
+            GROUP BY
+                p.product_id, p.product_name
+            ORDER BY
+                total_sold DESC
+            LIMIT :limit
+        ";
+
+        $prep_arr = [
+            ':limit' => (int)$limit
+        ];
+
+        $arr = [];
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+    public function get_ranked_products($debug, $limit = 5, $offset = 0)
+    {
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                SUM(oi.quantity) AS total_sold,
+                (
+                    SELECT pi.image_path 
+                    FROM product_images pi 
+                    WHERE pi.product_id = p.product_id 
+                    ORDER BY pi.image_type = 'main' DESC, pi.display_order ASC, pi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                GROUP_CONCAT(DISTINCT t.tag_name ORDER BY t.tag_id SEPARATOR ', ') AS tags
+            FROM
+                order_items oi
+            JOIN
+                product_info p ON oi.product_id = p.product_id
+            LEFT JOIN
+                product_tags_relation ptr ON p.product_id = ptr.product_id
+            LEFT JOIN
+                tags t ON ptr.tag_id = t.tag_id
+            WHERE
+                oi.product_id IS NOT NULL
+            GROUP BY
+                p.product_id
+            ORDER BY
+                total_sold DESC
+            LIMIT :limit OFFSET :offset
+        ";
+
+        $prep_arr = [
+            ':limit' => (int)$limit,
+            ':offset' => (int)$offset
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+    public function get_top_selling_products_by_tag($debug, $tag_name, $limit = 5)
+    {
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                SUM(oi.quantity) AS total_sold,
+                (
+                    SELECT pi.image_path 
+                    FROM product_images pi 
+                    WHERE pi.product_id = p.product_id 
+                    AND pi.image_type = 'main' 
+                    ORDER BY pi.display_order ASC, pi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                -- 商品に紐づく全てのタグを取得
+                (
+                    SELECT GROUP_CONCAT(t_all.tag_name ORDER BY t_all.tag_id SEPARATOR ', ')
+                    FROM product_tags_relation ptr_all
+                    JOIN tags t_all ON ptr_all.tag_id = t_all.tag_id
+                    WHERE ptr_all.product_id = p.product_id
+                ) AS tags
+            FROM
+                order_items oi
+            JOIN
+                product_info p ON oi.product_id = p.product_id
+            -- 特定のタグを持つ商品を絞り込むためのJOIN
+            JOIN
+                product_tags_relation ptr_filter ON p.product_id = ptr_filter.product_id
+            JOIN
+                tags t_filter ON ptr_filter.tag_id = t_filter.tag_id
+            WHERE
+                oi.product_id IS NOT NULL
+                AND t_filter.tag_name = :tag_name
+            GROUP BY
+                p.product_id
+            ORDER BY
+                total_sold DESC
+            LIMIT :limit
+        ";
+
+        $prep_arr = [
+            ':tag_name' => $tag_name,
+            ':limit' => (int)$limit
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+    public function get_all_products_for_list($debug)
+    {
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                p.product_Contents,
+                p.created_at,
+                c.category_name,
+                -- 販売数を計算（売れていない商品は0になる）
+                COALESCE(SUM(oi.quantity), 0) AS total_sold,
+                -- メイン画像を取得
+                (
+                    SELECT pi.image_path 
+                    FROM product_images pi 
+                    WHERE pi.product_id = p.product_id 
+                    ORDER BY pi.image_type = 'main' DESC, pi.display_order ASC, pi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                -- 関連タグをカンマ区切りで取得
+                GROUP_CONCAT(DISTINCT t.tag_name ORDER BY t.tag_id SEPARATOR ', ') AS tags
+            FROM
+                product_info p
+            LEFT JOIN
+                categories c ON p.product_category = c.category_id
+            LEFT JOIN
+                product_tags_relation ptr ON p.product_id = ptr.product_id
+            LEFT JOIN
+                tags t ON ptr.tag_id = t.tag_id
+            LEFT JOIN
+                order_items oi ON p.product_id = oi.product_id
+            GROUP BY
+                p.product_id
+            ORDER BY
+                p.product_id DESC
+        ";
+
+        $stmt = $this->execute_query($debug, $query, []);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
     }
 
     public function __destruct()

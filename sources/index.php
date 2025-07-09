@@ -5,11 +5,21 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、ここでの処理は不要です。
-// session_start();
-// require_once __DIR__ . '/common/contents_db.php';
+// --- トップページ用のデータ取得 ---
+require_once __DIR__ . '/common/contents_db.php';
+$debug = false;
 
-// ここにトップページ固有のPHPロジックがあれば記述します。
+$product_db = new cproduct_info();
+
+// メインカルーセル用の売上ランキングTOP3の商品を取得
+$top_products = $product_db->get_top_selling_products($debug, 3);
+
+// ランキングセクション用の商品を取得 (4位から5件)
+$ranking_products = $product_db->get_ranked_products($debug, 5, 3);
+
+// 初心者向けセクション用の商品を取得
+$beginner_products = $product_db->get_top_selling_products_by_tag($debug, '初心者向け', 5);
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -69,15 +79,26 @@
     <main>
         <section class="main-visual swiper mySwiperHero">
             <div class="swiper-wrapper">
-                <div class="swiper-slide main-visual__item">
-                    <img src="img/gingerale.png" alt="雄大な自然">
-                </div>
-                <div class="swiper-slide main-visual__item">
-                    <img src="img/osake.png" alt="お酒と料理">
-                </div>
-                <div class="swiper-slide main-visual__item">
-                    <img src="img/sake.png" alt="グラス">
-                </div>
+                <?php if (!empty($top_products)): ?>
+                    <?php foreach ($top_products as $product): ?>
+                        <div class="swiper-slide main-visual__item">
+                            <a href="product.php?id=<?php echo htmlspecialchars($product['product_id']); ?>">
+                                <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                            </a>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <!-- ランキング商品がない場合のデフォルト表示 -->
+                    <div class="swiper-slide main-visual__item">
+                        <img src="img/gingerale.png" alt="雄大な自然">
+                    </div>
+                    <div class="swiper-slide main-visual__item">
+                        <img src="img/osake.png" alt="お酒と料理">
+                    </div>
+                    <div class="swiper-slide main-visual__item">
+                        <img src="img/sake.png" alt="グラス">
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="swiper-pagination"></div>
         </section>
@@ -90,56 +111,30 @@
                 </h2>
                 <div class="swiper mySwiperProducts">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/gingerale.png" alt="商品名１">
+                        <?php if (!empty($ranking_products)): ?>
+                            <?php foreach ($ranking_products as $product): ?>
+                                <?php
+                                    $tags_display = '';
+                                    if (!empty($product['tags'])) {
+                                        $tags_array = explode(', ', $product['tags']);
+                                        $tags_to_show = array_slice($tags_array, 0, 3);
+                                        $tags_display = '#' . implode(' #', array_map('htmlspecialchars', $tags_to_show));
+                                    }
+                                ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id']); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name']); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                        <p class="product-item__tag"><?php echo $tags_display; ?></p>
+                                    </a>
                                 </div>
-                                <h3 class="product-item__name">純米大吟醸 麗し乃雫</h3>
-                                <p class="product-item__price">¥ 5,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#日本酒 #華やか #ギフト</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/osake.png" alt="商品名２">
-                                </div>
-                                <h3 class="product-item__name">果実酒 桃源郷の誘い</h3>
-                                <p class="product-item__price">¥ 3,200<span>(税込)</span></p>
-                                <p class="product-item__tag">#果実酒 #甘口 #女子会</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake.png" alt="商品名３">
-                                </div>
-                                <h3 class="product-item__name">スパークリングワイン 煌</h3>
-                                <p class="product-item__price">¥ 4,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#ワイン #スパークリング #パーティー</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="images/product4.jpg" alt="商品名４">
-                                </div>
-                                <h3 class="product-item__name">焼酎 琥珀の夢</h3>
-                                <p class="product-item__price">¥ 3,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#焼酎 #ロック #本格派</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="images/product5.jpg" alt="商品名５">
-                                </div>
-                                <h3 class="product-item__name">リキュール 桜日和</h3>
-                                <p class="product-item__price">¥ 2,900<span>(税込)</span></p>
-                                <p class="product-item__tag">#リキュール #カクテル #映え</p>
-                            </a>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="text-align:center;">現在、ランキングデータを集計中です。</p>
+                        <?php endif; ?>
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>
@@ -154,56 +149,30 @@
                 </h2>
                 <div class="swiper mySwiperBeginners">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/gingerale.png" alt="初心者向け商品１">
+                        <?php if (!empty($beginner_products)): ?>
+                            <?php foreach ($beginner_products as $product): ?>
+                                <?php
+                                    $tags_display = '';
+                                    if (!empty($product['tags'])) {
+                                        $tags_array = explode(', ', $product['tags']);
+                                        $tags_to_show = array_slice($tags_array, 0, 3);
+                                        $tags_display = '#' . implode(' #', array_map('htmlspecialchars', $tags_to_show));
+                                    }
+                                ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id']); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png'); ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name']); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                        <p class="product-item__tag"><?php echo $tags_display; ?></p>
+                                    </a>
                                 </div>
-                                <h3 class="product-item__name">月桂冠 スパークリング</h3>
-                                <p class="product-item__price">¥ 1,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#日本酒 #甘口 #飲みやすい</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/osake.png" alt="初心者向け商品２">
-                                </div>
-                                <h3 class="product-item__name">白桃とレモングラスの果実酒</h3>
-                                <p class="product-item__price">¥ 2,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#果実酒 #フルーティー #女性に人気</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake.png" alt="初心者向け商品３">
-                                </div>
-                                <h3 class="product-item__name">サントリー ほろよい</h3>
-                                <p class="product-item__price">¥ 200<span>(税込)</span></p>
-                                <p class="product-item__tag">#低アルコール #お手軽 #家飲み</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="images/product4.jpg" alt="初心者向け商品４">
-                                </div>
-                                <h3 class="product-item__name">カルピスサワー</h3>
-                                <p class="product-item__price">¥ 350<span>(税込)</span></p>
-                                <p class="product-item__tag">#サワー #定番 #甘い</p>
-                            </a>
-                        </div>
-                        <div class="swiper-slide product-item">
-                            <a href="product.php">
-                                <div class="product-item__img-wrap">
-                                    <img src="images/product5.jpg" alt="初心者向け商品５">
-                                </div>
-                                <h3 class="product-item__name">北海道ワイン おたる 赤 甘口</h3>
-                                <p class="product-item__price">¥ 1,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#ワイン #甘口 #国産</p>
-                            </a>
-                        </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="text-align:center;">現在、おすすめ商品を準備中です。</p>
+                        <?php endif; ?>
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>

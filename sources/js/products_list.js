@@ -251,7 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (currentSortOrder === 'lowest_price') {
             filteredProducts.sort((a, b) => a.price - b.price);
         } else if (currentSortOrder === 'ranking') {
-            filteredProducts.sort((a, b) => b.rankingScore - a.rankingScore);
+            // 'rankingScore' を実際の販売数 'sales' で並び替え
+            filteredProducts.sort((a, b) => b.sales - a.sales);
         }
 
         updatePageTitle();
