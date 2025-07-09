@@ -454,7 +454,55 @@ class cproduct_info extends crecord
         }
         return $arr;
     }
+    
+    public function decrease_stock($debug, $product_id, $quantity)
+    {
+        if (!cutil::is_number($product_id) || $product_id < 1 || !cutil::is_number($quantity) || $quantity < 1) {
+            return false;
+        }
 
+        // このメソッドは、api/process_order.php のトランザクション内で呼び出されることを前提としています。
+        try {
+            // 1. 行をロックして現在の在庫数を取得
+            $query_select = "SELECT product_stock FROM product_info WHERE product_id = :product_id FOR UPDATE";
+            $stmt_select = $this->pdo->prepare($query_select);
+            $stmt_select->execute([':product_id' => (int)$product_id]);
+            $result = $stmt_select->fetch(PDO::FETCH_ASSOC);
+
+            if (!$result) {
+                // 商品が見つからない場合
+                error_log("decrease_stock error: Product with ID {$product_id} not found.");
+                return false;
+            }
+
+            $current_stock = (int)$result['product_stock'];
+
+            // 2. PHP側で在庫数を確認
+            if ($current_stock < $quantity) {
+                // 在庫が不足している場合
+                error_log("decrease_stock error: Insufficient stock for product ID {$product_id}. Required: {$quantity}, Available: {$current_stock}");
+                return false;
+            }
+
+            // 3. 在庫数を更新
+            $new_stock = $current_stock - (int)$quantity;
+            $query_update = "UPDATE product_info SET product_stock = :new_stock WHERE product_id = :product_id";
+            $stmt_update = $this->pdo->prepare($query_update);
+            $update_success = $stmt_update->execute([
+                ':new_stock' => $new_stock,
+                ':product_id' => (int)$product_id
+            ]);
+            
+            return $update_success;
+
+        } catch (PDOException $e) {
+            // エラーが発生した場合、呼び出し元のcatchブロックでトランザクションがロールバックされるように例外をスローする
+            $error_message_log = "Database Error in decrease_stock: " . $e->getMessage();
+            error_log($error_message_log);
+            throw $e;
+        }
+    }
+    
     public function __destruct()
     {
         parent::__destruct();
@@ -1808,7 +1856,7 @@ class ccart_items extends crecord
         $prep_arr = [':cart_item_id' => (int)$cart_item_id];
         return $this->execute_query($debug, $query, $prep_arr);
     }
-        public function clear_items_by_cart_id($debug, $cart_id)
+    public function clear_items_by_cart_id($debug, $cart_id)
     {
         if (!cutil::is_number($cart_id) || $cart_id < 1) {
             return false;
@@ -1956,7 +2004,7 @@ class corder_items extends crecord
             // product_id と otumami_id のどちらかが必須
             if ($product_id === null && $otumami_id === null) {
                 error_log("add_items_to_order: product_idとotumami_idが両方nullです。 Item: " . print_r($item, true));
-                return false; 
+                return false;
             }
 
             $prep_arr = [
@@ -1979,7 +2027,7 @@ class corder_items extends crecord
         // すべてのループが成功した場合
         return true;
     }
-    
+
     public function get_items_by_order_id($debug, $order_id)
     {
         if (!cutil::is_number($order_id) || $order_id < 1) {
