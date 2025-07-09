@@ -1,7 +1,7 @@
 <?php
 /**
  * @file process_order.php
- * @brief 注文処理API (おつまみ登録処理のロジックを参考)
+ * @brief 注文処理API (在庫削減機能付き)
  */
 
 ob_start();
@@ -46,6 +46,7 @@ try {
     $cart_items_db = new ccart_items();
     $orders_db = new corders();
     $order_items_db = new corder_items();
+    $product_info_db = new cproduct_info(); // 在庫操作のために追加
 
     $pdo = $orders_db->get_pdo();
     if (!$pdo) {
@@ -55,28 +56,41 @@ try {
     // --- トランザクション1: 注文(orders)の登録 ---
     $pdo->beginTransaction();
     
-    // カート情報を取得
     $cart_id = $carts_db->get_or_create_cart_by_user_id($debug_mode, $current_user_id);
     if (!$cart_id) throw new Exception('カートの取得に失敗しました。');
     
     $cart_items = $cart_items_db->get_items_by_cart_id($debug_mode, $cart_id);
     if (empty($cart_items)) throw new Exception('カートが空です。決済処理を中断しました。');
 
-    // ordersテーブルに記録
     $order_id = $orders_db->create_order($debug_mode, $current_user_id, $total_amount, $shipping_address);
-    if (!$order_id) {
-        throw new Exception('注文の作成(ordersテーブルへのINSERT)に失敗しました。');
-    }
-    $pdo->commit(); // ★ここで一度コミット
+    if (!$order_id) throw new Exception('注文の作成(ordersテーブルへのINSERT)に失敗しました。');
+    
+    $pdo->commit();
 
-    // --- トランザクション2: 注文商品(order_items)の登録とカートのクリア ---
+    // --- トランザクション2: 注文商品登録、在庫削減、カートクリア ---
     $pdo->beginTransaction();
 
-    // order_itemsテーブルに記録
+    // 注文商品を登録
     $result_add_items = $order_items_db->add_items_to_order($debug_mode, $order_id, $cart_items);
-    if (!$result_add_items) {
-        // この例外がスローされている
-        throw new Exception('注文商品の登録(order_itemsテーブルへのINSERT)に失敗しました。');
+    if (!$result_add_items) throw new Exception('注文商品の登録(order_itemsテーブルへのINSERT)に失敗しました。');
+
+    // 在庫削減処理
+    foreach ($cart_items as $item) {
+        // 商品(product)の場合のみ在庫を減らす
+        if (isset($item['product_id']) && !empty($item['product_id'])) {
+            $product_id = $item['product_id'];
+            $quantity = $item['cart_quantity'];
+
+            $stock_decreased = $product_info_db->decrease_stock($debug_mode, $product_id, $quantity);
+            
+            // 在庫削減に失敗した場合（在庫不足など）
+            if (!$stock_decreased) {
+                // 在庫が足りなかった商品の名前を取得してエラーメッセージに含める
+                $product_details = $product_info_db->get_tgt($debug_mode, $product_id);
+                $product_name = $product_details ? $product_details['product_name'] : "商品ID: {$product_id}";
+                throw new Exception("在庫不足のため注文を完了できませんでした。商品:「{$product_name}」");
+            }
+        }
     }
 
     // カートを空にする
@@ -84,13 +98,13 @@ try {
     if (!$result_clear_cart) {
         error_log("注文完了後のカートクリアに失敗しました。 order_id: {$order_id}, cart_id: {$cart_id}");
     }
-    $pdo->commit(); // ★ここで二度目のコミット
+    
+    $pdo->commit();
 
     ob_end_clean();
     echo json_encode(['success' => true, 'order_id' => $order_id]);
 
 } catch (Exception $e) {
-    // どちらかのトランザクションでエラーが起きた場合
     if ($pdo && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
