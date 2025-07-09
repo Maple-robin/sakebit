@@ -38,16 +38,23 @@ if (!empty($products_from_db)) {
         $main_image = !empty($product['main_image_path']) ? htmlspecialchars($product['main_image_path']) : 'https://placehold.co/300x200?text=NoImage';
         $tags_array = !empty($product['tags']) ? array_map('trim', explode(', ', $product['tags'])) : [];
 
+        // ★★★ ここからが修正箇所 ★★★
+        $volume = htmlspecialchars($product['product_Contents'] ?? '');
+        // 内容量が数字のみの場合、末尾に 'ml' を追加する
+        if (!empty($volume) && is_numeric($volume)) {
+            $volume .= 'ml';
+        }
+        // ★★★ ここまで修正 ★★★
+
         $products_for_js[] = [
             'id' => (int)$product['product_id'],
             'name' => htmlspecialchars($product['product_name']),
             'image' => $main_image,
-            'volume' => htmlspecialchars($product['product_Contents']),
+            'volume' => $volume, // 修正した内容量をセット
             'price' => (float)$product['product_price'],
             'tags' => $tags_array,
             'category' => htmlspecialchars($product['category_name']),
             'releaseDate' => date('Y-m-d', strtotime($created_at)),
-            // 'rankingScore' を実際の販売数 'sales' に変更
             'sales' => (int)$product['total_sold'],
             'isFavorite' => in_array($product['product_id'], $favorite_product_ids)
         ];

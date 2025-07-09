@@ -672,6 +672,64 @@ class cproduct_info extends crecord
         }
         return [];
     }
+    /**
+     * 【新規追加】指定されたクライアントIDに紐づく商品のリストを取得する (プレビューのプルダウン用)
+     * @param bool $debug デバッグモード
+     * @param int $client_id クライアントID
+     * @return array 商品の配列 (product_id, product_name)
+     */
+    public function get_products_by_client_id($debug, $client_id)
+    {
+        $query = "SELECT product_id, product_name FROM product_info WHERE client_id = :client_id ORDER BY product_id DESC";
+        $prep_arr = [':client_id' => (int)$client_id];
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
+    /**
+     * 【新規追加】単一商品の全ての詳細情報を取得する (プレビュー表示用)
+     * @param bool $debug デバッグモード
+     * @param int $product_id 商品ID
+     * @return array|false 商品データが見つかればその配列、なければfalse
+     */
+    public function get_full_product_details($debug, $product_id)
+    {
+        $query = "
+            SELECT
+                p.*,
+                c.category_name,
+                cu.company_name,
+                GROUP_CONCAT(DISTINCT t.tag_name ORDER BY t.tag_id SEPARATOR ', ') AS tags
+            FROM
+                product_info p
+            LEFT JOIN
+                categories c ON p.product_category = c.category_id
+            LEFT JOIN
+                client_user_info cu ON p.client_id = cu.client_id
+            LEFT JOIN
+                product_tags_relation ptr ON p.product_id = ptr.product_id
+            LEFT JOIN
+                tags t ON ptr.tag_id = t.tag_id
+            WHERE
+                p.product_id = :product_id
+            GROUP BY
+                p.product_id
+        ";
+        $prep_arr = [':product_id' => (int)$product_id];
+        $this->select_query($debug, $query, $prep_arr);
+        $product_details = $this->fetch_assoc();
+
+        if ($product_details) {
+            // 画像情報を別途取得して追加
+            $images_db = new cproduct_images();
+            $product_details['images'] = $images_db->get_images_by_product_id($debug, $product_id);
+        }
+
+        return $product_details;
+    }
 
     public function __destruct()
     {
