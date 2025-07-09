@@ -1,6 +1,6 @@
 <?php
 /*!
-@file login.php
+@file admin_login.php
 @brief 管理者ログインページと処理
 @copyright Copyright (c) 2024 Your Name.
 */
@@ -11,6 +11,10 @@ ini_set('display_errors', 1);
 
 // セッションを開始
 session_start();
+// 既存のセッション情報を一度すべて破棄して、セッションIDを再生成する
+// これにより、他のユーザーとしてログインしていた場合の情報が完全にクリアされる
+session_unset();
+session_regenerate_id(true);
 
 // contents_db.php と config.php をインクルード
 // パスは /home/j2025g/public_html/common/ にあることを想定して調整済み
@@ -64,19 +68,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($username) || empty($password)) {
         $_SESSION['admin_login_message'] = ['text' => 'ユーザー名とパスワードを入力してください。', 'type' => 'error'];
-        header('Location: login.php'); // エラーメッセージを表示するため同じページにリダイレクト
+        header('Location: admin_login.php'); // エラーメッセージを表示するため同じページにリダイレクト
         exit();
     } else {
         try {
             // cadmin_user_info クラスが存在するか再度確認 (念のため)
             if (!class_exists('cadmin_user_info')) {
                 $_SESSION['admin_login_message'] = ['text' => 'システムエラー: クラス cadmin_user_info が見つかりません。', 'type' => 'error'];
-                error_log("Class cadmin_user_info not found in login.php POST block.");
-                header('Location: login.php');
+                error_log("Class cadmin_user_info not found in admin_login.php POST block.");
+                header('Location: admin_login.php');
                 exit();
             }
 
-            $admin_db = new cadmin_user_info(); 
+            $admin_db = new cadmin_user_info();
             $admin_user = $admin_db->get_admin_user_by_name(DEBUG_MODE, $username);
 
             if ($admin_user && password_verify($password, $admin_user['admin_user_pass'])) {
@@ -88,13 +92,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit();
             } else {
                 $_SESSION['admin_login_message'] = ['text' => 'ユーザー名またはパスワードが正しくありません。', 'type' => 'error'];
-                header('Location: login.php');
+                header('Location: admin_login.php');
                 exit();
             }
         } catch (Exception $e) {
             error_log("Admin login process error: " . $e->getMessage());
             $_SESSION['admin_login_message'] = ['text' => 'システムエラーが発生しました。しばらくしてから再度お試しください。', 'type' => 'error'];
-            header('Location: login.php');
+            header('Location: admin_login.php');
             exit();
         }
     }
@@ -102,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,17 +115,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="../admincss/admin.css"> 
-    <link rel="stylesheet" href="../admincss/login.css"> 
+
+    <link rel="stylesheet" href="../admincss/admin.css">
+    <link rel="stylesheet" href="../admincss/login.css">
     <style>
         /* エラーメッセージのスタイル */
         .error-message {
-            color: #dc3545; /* 赤色 */
+            color: #dc3545;
+            /* 赤色 */
             text-align: center;
             margin-bottom: 15px;
             font-weight: bold;
         }
+
         /* カスタムメッセージボックスのスタイル */
         .custom-message-box {
             position: fixed;
@@ -138,17 +145,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             min-width: 300px;
             text-align: center;
         }
+
         .custom-message-box.success {
-            background-color: #28a745; /* 緑色 */
+            background-color: #28a745;
+            /* 緑色 */
         }
+
         .custom-message-box.error {
-            background-color: #dc3545; /* 赤色 */
+            background-color: #dc3545;
+            /* 赤色 */
         }
+
         @keyframes fadeInOut {
-            0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            10% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            90% { opacity: 1; transform: translateX(-50%) translateY(0); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+
+            10% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            90% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
         }
     </style>
 </head>
@@ -183,11 +210,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="login-container">
         <!-- ログインページのタイトル -->
         <h1 class="login-title">OUR BRAND 管理者ログイン</h1>
-        
+
         <!-- ログインフォーム -->
-        <!-- action="login.php" で同じページに送信し、処理を行う -->
+        <!-- action="admin_login.php" で同じページに送信し、処理を行う -->
         <!-- method="POST" でデータを安全に送信 -->
-        <form action="login.php" method="POST" class="login-form">
+        <form action="admin_login.php" method="POST" class="login-form">
             <!-- ユーザー名入力グループ -->
             <div class="form-group">
                 <label for="username">ユーザー名:</label>
@@ -247,9 +274,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('admin_registered') === 'true') {
                 displayMessage('管理者ユーザーが登録されました！', 'success');
-                history.replaceState(null, '', window.location.pathname); 
+                history.replaceState(null, '', window.location.pathname);
             }
         });
     </script>
 </body>
+
 </html>

@@ -13,6 +13,10 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+// 既存のセッション情報を一度すべて破棄して、セッションIDを再生成する
+// これにより、他のユーザーとしてログインしていた場合の情報が完全にクリアされる
+session_unset();
+session_regenerate_id(true);
 
 // 共通DBファイルをインクルード
 require_once __DIR__ . '/common/contents_db.php';

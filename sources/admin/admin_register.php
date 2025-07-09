@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($result) {
                     // 成功メッセージをセッションに保存してログインページにリダイレクト
                     $_SESSION['admin_login_message'] = ['text' => '管理者ユーザーが正常に登録されました。', 'type' => 'success'];
-                    header('Location: login.php');
+                    header('Location: admin_login.php');
                     exit();
                 } else {
                     $message = '管理者ユーザーの登録に失敗しました。';
@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="login-button">管理者登録</button>
         </form>
-        <p class="text-center" style="margin-top: 20px;"><a href="login.php">ログインページに戻る</a></p>
+        <p class="text-center" style="margin-top: 20px;"><a href="admin_login.php">ログインページに戻る</a></p>
     </div>
 
     <footer class="admin-footer">

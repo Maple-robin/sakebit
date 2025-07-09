@@ -4,7 +4,7 @@ session_start();
 
 // ログイン状態のチェック (必要であればコメントアウトを解除して使用)
 if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
-    header('Location: login.php'); // ログインページのパスに修正
+    header('Location: admin_login.php'); // ログインページのパスに修正
     exit();
 }
 

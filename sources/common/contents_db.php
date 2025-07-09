@@ -1664,6 +1664,51 @@ class corders extends crecord {
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
+    
+    public function get_orders_by_user_id($debug, $user_id) {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return [];
+        }
+
+        $arr = [];
+        // 注文を新しい順に取得
+        $query = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_date DESC";
+        $prep_arr = [':user_id' => (int)$user_id];
+        
+        $this->select_query($debug, $query, $prep_arr);
+
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+    
+    /**
+     * ★★★【新規追加】★★★
+     * 新しい注文をデータベースに作成する
+     * @param bool $debug デバッグモード
+     * @param int $user_id ユーザーID
+     * @param float $total_amount 合計金額
+     * @param string $shipping_address 配送先住所
+     * @return int|false 作成された注文のID、失敗した場合はfalse
+     */
+    public function create_order($debug, $user_id, $total_amount, $shipping_address) {
+        $query = "
+            INSERT INTO orders (user_id, total_amount, shipping_address, order_status) 
+            VALUES (:user_id, :total_amount, :shipping_address, 'pending')
+        ";
+        $prep_arr = [
+            ':user_id' => (int)$user_id,
+            ':total_amount' => (float)$total_amount,
+            ':shipping_address' => $shipping_address
+        ];
+        
+        $result = $this->execute_query($debug, $query, $prep_arr);
+        if ($result) {
+            return $this->last_insert_id(); // 作成された注文のIDを返す
+        }
+        return false;
+    }
 
     public function __destruct() {
         parent::__destruct();
@@ -1706,12 +1751,103 @@ class corder_items extends crecord {
         return $this->fetch_assoc();
     }
 
+    public function get_items_by_order_id($debug, $order_id) {
+        if (!cutil::is_number($order_id) || $order_id < 1) {
+            return [];
+        }
+
+        $arr = [];
+        $query = "
+            SELECT
+                oi.order_item_id,
+                oi.order_id,
+                oi.product_id,
+                oi.otumami_id,
+                oi.quantity,
+                oi.price_at_purchase,
+                CASE
+                    WHEN oi.product_id IS NOT NULL THEN 'product'
+                    WHEN oi.otumami_id IS NOT NULL THEN 'otumami'
+                    ELSE 'unknown'
+                END AS item_type,
+                COALESCE(p.product_name, o.otumami_name) AS item_name,
+                COALESCE(
+                    (SELECT image_path FROM product_images WHERE product_id = oi.product_id ORDER BY display_order ASC, image_id ASC LIMIT 1),
+                    (SELECT image_path FROM otumami_images WHERE otumami_id = oi.otumami_id ORDER BY display_order ASC, image_id ASC LIMIT 1)
+                ) AS image_path
+            FROM
+                order_items oi
+            LEFT JOIN
+                product_info p ON oi.product_id = p.product_id
+            LEFT JOIN
+                otumami o ON oi.otumami_id = o.otumami_id
+            WHERE
+                oi.order_id = :order_id
+            ORDER BY
+                oi.order_item_id ASC
+        ";
+        
+        $prep_arr = [':order_id' => (int)$order_id];
+        
+        $this->select_query($debug, $query, $prep_arr);
+
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+
     /**
-     * 特定商品の売れた合計数を取得するメソッド
+     * ★★★【新規追加】★★★
+     * 注文に紐づく商品をまとめて登録する
      * @param bool $debug デバッグモード
-     * @param int $product_id 商品ID
-     * @return int 売れた合計数
+     * @param int $order_id 注文ID
+     * @param array $items 登録する商品の配列
+     * @return bool 成功した場合はtrue, 失敗した場合はfalse
      */
+    public function add_items_to_order($debug, $order_id, $items) {
+        if (empty($items)) {
+            return false;
+        }
+
+        // 複数の商品を一度のクエリで挿入する準備
+        $query = "
+            INSERT INTO order_items (order_id, product_id, otumami_id, quantity, price_at_purchase) 
+            VALUES 
+        ";
+        $query_parts = [];
+        $prep_arr = [];
+        $i = 0;
+
+        foreach ($items as $item) {
+            $product_id = null;
+            $otumami_id = null;
+            
+            // cart.phpから渡された$item['product_id']等を想定
+            // otumamiの場合も考慮が必要な場合は、cart.phpのデータ構造に合わせて調整
+            if (isset($item['product_id'])) {
+                $product_id = $item['product_id'];
+            }
+            // otumamiのIDキーが 'otumami_id' の場合
+            if (isset($item['otumami_id'])) {
+                $otumami_id = $item['otumami_id'];
+            }
+
+            $query_parts[] = "(:order_id_{$i}, :product_id_{$i}, :otumami_id_{$i}, :quantity_{$i}, :price_at_purchase_{$i})";
+            
+            $prep_arr[":order_id_{$i}"] = (int)$order_id;
+            $prep_arr[":product_id_{$i}"] = $product_id ? (int)$product_id : null;
+            $prep_arr[":otumami_id_{$i}"] = $otumami_id ? (int)$otumami_id : null;
+            $prep_arr[":quantity_{$i}"] = (int)$item['cart_quantity'];
+            $prep_arr[":price_at_purchase_{$i}"] = (float)$item['cart_price_at_add'];
+            $i++;
+        }
+
+        $query .= implode(', ', $query_parts);
+
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
     public function get_total_sold_count_by_product_id($debug, $product_id) {
         if (!cutil::is_number($product_id) || $product_id < 1) {
             return 0;

@@ -69,7 +69,7 @@
         </form>
         <p class="signup-footer-text">
             既にアカウントをお持ちですか？<br>
-            <a href="login.php">ログインはこちら</a>
+            <a href="client_login.php">ログインはこちら</a>
         </p>
     </div>
 </body>

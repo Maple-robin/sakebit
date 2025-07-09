@@ -26,7 +26,7 @@
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php" class="is-current">FAQ管理</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
-                    <li><a href="login.php">ログイン</a></li>
+                    <li><a href="admin_login.php">ログイン</a></li>
                 </ul>
             </nav>
         </div>

@@ -10,7 +10,7 @@
 
 // ログイン状態のチェック (必要であればコメントアウトを解除して使用)
 // if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
-//     header('Location: login.php'); // ログインページのパスに修正
+//     header('Location: admin_login.php'); // ログインページのパスに修正
 //     exit();
 // }
 
@@ -61,7 +61,7 @@ if ($products === false) {
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php">FAQ管理</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
-                    <li><a href="login.php">ログイン</a></li>
+                    <li><a href="admin_login.php">ログイン</a></li>
                 </ul>
             </nav>
         </div>

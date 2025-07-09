@@ -24,7 +24,7 @@
                     <li><a href="client_preview.php">プレビュー</a></li>
                     <li><a href="client_analytics.php" class="is-active">情報確認</a></li> </ul>
                 <div class="admin-header__actions">
-                    <a href="login.php" class="admin-header__logout">
+                    <a href="client_login.php" class="admin-header__logout">
                         <i class="fas fa-sign-out-alt"></i> ログアウト
                     </a>
                 </div>
