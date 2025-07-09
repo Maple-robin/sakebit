@@ -2,66 +2,43 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    // --- ダミーデータ ---
-    // 実際のアプリケーションでは、カートページから商品データを引き継ぐことになります
-    const dummyProducts = [
-        {
-            id: 'product-1',
-            name: '【販売再開】イセ ポメロモ ヒート',
-            volume: '200ml',
-            price: 1750,
-            quantity: 2,
-            imageUrl: 'img/gingerale.png' // 仮の画像パス
-        },
-        {
-            id: 'product-2',
-            name: 'クラフトビール詰め合わせ',
-            volume: '6本入り',
-            price: 3500,
-            quantity: 1,
-            imageUrl: 'https://placehold.co/60x60/EEF5FF/333333?text=BeerSet' // プレースホルダー画像
-        }
-    ];
+    // PHPから渡された serverCartData を cartProducts として利用します
+    const cartProducts = typeof serverCartData !== 'undefined' ? serverCartData : [];
 
-    const TAX_RATE = 0.10; // 10% の税率として仮定
+    const TAX_RATE = 0.10; // 10% の税率
+    const FREE_SHIPPING_THRESHOLD = 5200; // 送料無料になる金額のスレッショルド
 
     // --- 要素の取得 ---
     const orderSummaryProductsContainer = document.getElementById('order-summary-products');
-    const summarySubtotalElement = document.getElementById('summary-subtotal');
-    const summaryShippingElement = document.getElementById('summary-shipping');
-    const summaryTaxElement = document.getElementById('summary-tax');
-    const summaryTotalElement = document.getElementById('summary-total');
-    const shippingMethodRadios = document.querySelectorAll('input[name="shipping-method"]');
-    const billingSameAsShippingCheckbox = document.getElementById('billing-same-as-shipping');
-    const billingAddressFields = document.querySelector('.billing-address-fields');
-    const applyDiscountButton = document.getElementById('apply-discount');
-    const discountInput = document.getElementById('discount-input');
+    const orderSummaryProductsPcContainer = document.getElementById('order-summary-products-pc');
+    const shippingOptionsContainer = document.getElementById('shipping-options-container');
     const placeOrderButton = document.getElementById('place-order-button');
-    const emailInput = document.getElementById('email');
-    const countrySelect = document.getElementById('country');
-    const firstNameInput = document.getElementById('first-name');
-    const lastNameInput = document.getElementById('last-name');
-    const addressInput = document.getElementById('address');
-    const cityInput = document.getElementById('city');
-    const prefectureSelect = document.getElementById('prefecture');
     const zipCodeInput = document.getElementById('zip-code');
-    const phoneInput = document.getElementById('phone');
-
+    const prefectureSelect = document.getElementById('prefecture');
+    const cityInput = document.getElementById('city');
+    const addressInput = document.getElementById('address');
+    const billingAddressRadios = document.querySelectorAll('input[name="billing-address-option"]');
+    const billingAddressFields = document.querySelector('.billing-address-fields');
+    const addressInputFields = [zipCodeInput, prefectureSelect, cityInput, addressInput];
 
     // --- 関数定義 ---
 
     /**
      * 注文概要に商品リストをレンダリングする
      */
-    function renderOrderSummary() {
-        if (!orderSummaryProductsContainer) return;
+    function renderOrderSummaryProducts(container) {
+        if (!container) return;
+        container.innerHTML = ''; 
 
-        orderSummaryProductsContainer.innerHTML = ''; // 既存の内容をクリア
+        if (cartProducts.length === 0) {
+            container.innerHTML = '<p>カートに商品がありません。</p>';
+            if(placeOrderButton) placeOrderButton.disabled = true;
+            return;
+        }
 
-        dummyProducts.forEach(product => {
+        cartProducts.forEach(product => {
             const productItem = document.createElement('div');
             productItem.classList.add('order-product-item');
-
             productItem.innerHTML = `
                 <div class="order-product-item__image">
                     <img src="${product.imageUrl}" alt="${product.name}">
@@ -69,121 +46,112 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="order-product-item__details">
                     <p class="order-product-item__name">${product.name}</p>
-                    <p class="order-product-item__volume">${product.volume}</p>
+                    <p class="order-product-item__volume">${product.volume || ''}</p>
                 </div>
                 <div class="order-product-item__price">¥ ${(product.price * product.quantity).toLocaleString()}</div>
             `;
-            orderSummaryProductsContainer.appendChild(productItem);
+            container.appendChild(productItem);
         });
     }
 
     /**
+     * ★★★ 修正箇所 ★★★
      * 価格の合計を計算し、表示を更新する
+     * - 送料無料のロジックを反映
+     * - 消費税の計算を修正
      */
     function updatePriceSummary() {
-        let subtotal = dummyProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+        // 商品の小計（税抜）を計算
+        let subtotal = cartProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+        
         let shippingCost = 0;
-        let tax = 0;
-        let total = 0;
-
-        // 選択されている配送方法の送料を取得
         const selectedShippingMethod = document.querySelector('input[name="shipping-method"]:checked');
         if (selectedShippingMethod) {
+            // data-price属性から送料を取得。updateShippingMethodsで0円に更新されている場合がある。
             shippingCost = parseFloat(selectedShippingMethod.dataset.price || 0);
         }
 
-        // 税金を計算（小計 + 送料に対して）
-        tax = (subtotal + shippingCost) * TAX_RATE;
-        total = subtotal + shippingCost + tax;
+        // 税込合計を計算
+        let total = subtotal + shippingCost;
+        // 税込合計から消費税額を計算
+        let tax = total - (total / (1 + TAX_RATE));
 
-        // モバイル版のサマリー要素を更新
+        // --- モバイル版のサマリー要素を更新 ---
         const summaryTotalMobile = document.getElementById('summary-total-mobile');
         const summarySubtotalMobileContent = document.getElementById('summary-subtotal-mobile-content');
         const summaryShippingMobileContent = document.getElementById('summary-shipping-mobile-content');
         const summaryTotalMobileContentFinal = document.getElementById('summary-total-mobile-content-final');
         const summaryTaxInfoMobile = document.getElementById('summary-tax-info');
 
+        const shippingCostText = shippingCost === 0 ? '無料' : `¥ ${shippingCost.toLocaleString()}`;
+
         if (summaryTotalMobile) summaryTotalMobile.textContent = `¥ ${Math.round(total).toLocaleString()}`;
         if (summarySubtotalMobileContent) summarySubtotalMobileContent.textContent = `¥ ${subtotal.toLocaleString()}`;
-        if (summaryShippingMobileContent) summaryShippingMobileContent.textContent = `¥ ${shippingCost.toLocaleString()}`;
+        if (summaryShippingMobileContent) {
+            summaryShippingMobileContent.textContent = selectedShippingMethod ? shippingCostText : '住所入力待ち';
+        }
         if (summaryTotalMobileContentFinal) summaryTotalMobileContentFinal.textContent = `¥ ${Math.round(total).toLocaleString()} JPY`;
-        if (summaryTaxInfoMobile) summaryTaxInfoMobile.textContent = `¥ ${Math.round(tax).toLocaleString()} の税金を含む`;
+        if (summaryTaxInfoMobile) summaryTaxInfoMobile.textContent = `(内、消費税 ¥ ${Math.round(tax).toLocaleString()})`;
 
-        // PC版のサマリー要素を更新
+        // --- PC版のサマリー要素を更新 ---
         const summarySubtotalPc = document.getElementById('summary-subtotal-pc');
         const summaryShippingPc = document.getElementById('summary-shipping-pc');
         const summaryTotalPc = document.getElementById('summary-total-pc');
         const summaryTaxInfoPc = document.getElementById('summary-tax-info-pc');
 
         if (summarySubtotalPc) summarySubtotalPc.textContent = `¥ ${subtotal.toLocaleString()}`;
-        if (summaryShippingPc) summaryShippingPc.textContent = `¥ ${shippingCost.toLocaleString()}`;
-        if (summaryTotalPc) summaryTotalPc.textContent = `¥ ${Math.round(total).toLocaleString()} JPY`;
-        if (summaryTaxInfoPc) summaryTaxInfoPc.textContent = `¥ ${Math.round(tax).toLocaleString()} の税金を含む`;
-    }
-
-
-    /**
-     * 請求先住所フィールドの表示/非表示を切り替える
-     */
-    function toggleBillingAddressFields() {
-        if (billingSameAsShippingCheckbox && billingAddressFields) {
-            if (billingSameAsShippingCheckbox.checked) {
-                billingAddressFields.classList.add('hidden');
-                // 非表示時は必須属性を解除
-                billingAddressFields.querySelectorAll('input, select').forEach(field => {
-                    field.removeAttribute('required');
-                });
-            } else {
-                billingAddressFields.classList.remove('hidden');
-                // 表示時は必須属性を設定
-                billingAddressFields.querySelectorAll('input:not([placeholder*="任意"]), select').forEach(field => {
-                    field.setAttribute('required', 'required');
-                });
-            }
+        if (summaryShippingPc) {
+             summaryShippingPc.textContent = selectedShippingMethod ? shippingCostText : '住所入力待ち';
         }
+        if (summaryTotalPc) summaryTotalPc.textContent = `¥ ${Math.round(total).toLocaleString()} JPY`;
+        if (summaryTaxInfoPc) summaryTaxInfoPc.textContent = `(内、消費税 ¥ ${Math.round(tax).toLocaleString()})`;
     }
 
     /**
-     * フォームのバリデーションを行う (簡易版)
-     * @returns {boolean} バリデーションが成功したかどうか
+     * ★★★ 修正箇所 ★★★
+     * 配送方法を表示/更新する
+     * - 商品小計に応じて送料無料を適用
      */
-    function validateForm() {
-        let isValid = true;
-        const requiredFields = [
-            emailInput, countrySelect, firstNameInput, lastNameInput,
-            addressInput, cityInput, prefectureSelect, zipCodeInput, phoneInput
+    function updateShippingMethods() {
+        if (!shippingOptionsContainer) return;
+        
+        const subtotal = cartProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+
+        // 基本の配送方法
+        let shippingMethods = [
+            { id: 'standard', name: '通常配送', price: 500, note: '（3-5営業日）' },
+            { id: 'express', name: 'お急ぎ便', price: 800, note: '（1-2営業日）' }
         ];
 
-        requiredFields.forEach(field => {
-            if (field && !field.value.trim()) {
-                field.style.borderColor = 'red'; // エラー表示
-                isValid = false;
-            } else if (field) {
-                field.style.borderColor = '#ddd'; // 通常の状態に戻す
+        // 送料無料の条件を満たしているかチェック
+        if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+            const standardMethod = shippingMethods.find(m => m.id === 'standard');
+            if (standardMethod) {
+                standardMethod.price = 0; // 通常配送の価格を0円にする
             }
+        }
+
+        let html = '';
+        shippingMethods.forEach((method, index) => {
+            const checked = index === 0 ? 'checked' : '';
+            const priceText = method.price === 0 ? '無料' : `¥ ${method.price.toLocaleString()}`;
+            // data-price属性に現在の価格を反映させる
+            html += `
+                <div class="shipping-option">
+                    <input type="radio" id="shipping-${method.id}" name="shipping-method" value="${method.id}" data-price="${method.price}" ${checked}>
+                    <label for="shipping-${method.id}">
+                        <span class="shipping-method-name">${method.name} ${method.note}</span>
+                        <span class="shipping-method-price">${priceText}</span>
+                    </label>
+                </div>
+            `;
         });
+        shippingOptionsContainer.innerHTML = html;
 
-        // 請求先住所が異なる場合にのみ、そのフィールドもバリデート
-        if (billingSameAsShippingCheckbox && !billingSameAsShippingCheckbox.checked) {
-            const billingRequiredFields = billingAddressFields.querySelectorAll('input[required], select[required]');
-            billingRequiredFields.forEach(field => {
-                if (field && !field.value.trim()) {
-                    field.style.borderColor = 'red';
-                    isValid = false;
-                } else if (field) {
-                    field.style.borderColor = '#ddd';
-                }
-            });
-        }
-
-        if (!isValid) {
-            // エラーメッセージをユーザーに表示する代替手段を検討してください
-            // 例: カスタムモーダル、フォーム内のエラーメッセージ
-            console.error('必要な情報が入力されていません。');
-            // カスタムモーダル表示の例:
-            // showCustomModal('入力エラー', 'すべての必須項目を入力してください。');
-        }
-        return isValid;
+        // ラジオボタンにイベントリスナーを再設定
+        document.querySelectorAll('input[name="shipping-method"]').forEach(radio => {
+            radio.addEventListener('change', updatePriceSummary);
+        });
     }
 
     /**
@@ -197,84 +165,21 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleButton.addEventListener('click', function() {
                 summaryContent.classList.toggle('hidden');
                 toggleButton.classList.toggle('expanded');
+                const icon = toggleButton.querySelector('.toggle-icon');
+                if (icon) {
+                    icon.classList.toggle('fa-chevron-down');
+                    icon.classList.toggle('fa-chevron-up');
+                }
             });
         }
     }
 
-
-    // --- イベントリスナー設定 ---
-
-    // 注文概要の初期レンダリングと価格計算
-    renderOrderSummary();
-    updatePriceSummary();
-    setupMobileOrderSummaryToggle(); // モバイル注文概要のトグル設定
-
-    // 配送方法の変更を監視して価格を更新
-    shippingMethodRadios.forEach(radio => {
-        radio.addEventListener('change', updatePriceSummary);
-    });
-
-    // 請求先住所チェックボックスの変更を監視
-    if (billingSameAsShippingCheckbox) {
-        billingSameAsShippingCheckbox.addEventListener('change', toggleBillingAddressFields);
-        toggleBillingAddressFields(); // ページロード時にも一度実行
-    }
-
-    // 割引コード適用ボタンのクリックイベント
-    // モバイル用とPC用の両方に対応
-    const discountInputMobile = document.getElementById('discount-input');
-    const applyDiscountButtonMobile = document.getElementById('apply-discount');
-    const discountInputPc = document.getElementById('discount-input-pc');
-    const applyDiscountButtonPc = document.getElementById('apply-discount-pc');
-
-    function applyDiscountHandler(inputElement) {
-        const code = inputElement ? inputElement.value.trim() : '';
-        if (code) {
-            console.log(`割引コード "${code}" を適用しようとしました。`);
-            // ここに実際の割引ロジック（サーバーサイド連携など）を追加します
-            // 例: 割引が適用されたら updatePriceSummary(); を呼び出す
-            // ダミーで割引を適用する例 (実際のアプリではAPIから割引額を取得)
-            // if (code === 'SAVE10') {
-            //     dummyProducts[0].price = dummyProducts[0].price * 0.9; // 例として10%割引
-            //     renderOrderSummary();
-            //     updatePriceSummary();
-            // } else {
-            //    showCustomModal('エラー', '無効なクーポンコードです。');
-            // }
-        } else {
-            console.log('割引コードを入力してください。');
-            // showCustomModal('お知らせ', '割引コードを入力してください。');
-        }
-    }
-
-    if (applyDiscountButtonMobile) {
-        applyDiscountButtonMobile.addEventListener('click', () => applyDiscountHandler(discountInputMobile));
-    }
-    if (applyDiscountButtonPc) {
-        applyDiscountButtonPc.addEventListener('click', () => applyDiscountHandler(discountInputPc));
-    }
-
-    // 今すぐ支払うボタンのクリックイベント
-    if (placeOrderButton) {
-        placeOrderButton.addEventListener('click', function(event) {
-            event.preventDefault(); // デフォルトのフォーム送信を防止
-
-            if (validateForm()) {
-                console.log('フォームは有効です。注文処理に進みます。');
-                // ここに実際の決済処理ロジック（サーバーサイド連携など）を追加します
-                // 例: fetch('/api/process-payment', { method: 'POST', body: JSON.stringify(formData) })
-                // window.location.href = 'confirmation.php'; // 決済成功後のページ遷移
-                window.location.href = 'thanks.php';
-            } else {
-                console.log('入力情報に誤りがあります。');
-            }
-        });
-    }
-
-    // 都道府県のプルダウンメニューに日本の都道府県を追加する（例）
+    /**
+     * 都道府県のプルダウンメニューを生成する
+     */
     function populatePrefectures(selectElementId) {
         const selectElement = document.getElementById(selectElementId);
-        if (!selectElement) return;
+        if (!selectElement || selectElement.options.length > 1) return;
 
         const prefectures = [
             "北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県",
@@ -285,18 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県",
             "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"
         ];
-
-        // 既存の「都道府県」オプションを残しつつ、それ以外のオプションを追加
-        const defaultOption = selectElement.querySelector('option[value=""]');
-        if (defaultOption) {
-            // defaultOptionを移動させず、ループで追加
-        } else {
-            const defaultPrefOption = document.createElement('option');
-            defaultPrefOption.value = "";
-            defaultPrefOption.textContent = "都道府県";
-            selectElement.appendChild(defaultPrefOption);
-        }
-
+        
         prefectures.forEach(pref => {
             const option = document.createElement('option');
             option.value = pref;
@@ -305,105 +199,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    populatePrefectures('prefecture');
-    populatePrefectures('billing-prefecture');
-
-    // PC版の注文概要にも商品をレンダリング
-    const orderSummaryProductsPcContainer = document.getElementById('order-summary-products-pc');
-    if (orderSummaryProductsPcContainer) {
-        dummyProducts.forEach(product => {
-            const productItem = document.createElement('div');
-            productItem.classList.add('order-product-item');
-            productItem.innerHTML = `
-                <div class="order-product-item__image">
-                    <img src="${product.imageUrl}" alt="${product.name}">
-                    <span class="order-product-item__quantity-badge">${product.quantity}</span>
-                </div>
-                <div class="order-product-item__details">
-                    <p class="order-product-item__name">${product.name}</p>
-                    <p class="order-product-item__volume">${product.volume}</p>
-                </div>
-                <div class="order-product-item__price">¥ ${(product.price * product.quantity).toLocaleString()}</div>
-            `;
-            orderSummaryProductsPcContainer.appendChild(productItem);
-        });
-    }
-
-    // ヘルプアイコンのツールチップ（簡易版）
-    document.querySelectorAll('.help-icon').forEach(icon => {
-        icon.addEventListener('click', function() {
-            // ここにカスタムモーダルやツールチップを表示するロジックを追加
-            // alert('この電話番号は、注文に関するご連絡やShop Payでのアカウント作成に使用されます。');
-            console.log('ヘルプアイコンがクリックされました。');
-            // カスタムモーダル表示の例:
-            // showCustomModal('携帯電話について', 'この電話番号は、注文に関するご連絡やShop Payでのアカウント作成に使用されます。');
-        });
-    });
-
-    // 「Shopアカウントを使用して次回の購入のために情報を保存する」チェックボックスの機能
-    const saveInfoShopAccountCheckbox = document.getElementById('save-info-shop-account');
-    const phoneSaveGroup = document.querySelector('.phone-save-group');
-
-    if (saveInfoShopAccountCheckbox && phoneSaveGroup) {
-        saveInfoShopAccountCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                phoneSaveGroup.classList.remove('hidden');
-                phoneSaveGroup.querySelector('input').setAttribute('required', 'required');
-            } else {
-                phoneSaveGroup.classList.add('hidden');
-                phoneSaveGroup.querySelector('input').removeAttribute('required');
-            }
-        });
-        // 初期状態を設定
-        if (saveInfoShopAccountCheckbox.checked) {
-            phoneSaveGroup.classList.remove('hidden');
-            phoneSaveGroup.querySelector('input').setAttribute('required', 'required');
-        }
-    }
-
-    // 支払い方法のラジオボタン切り替え
-    const paymentOptions = document.querySelectorAll('input[name="payment-option"]');
-    const creditCardFormDetails = document.querySelector('.card-form-details');
-    const paypalOptionHeader = document.querySelector('.payment-option-paypal');
-    const creditCardHeader = document.querySelector('.payment-option-header'); // 新しく追加したラジオボタン部分
-
-    paymentOptions.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.value === 'credit-card') {
-                creditCardFormDetails.style.display = 'block';
-                creditCardHeader.style.backgroundColor = '#fff';
-                paypalOptionHeader.style.backgroundColor = '#f8f8f8';
-            } else {
-                creditCardFormDetails.style.display = 'none';
-                creditCardHeader.style.backgroundColor = '#f8f8f8';
-                paypalOptionHeader.style.backgroundColor = '#fff';
-            }
-        });
-    });
-
-    // 初期ロード時の支払い方法表示設定
-    const initialCheckedPaymentOption = document.querySelector('input[name="payment-option"]:checked');
-    if (initialCheckedPaymentOption) {
-        if (initialCheckedPaymentOption.value === 'credit-card') {
-            if (creditCardFormDetails) creditCardFormDetails.style.display = 'block';
-            if (creditCardHeader) creditCardHeader.style.backgroundColor = '#fff';
-            if (paypalOptionHeader) paypalOptionHeader.style.backgroundColor = '#f8f8f8';
-        } else {
-            if (creditCardFormDetails) creditCardFormDetails.style.display = 'none';
-            if (creditCardHeader) creditCardHeader.style.backgroundColor = '#f8f8f8';
-            if (paypalOptionHeader) paypalOptionHeader.style.backgroundColor = '#fff';
-        }
-    } else {
-        // デフォルトでクレジットカードフォームを表示
-        if (creditCardFormDetails) creditCardFormDetails.style.display = 'block';
-        if (creditCardHeader) creditCardHeader.style.backgroundColor = '#fff';
-        if (paypalOptionHeader) paypalOptionHeader.style.backgroundColor = '#f8f8f8';
-        // クレジットカードラジオボタンをチェックする
-        const creditCardRadio = document.getElementById('credit-card-radio');
-        if (creditCardRadio) creditCardRadio.checked = true;
-    }
-
-    // 郵便番号から住所自動入力（zipcloud API利用）
+    /**
+     * 郵便番号から住所を自動入力する (zipcloud API)
+     */
     function fetchAddressByZip(zip, callback) {
         const cleanZip = zip.replace(/-/g, '');
         if (!/^\d{7}$/.test(cleanZip)) {
@@ -414,12 +212,10 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(res => res.json())
             .then(data => {
                 if (data && data.results && data.results[0]) {
-                    const result = data.results[0];
-                    // 都道府県、市区町村、町域を分割して返す
                     callback({
-                        prefecture: result.address1 || '',
-                        city: result.address2 || '',
-                        address: result.address3 || ''
+                        prefecture: data.results[0].address1 || '',
+                        city: data.results[0].address2 || '',
+                        address: data.results[0].address3 || ''
                     });
                 } else {
                     callback(null);
@@ -427,56 +223,87 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(() => callback(null));
     }
+    
+    /**
+     * 請求先住所フィールドの表示/非表示を切り替える
+     */
+    function toggleBillingAddressFields() {
+        const selectedOption = document.querySelector('input[name="billing-address-option"]:checked');
+        if (!selectedOption || !billingAddressFields) return;
 
-    // 郵便番号・住所欄が存在する場合のみイベントを設定
-    if (zipCodeInput && prefectureSelect && cityInput && addressInput) {
+        if (selectedOption.value === 'different') {
+            billingAddressFields.classList.remove('hidden');
+        } else {
+            billingAddressFields.classList.add('hidden');
+        }
+    }
+
+    // --- 初期化処理 & イベントリスナー設定 ---
+
+    renderOrderSummaryProducts(orderSummaryProductsContainer);
+    renderOrderSummaryProducts(orderSummaryProductsPcContainer);
+    
+    setupMobileOrderSummaryToggle();
+    populatePrefectures('prefecture');
+    populatePrefectures('billing-prefecture');
+
+    addressInputFields.forEach(field => {
+        if(field) {
+            field.addEventListener('change', () => {
+                const allFilled = addressInputFields.every(f => f && f.value.trim() !== '');
+                if (allFilled) {
+                    updateShippingMethods();
+                    updatePriceSummary();
+                }
+            });
+        }
+    });
+
+    if (zipCodeInput) {
         zipCodeInput.addEventListener('blur', function() {
-            const zip = zipCodeInput.value.trim();
-            if (zip.length >= 7) {
-                fetchAddressByZip(zip, function(addressObj) {
-                    if (addressObj) {
-                        // 都道府県
-                        if (prefectureSelect) {
-                            // セレクトボックスの場合
-                            for (let i = 0; i < prefectureSelect.options.length; i++) {
-                                if (prefectureSelect.options[i].value === addressObj.prefecture) {
-                                    prefectureSelect.selectedIndex = i;
-                                    break;
-                                }
-                            }
-                        }
-                        // 市区町村
-                        if (cityInput) cityInput.value = addressObj.city;
-                        // 町域・番地など
-                        if (addressInput) addressInput.value = addressObj.address;
-                    }
-                });
-            }
+            fetchAddressByZip(this.value, (addr) => {
+                if(addr) {
+                    if(prefectureSelect) prefectureSelect.value = addr.prefecture;
+                    if(cityInput) cityInput.value = addr.city;
+                    if(addressInput) addressInput.value = addr.address;
+                    // 住所自動入力後、配送方法と価格を更新
+                    updateShippingMethods();
+                    updatePriceSummary();
+                }
+            });
+        });
+    }
+    
+    const billingZipInput = document.getElementById('billing-zip-code');
+    if (billingZipInput) {
+        billingZipInput.addEventListener('blur', function() {
+            fetchAddressByZip(this.value, (addr) => {
+                const billingPrefectureSelect = document.getElementById('billing-prefecture');
+                const billingCityInput = document.getElementById('billing-city');
+                const billingAddressInput = document.getElementById('billing-address');
+                if(addr) {
+                    if(billingPrefectureSelect) billingPrefectureSelect.value = addr.prefecture;
+                    if(billingCityInput) billingCityInput.value = addr.city;
+                    if(billingAddressInput) billingAddressInput.value = addr.address;
+                }
+            });
         });
     }
 
-    // 請求先住所用（該当inputがある場合のみ）
-    const billingZipInput = document.getElementById('billing-zip-code');
-    const billingPrefectureSelect = document.getElementById('billing-prefecture');
-    const billingCityInput = document.getElementById('billing-city');
-    const billingAddressInput = document.getElementById('billing-address');
-    if (billingZipInput && billingPrefectureSelect && billingCityInput && billingAddressInput) {
-        billingZipInput.addEventListener('blur', function() {
-            const zip = billingZipInput.value.trim();
-            if (zip.length >= 7) {
-                fetchAddressByZip(zip, function(addressObj) { // ←ここを修正
-                    if (addressObj) {
-                        for (let i = 0; i < billingPrefectureSelect.options.length; i++) {
-                            if (billingPrefectureSelect.options[i].value === addressObj.prefecture) {
-                                billingPrefectureSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-                    }
-                    if (billingCityInput) billingCityInput.value = addressObj.city;
-                    if (billingAddressInput) billingAddressInput.value = addressObj.address;
-                });
-            }
+    if (billingAddressRadios) {
+        billingAddressRadios.forEach(radio => {
+            radio.addEventListener('change', toggleBillingAddressFields);
+        });
+        toggleBillingAddressFields();
+    }
+    
+    updatePriceSummary(); // ページ読み込み時に一度価格を計算
+
+    if (placeOrderButton) {
+        placeOrderButton.addEventListener('click', function(event) {
+            event.preventDefault(); 
+            console.log('注文処理に進みます。');
+            // window.location.href = 'thanks.php';
         });
     }
 });

@@ -1,17 +1,61 @@
 <?php
 /*!
-@file index.php
-@brief トップページ
+@file checkout.php
+@brief チェックアウトページ
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// セッションを開始 (HTML出力の前に置く)
-session_start();
+// --- データベースからカート情報を読み込む ---
+require_once __DIR__ . '/common/contents_db.php';
 
-// contents_db.php など、必要なファイルをインクルード（必要に応じて）
-// require_once __DIR__ . '/common/contents_db.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-// ここにトップページ固有のPHPロジックがあれば記述
+// ログインしていない場合はログインページへリダイレクト
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php?redirect_url=checkout.php');
+    exit();
+}
+
+$current_user_id = $_SESSION['user_id'];
+$debug_mode = defined('DEBUG') ? DEBUG : false;
+
+// DBクラスのインスタンスを生成
+$carts_db = new ccarts();
+$cart_items_db = new ccart_items();
+
+// ユーザーのカートIDを取得
+$cart_id = $carts_db->get_or_create_cart_by_user_id($debug_mode, $current_user_id);
+
+$cart_items = [];
+if ($cart_id) {
+    // カート内の商品情報を取得
+    $cart_items = $cart_items_db->get_items_by_cart_id($debug_mode, $cart_id);
+}
+
+// カートが空の場合はカートページに戻す
+if (empty($cart_items)) {
+    header('Location: cart.php');
+    exit();
+}
+
+// --- JavaScriptへデータを渡す準備 ---
+$cart_items_for_js = [];
+foreach ($cart_items as $item) {
+    $cart_items_for_js[] = [
+        'id'       => $item['product_id'],
+        'name'     => $item['product_name'],
+        'volume'   => $item['product_Contents'], // JSの'volume'にマッピング
+        'price'    => (float)$item['cart_price_at_add'],
+        'quantity' => (int)$item['cart_quantity'],
+        'imageUrl' => $item['image_path'] ?? 'https://placehold.co/60x60?text=NoImage'
+    ];
+}
+
+// JavaScriptに渡すためにJSON形式にエンコード
+$cart_items_json = json_encode($cart_items_for_js, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -26,8 +70,12 @@ session_start();
         href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- 実際のプロジェクトではパスを適切に設定してください -->
     <link rel="stylesheet" href="css/checkout.css">
+    
+    <!-- PHPからカートデータをJSON形式で受け取る -->
+    <script>
+        const serverCartData = <?php echo $cart_items_json; ?>;
+    </script>
 </head>
 
 <body>
@@ -43,11 +91,10 @@ session_start();
         <div class="checkout-container">
             <!-- 注文概要セクション (モバイルでは上部に表示) -->
             <section class="order-summary-section mobile-only">
-                <!-- 注文サマリーの展開/折りたたみ（画像参照） -->
                 <button class="order-summary-toggle">
                     <span class="toggle-text">注文サマリー</span>
                     <i class="fas fa-chevron-down toggle-icon"></i>
-                    <span class="total-price-mobile" id="summary-total-mobile">¥ 3,500</span>
+                    <span class="total-price-mobile" id="summary-total-mobile"></span>
                 </button>
                 <div class="order-summary-content hidden">
                     <h3 class="section-title-alt">ご注文内容</h3>
@@ -80,10 +127,6 @@ session_start();
 
             <!-- 決済フォームセクション -->
             <section class="checkout-form-section">
-                <!-- <h2 class="section-title">チェックアウト</h2> -->
-                <!-- モバイルではSection Titleは省略 -->
-
-                <!-- エクスプレスチェックアウト -->
                 <div class="express-checkout">
                     <h3>かんたん決済</h3>
                     <div class="express-buttons">
@@ -96,7 +139,6 @@ session_start();
                     </div>
                 </div>
 
-                <!-- 連絡先情報 -->
                 <div class="contact-info">
                     <div class="section-header-with-link">
                         <h3>連絡先</h3>
@@ -112,16 +154,13 @@ session_start();
                     </div>
                 </div>
 
-                <!-- お届け先 -->
                 <div class="delivery-address">
                     <h3>お届け先</h3>
                     <div class="form-group">
                         <label for="country" class="sr-only">国／地域</label>
                         <select id="country" required>
                             <option value="">国／地域</option>
-                            <option value="Japan">日本</option>
-                            <option value="US">アメリカ合衆国</option>
-                            <!-- 他の国を追加 -->
+                            <option value="Japan" selected>日本</option>
                         </select>
                     </div>
                     <div class="form-row">
@@ -146,7 +185,6 @@ session_start();
                         <label for="prefecture" class="sr-only">都道府県</label>
                         <select id="prefecture" required>
                             <option value="">都道府県</option>
-                            <!-- JavaScriptで都道府県を追加 -->
                         </select>
                     </div>
                     <div class="form-group">
@@ -170,29 +208,19 @@ session_start();
                     </div>
                 </div>
 
-                <!-- 配送方法 -->
                 <div class="shipping-method">
                     <h3>配送方法</h3>
-                    <p class="shipping-info-placeholder">利用可能な配送方法は配送先住所入力後に表示されます。</p>
-                    <!-- JavaScriptで動的に配送方法を追加 -->
-                    <!-- <div class="shipping-option">
-                        <input type="radio" id="standard-shipping" name="shipping-method" value="standard" data-price="0" checked>
-                        <label for="standard-shipping">標準配送 (3-5営業日) - <span class="shipping-price">無料</span></label>
+                    <div id="shipping-options-container">
+                       <p class="shipping-info-placeholder">利用可能な配送方法は配送先住所入力後に表示されます。</p>
                     </div>
-                    <div class="shipping-option">
-                        <input type="radio" id="express-shipping" name="shipping-method" value="express" data-price="800">
-                        <label for="express-shipping">速達配送 (1-2営業日) - <span class="shipping-price">¥ 800</span></label>
-                    </div> -->
                 </div>
 
-                <!-- 支払い -->
                 <div class="payment-method">
                     <h3>お支払い</h3>
                     <p class="payment-note">すべての取引は安全で、暗号化されています。</p>
                     <div class="payment-card-form">
                         <div class="payment-option-header">
-                            <input type="radio" id="credit-card-radio" name="payment-option" value="credit-card"
-                                checked>
+                            <input type="radio" id="credit-card-radio" name="payment-option" value="credit-card" checked>
                             <label for="credit-card-radio">クレジットカード</label>
                             <div class="card-icons">
                                 <i class="fab fa-cc-visa"></i>
@@ -224,26 +252,31 @@ session_start();
                             </div>
                         </div>
                     </div>
-
                     <div class="payment-option-paypal">
-                        <img src="img/paypal.png" alt="PayPal" class="paypal-logo">
-                        <span class="paypal-label">PayPalで支払う</span>
+                        <input type="radio" id="paypal-radio" name="payment-option" value="paypal" style="display:none;">
+                        <label for="paypal-radio" class="paypal-label-container">
+                           <img src="img/paypal.png" alt="PayPal" class="paypal-logo">
+                        </label>
                     </div>
+                </div>
 
-                    <!-- 請求先住所オプション -->
-                    <div class="billing-address-option">
-                        <input type="checkbox" id="billing-same-as-shipping" checked>
-                        <label for="billing-same-as-shipping">お届け先住所を請求先住所として使用する</label>
+                <div class="billing-address-section">
+                    <h3>請求先住所</h3>
+                    <div class="form-group">
+                        <div class="radio-group">
+                            <input type="radio" id="billing-same" name="billing-address-option" value="same" checked>
+                            <label for="billing-same">お届け先住所と同じ</label>
+                        </div>
+                        <div class="radio-group">
+                             <input type="radio" id="billing-different" name="billing-address-option" value="different">
+                             <label for="billing-different">違う請求先住所を使う</label>
+                        </div>
                     </div>
-
                     <div class="billing-address-fields hidden">
-                        <h4>請求先住所（配送先と異なる場合）</h4>
                         <div class="form-group">
                             <label for="billing-country" class="sr-only">国／地域</label>
                             <select id="billing-country">
-                                <option value="">国／地域</option>
-                                <option value="Japan">日本</option>
-                                <option value="US">アメリカ合衆国</option>
+                                <option value="Japan" selected>日本</option>
                             </select>
                         </div>
                         <div class="form-row">
@@ -255,10 +288,6 @@ session_start();
                                 <label for="billing-first-name" class="sr-only">名</label>
                                 <input type="text" id="billing-first-name" placeholder="名">
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="billing-company" class="sr-only">会社 (任意)</label>
-                            <input type="text" id="billing-company" placeholder="会社 (任意)">
                         </div>
                         <div class="form-group">
                             <label for="billing-zip-code" class="sr-only">郵便番号</label>
@@ -285,35 +314,9 @@ session_start();
                     </div>
                 </div>
 
-                <!-- 情報保存セクション -->
-                <div class="save-info-section">
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="save-info-shop-account">
-                        <label for="save-info-shop-account">Shopアカウントを使用して次回の購入のために情報を保存する</label>
-                    </div>
-                    <div class="form-group phone-save-group hidden">
-                        <label for="phone-save" class="sr-only">携帯電話番号</label>
-                        <div class="phone-input-with-prefix">
-                            <span class="country-code">+81</span>
-                            <input type="tel" id="phone-save" placeholder="携帯電話番号">
-                        </div>
-                    </div>
-                    <div class="security-info">
-                        <i class="fas fa-lock"></i>
-                        <span>暗号化によるセキュリティ</span>
-                        <span class="shop-logo-small">shop</span>
-                    </div>
-                </div>
-
                 <div class="checkout-actions">
                     <a href="cart.php" class="link-back-to-cart"><i class="fas fa-chevron-left"></i> 買い物かごに戻る</a>
                     <button type="submit" class="button-primary" id="place-order-button">今すぐ支払う</button>
-                </div>
-
-                <!-- 注文サマリーフッター（モバイル下部） -->
-                <div class="order-summary-footer-mobile mobile-only">
-                    <p class="terms-text">お客様の情報はShopアカウントに保存されます。続行すると、Shopの利用規約に同意し、<a
-                            href="#">プライバシーポリシー</a>を承諾することになります。</p>
                 </div>
             </section>
 
@@ -332,57 +335,24 @@ session_start();
                 <div class="price-breakdown">
                     <div class="price-item">
                         <span>小計</span>
-                        <span id="summary-subtotal-pc">¥ 0</span>
+                        <span id="summary-subtotal-pc"></span>
                     </div>
                     <div class="price-item">
                         <span>送料</span>
-                        <span id="summary-shipping-pc">お届け先住所を入力する</span>
+                        <span id="summary-shipping-pc"></span>
                     </div>
                     <div class="price-item total-price-item">
                         <span>合計</span>
-                        <span id="summary-total-pc">¥ 0 JPY</span>
+                        <span id="summary-total-pc"></span>
                     </div>
-                    <p class="tax-info-summary" id="summary-tax-info-pc">¥ 0 の税金を含む</p>
+                    <p class="tax-info-summary" id="summary-tax-info-pc"></p>
                 </div>
             </section>
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="footer__inner">
-            <ul class="footer__nav">
-                <li>
-                    <span class="footer__nav-title">商品一覧</span>
-                    <ul class="footer__subnav">
-                        <li><a href="products_list.php?category=日本酒">日本酒</a></li>
-                        <li><a href="products_list.php?category=中国酒">中国酒</a></li>
-                        <li><a href="products_list.php?category=梅酒">梅酒</a></li>
-                        <li><a href="products_list.php?category=缶チューハイ">缶チューハイ</a></li>
-                        <li><a href="products_list.php?category=焼酎">焼酎</a></li>
-                        <li><a href="products_list.php?category=ウィスキー">ウィスキー</a></li>
-                        <li><a href="products_list.php?category=スピリッツ">スピリッツ</a></li>
-                        <li><a href="products_list.php?category=リキュール">リキュール</a></li>
-                        <li><a href="products_list.php?category=ワイン">ワイン</a></li>
-                        <li><a href="products_list.php?category=ビール">ビール</a></li>
-                    </ul>
-                </li>
-                <li><a href="faq.php">よくあるご質問／お問合せ</a></li>
-                <li><a href="MyPage.php">会員登録・ログイン</a></li>
-                <li><a href="history.php">購入履歴</a></li>
-                <li><a href="cart.php">買い物かごを見る</a></li>
-                <li><a href="privacy.php">プライバシーポリシー</a></li>
-                <li><a href="terms.php">利用規約</a></li>
-            </ul>
-            <div class="footer__logo" style="margin: 24px 0 12px;">
-                <a href="index.php">
-                    <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
-                </a>
-            </div>
-            <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
-        </div>
-    </footer>
+    <?php require_once 'footer.php'; ?>
 
-    <!-- 実際のプロジェクトではパスを適切に設定してください -->
     <script src="js/checkout.js"></script>
     <script src="js/script.js"></script>
 </body>
