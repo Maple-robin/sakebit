@@ -62,11 +62,11 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/shochu_mugi.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/麦と焼酎.png');">
                         <h4>麦焼酎</h4>
                         <p>麦を原料とし、軽やかで香ばしい風味が特徴。<br>クセが少なく、すっきりとした味わいです。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/shochu_glass.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/米と焼酎.png');">
                         <h4>米焼酎</h4>
                         <p>日本酒のような香りと、上品な甘みが特徴。<br>フルーティーで飲みやすいものも多いです。</p>
                     </div>
