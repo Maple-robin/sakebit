@@ -19,7 +19,7 @@
 
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/kanchuhai_bg.png');">
+        <section class="guide-hero" style="background-image: url('img/缶チューハイいっぱい.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">缶チューハイの世界へようこそ</h2>
                 <p class="guide-hero__subtitle">手軽に楽しむ、無限のフレーバー</p>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/chuhai_can.png" alt="缶チューハイの紹介画像" class="intro-content__image">
+                        <img src="img/氷缶チューハイ.png" alt="缶チューハイの紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>缶チューハイは、焼酎やウォッカなどのスピリッツをベースに、果汁や炭酸水、フレーバーなどを加えて作られた、すぐに飲めるタイプのアルコール飲料です。手軽さと種類の豊富さから、幅広い層に人気があります。</p>
                         </div>
@@ -48,17 +48,17 @@
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">主な種類/h2>
+                    <h2 class="ja">主な種類</h2>
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/lemon_sour.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/檸檬サワー.png');">
                         <h4>レモンサワー</h4>
                         <p>定番の味で、甘いものから甘くないものまで種類が豊富です。食事にも合わせやすく、迷ったらこれを選ぶのがおすすめです。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/grapefruit_sour.png');">
-                        <h4>グレープフルーツサワー</h4>
-                        <p>爽やかな酸味と少し苦い味が特徴です。口の中をさっぱりさせたい時や、食事と一緒に飲むのにぴったりです。</p>
+                        <h4>フレーバー系</h4>
+                        <p>梅や茶葉、乳酸飲料、カクテルなどの多彩な素材の風味を生かした缶チューハイです。果実系とは異なる、個性豊かな味わいが楽しめます。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/strong_zero.png');">
                         <h4>ストロング系</h4>
