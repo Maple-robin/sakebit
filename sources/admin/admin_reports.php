@@ -14,7 +14,7 @@
 <body>
     <header class="admin-header">
         <div class="admin-header__inner">            <h1 class="admin-header__logo">
-                <a href="admin.php">OUR BRAND 管理者ページ</a>
+                <a href="admin_products.php">OUR BRAND 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
