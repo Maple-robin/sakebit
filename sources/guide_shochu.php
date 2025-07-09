@@ -29,7 +29,7 @@
 
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/shochu_barrel.png');">
+        <section class="guide-hero" style="background-image: url('img/焼酎製造.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">焼酎の世界へようこそ</h2>
                 <p class="guide-hero__subtitle">伝統と革新の味わい</p>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/shochu_bottle.png" alt="焼酎の紹介画像" class="intro-content__image">
+                        <img src="img/焼酎.png" alt="焼酎の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>焼酎は、米、麦、芋、そばなど様々な原料を蒸留して造られる日本の伝統的なお酒です。原料由来の豊かな風味とクリアな味わいが特徴で、多様な飲み方で楽しまれています。</p>
                         </div>
