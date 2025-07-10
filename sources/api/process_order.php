@@ -1,7 +1,7 @@
 <?php
 /**
  * @file process_order.php
- * @brief 注文処理API (在庫削減機能付き)
+ * @brief 注文処理API (お酒・おつまみ両方の在庫削減に対応)
  */
 
 ob_start();
@@ -46,7 +46,8 @@ try {
     $cart_items_db = new ccart_items();
     $orders_db = new corders();
     $order_items_db = new corder_items();
-    $product_info_db = new cproduct_info(); // 在庫操作のために追加
+    $product_info_db = new cproduct_info();
+    $otumami_db = new cotumami(); // ★おつまみDB操作のために追加
 
     $pdo = $orders_db->get_pdo();
     if (!$pdo) {
@@ -70,30 +71,38 @@ try {
     // --- トランザクション2: 注文商品登録、在庫削減、カートクリア ---
     $pdo->beginTransaction();
 
-    // 注文商品を登録
     $result_add_items = $order_items_db->add_items_to_order($debug_mode, $order_id, $cart_items);
     if (!$result_add_items) throw new Exception('注文商品の登録(order_itemsテーブルへのINSERT)に失敗しました。');
 
-    // 在庫削減処理
+    // ★★★ ここからが在庫削減処理 ★★★
     foreach ($cart_items as $item) {
-        // 商品(product)の場合のみ在庫を減らす
+        // 商品(product)の場合
         if (isset($item['product_id']) && !empty($item['product_id'])) {
             $product_id = $item['product_id'];
             $quantity = $item['cart_quantity'];
-
             $stock_decreased = $product_info_db->decrease_stock($debug_mode, $product_id, $quantity);
             
-            // 在庫削減に失敗した場合（在庫不足など）
             if (!$stock_decreased) {
-                // 在庫が足りなかった商品の名前を取得してエラーメッセージに含める
                 $product_details = $product_info_db->get_tgt($debug_mode, $product_id);
                 $product_name = $product_details ? $product_details['product_name'] : "商品ID: {$product_id}";
                 throw new Exception("在庫不足のため注文を完了できませんでした。商品:「{$product_name}」");
             }
+        } 
+        // おつまみ(otumami)の場合
+        elseif (isset($item['otumami_id']) && !empty($item['otumami_id'])) {
+            $otumami_id = $item['otumami_id'];
+            $quantity = $item['cart_quantity'];
+            $stock_decreased = $otumami_db->decrease_stock($debug_mode, $otumami_id, $quantity);
+
+            if (!$stock_decreased) {
+                $otumami_details = $otumami_db->get_tgt($debug_mode, $otumami_id);
+                $otumami_name = $otumami_details ? $otumami_details['otumami_name'] : "おつまみID: {$otumami_id}";
+                throw new Exception("在庫不足のため注文を完了できませんでした。商品:「{$otumami_name}」");
+            }
         }
     }
+    // ★★★ 在庫削減処理ここまで ★★★
 
-    // カートを空にする
     $result_clear_cart = $cart_items_db->clear_items_by_cart_id($debug_mode, $cart_id);
     if (!$result_clear_cart) {
         error_log("注文完了後のカートクリアに失敗しました。 order_id: {$order_id}, cart_id: {$cart_id}");

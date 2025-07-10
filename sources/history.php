@@ -5,14 +5,12 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★★★【最重要】ここから修正 ★★★
 // session_start()を、全ての処理の一番最初に呼び出す
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // ログイン状態を確認
-// session_start()が実行された後なので、正しく判定できる
 if (!isset($_SESSION['user_id'])) {
     // ログインしていなければ、ログインページにリダイレクト
     header('Location: login.php');
@@ -21,7 +19,6 @@ if (!isset($_SESSION['user_id'])) {
 
 // DB接続ファイルを読み込む
 require_once __DIR__ . '/common/contents_db.php';
-// ★★★ ここまで修正 ★★★
 
 
 // ログインユーザーのIDを取得
@@ -112,11 +109,17 @@ foreach ($orders as $key => $order) {
                                         <div class="history-item">
                                             <?php
                                             $image_path = !empty($item['image_path']) ? htmlspecialchars($item['image_path'], ENT_QUOTES, 'UTF-8') : 'img/no-image.png';
+                                            
+                                            // ★★★ ここを修正 ★★★
+                                            // リンク先を otumami.php から otsumami.php に修正
+                                            $link_url = ($item['item_type'] === 'product') 
+                                                        ? 'product.php?id=' . $item['product_id'] 
+                                                        : 'otsumami.php?id=' . $item['otumami_id'];
                                             ?>
                                             <img src="<?php echo $image_path; ?>" alt="<?php echo htmlspecialchars($item['item_name'], ENT_QUOTES, 'UTF-8'); ?>" class="history-item__img">
                                             <div class="history-item__details">
                                                 <h3 class="history-item__name">
-                                                    <a href="<?php echo ($item['item_type'] === 'product' ? 'product.php?id=' . $item['product_id'] : 'otumami.php?id=' . $item['otumami_id']); ?>">
+                                                    <a href="<?php echo $link_url; ?>">
                                                         <?php echo htmlspecialchars($item['item_name'], ENT_QUOTES, 'UTF-8'); ?>
                                                     </a>
                                                 </h3>
