@@ -1950,14 +1950,86 @@ class cotumami extends crecord
                 ':new_stock' => $new_stock,
                 ':otumami_id' => (int)$otumami_id
             ]);
-            
-            return $update_success;
 
+            return $update_success;
         } catch (PDOException $e) {
             $error_message_log = "Database Error in otumami->decrease_stock: " . $e->getMessage();
             error_log($error_message_log);
             throw $e;
         }
+    }
+    public function get_top_selling_otumami_by_sake_category($debug, $sake_category_id, $limit = 5)
+    {
+        $query = "
+            SELECT
+                o.otumami_id,
+                o.otumami_name,
+                o.otumami_price,
+                (
+                    SELECT oi.image_path 
+                    FROM otumami_images oi 
+                    WHERE oi.otumami_id = o.otumami_id 
+                    ORDER BY oi.image_type = 'main' DESC, oi.display_order ASC, oi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                COALESCE(SUM(order_items.quantity), 0) AS total_sold
+            FROM
+                otumami o
+            LEFT JOIN
+                order_items ON o.otumami_id = order_items.otumami_id
+            WHERE
+                o.combi_category_id = :category_id
+            GROUP BY
+                o.otumami_id
+            ORDER BY
+                total_sold DESC, o.otumami_id DESC
+            LIMIT :limit
+        ";
+
+        $prep_arr = [
+            ':category_id' => (int)$sake_category_id,
+            ':limit' => (int)$limit
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+    public function get_top_selling_otumami($debug, $limit = 5)
+    {
+        $query = "
+            SELECT
+                o.otumami_id,
+                o.otumami_name,
+                o.otumami_price,
+                (
+                    SELECT oi.image_path 
+                    FROM otumami_images oi 
+                    WHERE oi.otumami_id = o.otumami_id 
+                    ORDER BY oi.image_type = 'main' DESC, oi.display_order ASC, oi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                COALESCE(SUM(order_items.quantity), 0) AS total_sold
+            FROM
+                otumami o
+            LEFT JOIN
+                order_items ON o.otumami_id = order_items.otumami_id
+            GROUP BY
+                o.otumami_id
+            ORDER BY
+                total_sold DESC, o.otumami_id DESC
+            LIMIT :limit
+        ";
+
+        $prep_arr = [':limit' => (int)$limit];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
     }
 
     public function __destruct()
@@ -2510,6 +2582,48 @@ class corder_items extends crecord
         }
         return [];
     }
+    public function get_frequently_bought_with_otumami($debug, $product_id, $limit = 5)
+    {
+        $query = "
+            SELECT
+                o.otumami_id,
+                o.otumami_name,
+                o.otumami_price,
+                (
+                    SELECT oi.image_path 
+                    FROM otumami_images oi 
+                    WHERE oi.otumami_id = o.otumami_id 
+                    ORDER BY oi.image_type = 'main' DESC, oi.display_order ASC, oi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                COUNT(o.otumami_id) AS purchase_count
+            FROM
+                order_items oi1
+            JOIN
+                order_items oi2 ON oi1.order_id = oi2.order_id AND oi1.order_item_id != oi2.order_item_id
+            JOIN
+                otumami o ON oi2.otumami_id = o.otumami_id
+            WHERE
+                oi1.product_id = :product_id
+            GROUP BY
+                o.otumami_id
+            ORDER BY
+                purchase_count DESC, o.otumami_id DESC
+            LIMIT :limit
+        ";
+
+        $prep_arr = [
+            ':product_id' => (int)$product_id,
+            ':limit' => (int)$limit
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
     public function __destruct()
     {
         parent::__destruct();
