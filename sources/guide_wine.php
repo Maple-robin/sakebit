@@ -29,7 +29,7 @@
 
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/wine_barrel.png');">
+        <section class="guide-hero" style="background-image: url('img/ワインブドウ.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">ワインの世界へようこそ</h2>
                 <p class="guide-hero__subtitle">ブドウ畑からの物語</p>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/wine_bottle.png" alt="ワインの紹介画像" class="intro-content__image">
+                        <img src="img/ワインブドウ1.png" alt="ワインの紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>ワインは、主にブドウの果汁を発酵させて造られるアルコール飲料です。ブドウの品種、産地、製造方法によって、味わい、色、香りが大きく異なります。赤、白、ロゼなど様々な種類があります。</p>
                         </div>
@@ -62,15 +62,15 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/wine_red_bottle.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ワイン赤ワイン.png');">
                         <h4>赤ワイン</h4>
                         <p>ブドウの皮や種を発酵させて作られる。<br>渋みとコクがある味わいが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/wine_white_bottle.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ワイン白ワイン.png');">
                         <h4>白ワイン</h4>
                         <p>ブドウの果汁のみを発酵させて作られる。<br>爽やかな酸味と果実のような香りが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/wine_rose_bottle.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ワインロゼ.png');">
                         <h4>ロゼ</h4>
                         <p>ブドウの皮を少しだけ使って作るワインです。<br>すっきりとしたブドウの風味と後味が特徴です。</p>
                     </div>

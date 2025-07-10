@@ -34,7 +34,7 @@
     
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/umeshu_bg.png');">
+        <section class="guide-hero" style="background-image: url('img/梅酒梅たくさん.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">梅酒の世界へようこそ</h2>
                 <p class="guide-hero__subtitle">梅が織りなす、癒やしの甘み</p>
@@ -50,7 +50,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/umeshu_making.png" alt="梅酒の紹介画像" class="intro-content__image">
+                        <img src="img/梅酒コップ.png" alt="梅酒の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>梅酒は、青梅を氷砂糖と共に焼酎などの蒸留酒（または醸造酒）に漬け込んで造られる日本の伝統的なリキュールです。梅の爽やかな酸味と、氷砂糖の優しい甘みが調和した、親しみやすい味わいが特徴です。</p>
                         </div>
@@ -67,15 +67,15 @@
                     <p class="en">Choose by Base Liquor</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/umeshu_white.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/梅酒ホワイトリカー.png');">
                         <h4>ホワイトリカーベース</h4>
                         <p>最も一般的で、すっきりとクリアな味わい。梅本来の風味をストレートに楽しめます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/umeshu_glass.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/梅酒ブランデー.png');">
                         <h4>ブランデーベース</h4>
                         <p>ブランデーの芳醇な香りとコクが加わり、重厚で贅沢な味わいの梅酒になります。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/umeshu_sake.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/梅酒日本酒.png');">
                         <h4>日本酒ベース</h4>
                         <p>日本酒の米の旨味と梅の酸味が調和し、まろやかで深みのある味わいが楽しめます。</p>
                     </div>

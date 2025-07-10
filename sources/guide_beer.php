@@ -29,7 +29,7 @@
 
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/beer.png');">
+        <section class="guide-hero" style="background-image: url('img/ビール大麦2.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">ビールの世界へようこそ</h2>
                 <p class="guide-hero__subtitle">クラフトの探求と楽しみ</p>
@@ -45,7 +45,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/craft_beer.png" alt="ビールの紹介画像" class="intro-content__image">
+                        <img src="img/ビールたくさん.png" alt="ビールの紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>ビールは、主に大麦の麦芽を酵母で発酵させて造られるアルコール飲料です。ホップを加えることで、特有の苦味と香りが生まれます。世界中で最も古くから親しまれているお酒の一つです。</p>
                         </div>
@@ -62,15 +62,15 @@
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/beer_pilsner.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ビールピルスナー.png');">
                         <h4>ピルスナー</h4>
                         <p>世界で最も普及しているスタイルで、アサヒスーパードライやキリン一番搾りなど、日本で売られているビールのほとんどがこれに当たります。すっきりとしたのどごしと爽やかなホップの苦みが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/beer_glass.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ビールヴァイツェン.png');">
                         <h4>ヴァイツェン</h4>
                         <p>小麦を主原料とした、フルーティーでバナナのような香りが特徴の白ビールです。苦みが少なくまろやかな口当たりで、酵母の働きによる独特の風味が楽しめます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/beer_ale.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ビールペールエール.png');">
                         <h4>ペールエール</h4>
                         <p>ホップを豊富に使うことで、柑橘系やフローラルな華やかな香りと程よい苦みが特徴です。クラフトビールの入門としても人気が高く、香りを楽しむことに重点を置いたスタイルです。</p>
                     </div>

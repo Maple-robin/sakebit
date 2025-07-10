@@ -36,7 +36,7 @@
     
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/sake.png');">
+        <section class="guide-hero" style="background-image: url('img/日本酒米米.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">日本酒の世界へようこそ</h2>
                 <p class="guide-hero__subtitle">奥深い味わいの探求</p>
@@ -52,7 +52,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/osake.png" alt="日本酒の紹介画像" class="intro-content__image">
+                        <img src="img/日本酒 注ぐ2.png" alt="日本酒の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>日本酒は、米、米麹、水を主原料として発酵させて造られる、日本古来の醸造酒です。「清酒」とも呼ばれ、日本の食文化に深く根付いています。地域ごとの気候や水、米の違いが、多様な風味や香りを生み出します。</p>
                         </div>
@@ -69,15 +69,15 @@
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/sake_rice.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/日本酒純米酒2.png');">
                         <h4>純米酒</h4>
                         <p>米と米麹、水だけで造られた、米本来の旨味やコクが味わえるタイプ。料理との相性も抜群です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/osyareOsake.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/日本酒吟醸酒1.png');">
                         <h4>吟醸酒</h4>
                         <p>よく磨いた米を低温でゆっくり発酵させて造られ、フルーティーで華やかな香りが特徴です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/sake_bottle.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/日本酒本醸造酒2.png');">
                         <h4>本醸造酒</h4>
                         <p>すっきりとキレのある味わいが特徴。冷やしても燗にしても美味しく、日常的に楽しめます。</p>
                     </div>
@@ -103,7 +103,7 @@
                             <p>冷蔵庫で5〜10℃に冷やして。吟醸酒など香りの高いお酒は、その華やかさが引き立ちます。すっきりとした飲み口に。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/sake-cold.jpg" alt="グラスに注がれた冷たい日本酒">
+                            <img src="img/日本酒冷酒6.png" alt="グラスに注がれた冷たい日本酒">
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                             <p>15〜20℃くらいの温度帯。お酒本来の味と香りが最もよくわかります。純米酒など、米の旨味をじっくり味わいたい時に。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/sake-normal.jpg" alt="常温の日本酒">
+                            <img src="img/日本酒常温4.png" alt="常温の日本酒">
                         </div>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                             <p>徳利に入れて湯煎で温めます。温度によって「ぬる燗」「熱燗」など呼び名が変わり、風味も豊かになります。寒い日にぴったり。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/sake-warm.jpg" alt="温かいお酒、熱燗">
+                            <img src="img/日本酒燗酒5.png" alt="温かいお酒、熱燗">
                         </div>
                     </div>
                 </div>

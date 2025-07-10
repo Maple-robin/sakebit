@@ -74,11 +74,11 @@
                         <h4>果実酒・リキュール</h4>
                         <p>甘くてフルーティーなものが多く、ジュース感覚で楽しめるので最初の一杯にぴったりです。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/chuhai_can.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/缶チューハイ.png');">
                         <h4>缶チューハイ</h4>
                         <p>アルコール度数が低めで、様々なフレーバーがあります。コンビニやスーパーで手軽に試せます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/beer.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ビール注ぐ.png');">
                         <h4>ビール</h4>
                         <p>苦みが特徴ですが、フルーティーで飲みやすいタイプも増えています。まずは少量から試してみましょう。</p>
                     </div>
