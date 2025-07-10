@@ -19,7 +19,7 @@
 
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/gin_tonic.png');">
+        <section class="guide-hero" style="background-image: url('img/スピリッツ.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">スピリッツの世界へようこそ</h2>
                 <p class="guide-hero__subtitle">カクテルの無限の可能性</p>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/spirits_collection.png" alt="スピリッツの紹介画像" class="intro-content__image">
+                        <img src="img/スピリッツとは.png" alt="スピリッツの紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>スピリッツとは、蒸留によって造られるアルコール度数の高いお酒の総称です。ジン、ウォッカ、ラム、テキーラなどが代表的で、それぞれが独自の原料と製法を持ち、カクテルのベースとして広く使われています。</p>
                         </div>
@@ -52,15 +52,15 @@
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/spirits_gin.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ジン.png');">
                         <h4>ジン</h4>
                         <p>ジュニパーベリーの香りが特徴。ジントニックが有名で、ボタニカルの複雑な香りを楽しめます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/vodka_glass.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ウォッカ.png');">
                         <h4>ウォッカ</h4>
                         <p>クリアでクセのない味わいが特徴。様々なジュースやリキュールと相性が良く、カクテルの幅を広げます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/spirits_rum.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ラム.png');">
                         <h4>ラム</h4>
                         <p>サトウキビを原料とし、甘い香りとコクが特徴。コーラで割るキューバリブレや、ミントと合わせるモヒートが人気です。</p>
                     </div>

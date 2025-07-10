@@ -56,11 +56,11 @@
                         <h4>レモンサワー</h4>
                         <p>定番の味で、甘いものから甘くないものまで種類が豊富です。食事にも合わせやすく、迷ったらこれを選ぶのがおすすめです。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/grapefruit_sour.png');">
-                        <h4>フレーバー系</h4>
-                        <p>梅や茶葉、乳酸飲料、カクテルなどの多彩な素材の風味を生かした缶チューハイです。果実系とは異なる、個性豊かな味わいが楽しめます。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/お茶ハイ.png');">
+                        <h4>お茶系</h4>
+                        <p>お茶の爽やかな香りとすっきりした甘くない味わい。食事のお供にぴったりです。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/strong_zero.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ストゼロ.png');">
                         <h4>ストロング系</h4>
                         <p>甘さがなく、アルコール度数が高めです。キリッとした飲みごたえがあり、甘くない味を好む方におすすめです。</p>
                     </div>

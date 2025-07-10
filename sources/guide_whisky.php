@@ -19,7 +19,7 @@
 
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/whisky_barrel.png');">
+        <section class="guide-hero" style="background-image: url('img/ウイスキー.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">ウィスキーの世界へようこそ</h2>
                 <p class="guide-hero__subtitle">熟成が織りなす深い味わい</p>
@@ -35,7 +35,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/whisky_bottle.png" alt="ウィスキーの紹介画像" class="intro-content__image">
+                        <img src="img/ウイスキー樽.png" alt="ウィスキーの紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>ウィスキーは、大麦、ライ麦、トウモロコシなどの穀物を原料とし、糖化、発酵、蒸留を経て、木製の樽で熟成させたお酒です。産地や製法によって多様な個性が生まれます。</p>
                         </div>
@@ -52,15 +52,15 @@
                     <p class="en">Easy to Drink</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/whisky_scotch.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/スコッチウイスキー.png');">
                         <h4>スコッチウィスキー</h4>
                         <p>スモーキーな香りが特徴ですが、華やかで飲みやすいタイプも多数。バニラのような甘い香りも楽しめます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/whisky_glass.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/ジャパニーズウイスキー.png');">
                         <h4>ジャパニーズウィスキー</h4>
                         <p>繊細でバランスの取れた味わいが特徴。ハイボールにすると、その良さが一層引き立ちます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/whisky_bourbon.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/バーボンウイスキー.png');">
                         <h4>バーボンウィスキー</h4>
                         <p>トウモロコシを主原料とし、甘く華やかな香りが特徴。コーラで割るのもおすすめです。</p>
                     </div>
