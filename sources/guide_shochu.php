@@ -70,7 +70,7 @@
                         <h4>米焼酎</h4>
                         <p>日本酒のような香りと、上品な甘みが特徴。<br>フルーティーで飲みやすいものも多いです。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/shochu_imo.png');">
+                    <div class="type-card type-card--bg" style="background-image: url('img/芋焼酎.png');">
                         <h4>芋焼酎</h4>
                         <p>さつまいもを原料とし、華やかな香りが魅力。<br>近年は飲みやすくされたものも増えています。</p>
                     </div>

@@ -36,7 +36,7 @@
     
     <main>
         <!-- ヒーローセクション -->
-        <section class="guide-hero" style="background-image: url('img/osyareOsake.png');">
+        <section class="guide-hero" style="background-image: url('img/リキュール.png');">
             <div class="guide-hero__inner">
                 <h2 class="guide-hero__title">リキュールの世界へようこそ</h2>
                 <p class="guide-hero__subtitle">創造的なカクテルの探求</p>
@@ -52,7 +52,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/gin.png" alt="リキュールの紹介画像" class="intro-content__image">
+                        <img src="img/リキュールとは.png" alt="リキュールの紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>リキュールは、蒸留酒に果物やハーブ、スパイスなどの風味を加え、砂糖やシロップで甘みをつけたお酒です。多彩なフレーバーが特徴で、カクテルのベースとして、また食後酒としても楽しまれます。</p>
                         </div>
@@ -69,17 +69,17 @@
                     <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
-                    <div class="type-card type-card--bg" style="background-image: url('img/soda.png');">
-                        <h4>ソーダ割り</h4>
-                        <p>最もシンプルで爽やかな飲み方。リキュールの持つ本来の風味を軽やに楽しめます。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/フルーツ系.png');">
+                        <h4>フルーツ系</h4>
+                        <p>カシスやピーチ、オレンジなど、様々な果物の甘みと香りが楽しめます。ジュース割りやソーダ割りに最適です。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/cassis.png');">
-                        <h4>ジュース割り</h4>
-                        <p>オレンジやグレープフルーツジュースで割れば、フルーティーで飲みやすいカクテルが完成します。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/ハーブ系.png');">
+                        <h4>ハーブ・薬草系</h4>
+                        <p>独特のハーブやスパイスの香りが特徴で、食後酒としても人気です。ストレートやロックでじっくり味わえます。</p>
                     </div>
-                    <div class="type-card type-card--bg" style="background-image: url('img/rock.png');">
-                        <h4>ロック</h4>
-                        <p>氷を入れたグラスに注ぐだけ。リキュール本来の濃厚な味わいをじっくりと楽しめます。</p>
+                    <div class="type-card type-card--bg" style="background-image: url('img/クリーム系.png');">
+                        <h4>クリーム系</h4>
+                        <p>ミルクやクリームをベースにした、甘くてまろやかな味わいです。デザート感覚で楽しめ、ホットカクテルにも向いています。</p>
                     </div>
                 </div>
             </div>
