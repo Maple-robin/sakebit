@@ -2,97 +2,111 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const productList = document.getElementById('product-list');
     
-    // PHPから渡された実際のお気に入り商品データを使用
-    let favoriteProducts = initialFavoriteProducts;
+    // PHPから渡されたお気に入りデータ（お酒・おつまみ混合）
+    let favoriteItems = initialFavoriteItems;
 
     // 商品をレンダリングする関数
-    function renderProducts(productsToRender) {
-        productList.innerHTML = ''; // 一旦リストを空にする
-        productList.className = 'product-grid'; // PC/スマホ共通でグリッド表示
+    function renderProducts(itemsToRender) {
+        productList.innerHTML = ''; 
+        productList.className = 'product-grid';
 
         const existingMsg = document.querySelector('.no-favorites-message');
         if (existingMsg) {
             existingMsg.remove();
         }
 
-        if (!productsToRender || productsToRender.length === 0) {
+        if (!itemsToRender || itemsToRender.length === 0) {
             const msg = document.createElement('p');
             msg.className = 'no-favorites-message';
             msg.textContent = 'お気に入りの商品はありません。';
-            // productList自体が空になるので、その親要素の後ろにメッセージを挿入
             if(productList.parentNode) {
                  productList.parentNode.insertBefore(msg, productList.nextSibling);
             }
             return;
         }
 
-        productsToRender.forEach(product => {
-            const productCardLink = document.createElement('a');
-            productCardLink.href = `product.php?id=${product.id}`;
-            productCardLink.classList.add('product-card');
-            productCardLink.dataset.productId = product.id;
+        itemsToRender.forEach(item => {
+            const itemCardLink = document.createElement('a');
+            
+            // ★★★ 修正点: item.typeに応じてリンク先を切り替える ★★★
+            itemCardLink.href = item.type === 'product' 
+                ? `product.php?id=${item.id}` 
+                : `otsumami.php?id=${item.id}`;
+
+            itemCardLink.classList.add('product-card');
+            itemCardLink.dataset.itemId = item.id;
+            itemCardLink.dataset.itemType = item.type; // typeをdata属性として保持
 
             const favoriteClass = 'fas fa-heart is-favorite';
 
-            // タグ表示制限のロジックを追加
             const MAX_VISIBLE_TAGS = 4;
             let tagsHtml = '';
-            if (product.tags && product.tags.length > MAX_VISIBLE_TAGS) {
-                tagsHtml = product.tags.slice(0, MAX_VISIBLE_TAGS).map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
-                const remainingCount = product.tags.length - MAX_VISIBLE_TAGS;
-                tagsHtml += `<span class="product-card__tag product-card__tag-more" data-product-id="${product.id}">+${remainingCount}</span>`;
-            } else if (product.tags) {
-                tagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+            if (item.tags && item.tags.length > MAX_VISIBLE_TAGS) {
+                tagsHtml = item.tags.slice(0, MAX_VISIBLE_TAGS).map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+                const remainingCount = item.tags.length - MAX_VISIBLE_TAGS;
+                tagsHtml += `<span class="product-card__tag product-card__tag-more" data-item-id="${item.id}" data-item-type="${item.type}">+${remainingCount}</span>`;
+            } else if (item.tags) {
+                tagsHtml = item.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
             }
 
-            productCardLink.innerHTML = `
-                <img src="${product.image}" alt="${product.name}" class="product-card__image">
-                <i class="${favoriteClass} product-card__favorite" data-product-id="${product.id}"></i>
+            // volumeキーの有無をチェック
+            const volumeHtml = item.volume ? `<p class="product-card__volume">${item.volume}</p>` : '';
+
+            itemCardLink.innerHTML = `
+                <img src="${item.image}" alt="${item.name}" class="product-card__image">
+                <i class="${favoriteClass} product-card__favorite" data-item-id="${item.id}" data-item-type="${item.type}"></i>
                 <div class="product-card__details">
-                    <h3 class="product-card__title">${product.name}</h3>
-                    <p class="product-card__volume">${product.volume}</p>
-                    <p class="product-card__price">¥ ${product.price.toLocaleString()} <span>~ 【税込】</span></p>
+                    <h3 class="product-card__title">${item.name}</h3>
+                    ${volumeHtml}
+                    <p class="product-card__price">¥ ${item.price.toLocaleString()} <span>(税込)</span></p>
                     <div class="product-card__tags-container">
                         ${tagsHtml}
                     </div>
                 </div>
             `;
-            productList.appendChild(productCardLink);
+            productList.appendChild(itemCardLink);
         });
     }
 
-    // ★★★ イベントリスナーを修正 ★★★
     productList.addEventListener('click', function(e) {
         
-        // 「+〇」タグのクリック処理
         if (e.target.classList.contains('product-card__tag-more')) {
-            e.preventDefault(); // ★重要：リンク遷移をキャンセル
+            e.preventDefault(); 
             
-            const productId = parseInt(e.target.dataset.productId);
-            const product = favoriteProducts.find(p => p.id == productId);
+            const itemId = parseInt(e.target.dataset.itemId);
+            const itemType = e.target.dataset.itemType;
+            const item = favoriteItems.find(p => p.id == itemId && p.type == itemType);
             
-            if (product) {
+            if (item) {
                 const tagsContainer = e.target.parentElement;
-                const allTagsHtml = product.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
+                const allTagsHtml = item.tags.map(tag => `<span class="product-card__tag">${tag}</span>`).join('');
                 tagsContainer.innerHTML = allTagsHtml;
             }
         }
         
-        // お気に入り（ハート）アイコンのクリック処理
         else if (e.target.classList.contains('product-card__favorite')) {
-            e.preventDefault(); // ★重要：リンク遷移をキャンセル
+            e.preventDefault(); 
 
             const card = e.target.closest('.product-card');
-            const productId = parseInt(card.dataset.productId);
+            const itemId = parseInt(card.dataset.itemId);
+            const itemType = card.dataset.itemType;
 
-            // APIを呼び出してサーバー上のお気に入り情報を削除
-            fetch('api/api_toggle_favorite.php', {
+            // ★★★ 修正点: item.typeに応じてAPIのURLと送信データを切り替える ★★★
+            const apiUrl = itemType === 'product' 
+                ? 'api/api_toggle_favorite.php' 
+                : 'api/api_toggle_otumami_favorite.php';
+            
+            const requestBody = { is_favorited: true }; // お気に入りページでは常に解除操作
+            if (itemType === 'product') {
+                requestBody.product_id = itemId;
+            } else {
+                requestBody.otumami_id = itemId;
+            }
+
+            fetch(apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    product_id: productId,
-                    is_favorited: true // お気に入りページでは常に解除操作
-                })
+                body: JSON.stringify(requestBody)
             })
             .then(response => response.json())
             .then(data => {
@@ -102,7 +116,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     card.style.transform = 'scale(0.95)';
                     setTimeout(() => {
                         card.remove();
-                        favoriteProducts = favoriteProducts.filter(p => p.id !== productId);
+                        // ローカルのデータからも削除
+                        favoriteItems = favoriteItems.filter(p => !(p.id === itemId && p.type === itemType));
                         if (productList.children.length === 0) {
                            renderProducts([]);
                         }
@@ -119,5 +134,5 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // 初期表示
-    renderProducts(favoriteProducts);
+    renderProducts(favoriteItems);
 });

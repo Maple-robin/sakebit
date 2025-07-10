@@ -730,6 +730,45 @@ class cproduct_info extends crecord
 
         return $product_details;
     }
+    public function get_top_selling_products_by_category($debug, $category_id, $limit = 5)
+    {
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                COALESCE(SUM(oi.quantity), 0) AS total_sold,
+                (
+                    SELECT pi.image_path 
+                    FROM product_images pi 
+                    WHERE pi.product_id = p.product_id 
+                    ORDER BY pi.image_type = 'main' DESC, pi.display_order ASC, pi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path
+            FROM
+                product_info p
+            LEFT JOIN
+                order_items oi ON p.product_id = oi.product_id
+            WHERE
+                p.product_category = :category_id
+            GROUP BY
+                p.product_id
+            ORDER BY
+                total_sold DESC, p.product_id DESC
+            LIMIT :limit
+        ";
+
+        $prep_arr = [
+            ':category_id' => (int)$category_id,
+            ':limit' => (int)$limit
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
 
     public function __destruct()
     {
@@ -1834,6 +1873,92 @@ class cotumami extends crecord
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
+    public function get_otumami_list_by_ids($debug, $ids)
+    {
+        if (empty($ids) || !is_array($ids)) {
+            return [];
+        }
+
+        // プレースホルダーを作成 (例: ?,?,?)
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+        $query = "
+            SELECT
+                o.otumami_id,
+                o.otumami_name,
+                o.otumami_price,
+                o.created_at,
+                (
+                    SELECT oi.image_path 
+                    FROM otumami_images oi 
+                    WHERE oi.otumami_id = o.otumami_id 
+                    ORDER BY oi.image_type = 'main' DESC, oi.display_order ASC, oi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                GROUP_CONCAT(DISTINCT ot.tag_name ORDER BY ot.tag_id SEPARATOR ', ') AS tags
+            FROM
+                otumami o
+            LEFT JOIN
+                otumami_otumami_tags otr ON o.otumami_id = otr.otumami_id
+            LEFT JOIN
+                otumami_tags ot ON otr.tag_id = ot.tag_id
+            WHERE
+                o.otumami_id IN ({$placeholders})
+            GROUP BY
+                o.otumami_id
+        ";
+
+        // array_valuesでキーをリセットし、PDOが正しくバインドできるようにする
+        $stmt = $this->execute_query($debug, $query, array_values($ids));
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+    public function decrease_stock($debug, $otumami_id, $quantity)
+    {
+        if (!cutil::is_number($otumami_id) || $otumami_id < 1 || !cutil::is_number($quantity) || $quantity < 1) {
+            return false;
+        }
+
+        // このメソッドは、api/process_order.php のトランザクション内で呼び出されることを前提としています。
+        try {
+            // 1. 行をロックして現在の在庫数を取得
+            $query_select = "SELECT otumami_stock FROM otumami WHERE otumami_id = :otumami_id FOR UPDATE";
+            $stmt_select = $this->pdo->prepare($query_select);
+            $stmt_select->execute([':otumami_id' => (int)$otumami_id]);
+            $result = $stmt_select->fetch(PDO::FETCH_ASSOC);
+
+            if (!$result) {
+                error_log("decrease_stock error: Otumami with ID {$otumami_id} not found.");
+                return false;
+            }
+
+            $current_stock = (int)$result['otumami_stock'];
+
+            // 2. PHP側で在庫数を確認
+            if ($current_stock < $quantity) {
+                error_log("decrease_stock error: Insufficient stock for otumami ID {$otumami_id}. Required: {$quantity}, Available: {$current_stock}");
+                return false;
+            }
+
+            // 3. 在庫数を更新
+            $new_stock = $current_stock - (int)$quantity;
+            $query_update = "UPDATE otumami SET otumami_stock = :new_stock WHERE otumami_id = :otumami_id";
+            $stmt_update = $this->pdo->prepare($query_update);
+            $update_success = $stmt_update->execute([
+                ':new_stock' => $new_stock,
+                ':otumami_id' => (int)$otumami_id
+            ]);
+            
+            return $update_success;
+
+        } catch (PDOException $e) {
+            $error_message_log = "Database Error in otumami->decrease_stock: " . $e->getMessage();
+            error_log($error_message_log);
+            throw $e;
+        }
+    }
 
     public function __destruct()
     {
@@ -1995,16 +2120,22 @@ class ccart_items extends crecord
     {
         parent::__construct();
     }
-    public function add_or_update_item($debug, $cart_id, $product_id, $quantity, $price)
+    public function add_or_update_item($debug, $cart_id, $item_id, $item_type, $quantity, $price)
     {
-        if (!cutil::is_number($cart_id) || !cutil::is_number($product_id) || !cutil::is_number($quantity)) {
+        if (!cutil::is_number($cart_id) || !cutil::is_number($item_id) || !cutil::is_number($quantity)) {
             return false;
         }
-        $query = "SELECT cart_item_id, cart_quantity FROM cart_items WHERE cart_id = :cart_id AND product_id = :product_id";
-        $this->select_query($debug, $query, [':cart_id' => (int)$cart_id, ':product_id' => (int)$product_id]);
+
+        // どのIDカラムを検索・更新するかを決定
+        $id_column = ($item_type === 'otumami') ? 'otumami_id' : 'product_id';
+
+        // 同じ商品が既にカートに存在するか確認
+        $query = "SELECT cart_item_id, cart_quantity FROM cart_items WHERE cart_id = :cart_id AND {$id_column} = :item_id";
+        $this->select_query($debug, $query, [':cart_id' => (int)$cart_id, ':item_id' => (int)$item_id]);
         $existing_item = $this->fetch_assoc();
 
         if ($existing_item) {
+            // 存在する場合：数量を更新
             $new_quantity = $existing_item['cart_quantity'] + $quantity;
             $query = "UPDATE cart_items SET cart_quantity = :quantity WHERE cart_item_id = :cart_item_id";
             return $this->execute_query($debug, $query, [
@@ -2012,36 +2143,56 @@ class ccart_items extends crecord
                 ':cart_item_id' => $existing_item['cart_item_id']
             ]);
         } else {
-            $query = "INSERT INTO cart_items (cart_id, product_id, cart_quantity, cart_price_at_add) VALUES (:cart_id, :product_id, :quantity, :price)";
+            // 存在しない場合：新規に挿入
+            $product_id_val = ($item_type === 'product') ? (int)$item_id : null;
+            $otumami_id_val = ($item_type === 'otumami') ? (int)$item_id : null;
+
+            $query = "INSERT INTO cart_items (cart_id, product_id, otumami_id, cart_quantity, cart_price_at_add) 
+                      VALUES (:cart_id, :product_id, :otumami_id, :quantity, :price)";
             return $this->execute_query($debug, $query, [
                 ':cart_id' => (int)$cart_id,
-                ':product_id' => (int)$product_id,
+                ':product_id' => $product_id_val,
+                ':otumami_id' => $otumami_id_val,
                 ':quantity' => (int)$quantity,
                 ':price' => (float)$price
             ]);
         }
     }
 
+    /**
+     * ★★★【修正】★★★
+     * カート内の商品（お酒・おつまみ両方）の情報を取得する
+     * @param bool $debug デバッグモード
+     * @param int $cart_id カートID
+     * @return array カート内の商品情報の配列
+     */
     public function get_items_by_cart_id($debug, $cart_id)
     {
         if (!cutil::is_number($cart_id) || $cart_id < 1) {
             return [];
         }
         $arr = [];
+        // お酒とおつまみの情報をCOALESCEで結合して取得
         $query = "
             SELECT
                 ci.cart_item_id,
                 ci.cart_id,
                 ci.product_id,
+                ci.otumami_id,
                 ci.cart_quantity,
                 ci.cart_price_at_add,
-                p.product_name,
-                p.product_Contents,
-                (SELECT image_path FROM product_images WHERE product_id = p.product_id ORDER BY display_order ASC, image_id ASC LIMIT 1) AS image_path
+                COALESCE(p.product_name, o.otumami_name) AS product_name, -- 統一された名前
+                COALESCE(p.product_Contents, '') AS product_Contents, -- お酒にしかない情報は空文字を返す
+                COALESCE(
+                    (SELECT image_path FROM product_images WHERE product_id = ci.product_id ORDER BY display_order ASC, image_id ASC LIMIT 1),
+                    (SELECT image_path FROM otumami_images WHERE otumami_id = ci.otumami_id ORDER BY display_order ASC, image_id ASC LIMIT 1)
+                ) AS image_path
             FROM
                 cart_items ci
-            JOIN
+            LEFT JOIN
                 product_info p ON ci.product_id = p.product_id
+            LEFT JOIN
+                otumami o ON ci.otumami_id = o.otumami_id
             WHERE
                 ci.cart_id = :cart_id
             ORDER BY
@@ -2318,6 +2469,47 @@ class corder_items extends crecord
         return $row ? (int)$row['total_sold_count'] : 0;
     }
 
+    public function get_frequently_bought_with_products($debug, $otumami_id, $limit = 5)
+    {
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                (
+                    SELECT pi.image_path 
+                    FROM product_images pi 
+                    WHERE pi.product_id = p.product_id 
+                    ORDER BY pi.image_type = 'main' DESC, pi.display_order ASC, pi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                COUNT(p.product_id) AS purchase_count
+            FROM
+                order_items oi1
+            JOIN
+                order_items oi2 ON oi1.order_id = oi2.order_id AND oi1.order_item_id != oi2.order_item_id
+            JOIN
+                product_info p ON oi2.product_id = p.product_id
+            WHERE
+                oi1.otumami_id = :otumami_id
+            GROUP BY
+                p.product_id
+            ORDER BY
+                purchase_count DESC, p.product_id DESC
+            LIMIT :limit
+        ";
+
+        $prep_arr = [
+            ':otumami_id' => (int)$otumami_id,
+            ':limit' => (int)$limit
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
     public function __destruct()
     {
         parent::__destruct();
@@ -2470,18 +2662,119 @@ class cproduct_favorites extends crecord
      * @param int $user_id ユーザーID
      * @return array お気に入り商品IDの配列
      */
-    public function get_favorite_product_ids_by_user_id($debug, $user_id)
+    public function get_favorite_products_by_user_id($debug, $user_id)
     {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
-        $arr = [];
-        $query = "SELECT product_id FROM product_favorites WHERE user_id = :user_id ORDER BY created_at DESC";
-        $this->select_query($debug, $query, [':user_id' => (int)$user_id]);
-        while ($row = $this->fetch_assoc()) {
-            $arr[] = $row['product_id'];
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                pf.created_at AS favorited_at,
+                (
+                    SELECT pi.image_path 
+                    FROM product_images pi 
+                    WHERE pi.product_id = p.product_id 
+                    ORDER BY pi.image_type = 'main' DESC, pi.display_order ASC, pi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                GROUP_CONCAT(DISTINCT t.tag_name ORDER BY t.tag_id SEPARATOR ', ') AS tags
+            FROM
+                product_favorites AS pf
+            JOIN
+                product_info AS p ON pf.product_id = p.product_id
+            LEFT JOIN
+                product_tags_relation AS ptr ON p.product_id = ptr.product_id
+            LEFT JOIN
+                tags AS t ON ptr.tag_id = t.tag_id
+            WHERE
+                pf.user_id = :user_id
+            GROUP BY
+                p.product_id, pf.created_at
+            ORDER BY
+                pf.created_at DESC
+        ";
+        $stmt = $this->execute_query($debug, $query, [':user_id' => (int)$user_id]);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-        return $arr;
+        return [];
+    }
+
+    public function __destruct()
+    {
+        parent::__destruct();
+    }
+}
+
+class cotumami_favorites extends crecord
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    public function is_favorited($debug, $user_id, $otumami_id)
+    {
+        if (!cutil::is_number($user_id) || !cutil::is_number($otumami_id)) return false;
+        $query = "SELECT COUNT(*) AS count_result FROM otumami_favorites WHERE user_id = :user_id AND otumami_id = :otumami_id";
+        $this->select_query($debug, $query, [':user_id' => (int)$user_id, ':otumami_id' => (int)$otumami_id]);
+        $row = $this->fetch_assoc();
+        return $row && $row['count_result'] > 0;
+    }
+
+    public function add_favorite($debug, $user_id, $otumami_id)
+    {
+        $query = "INSERT INTO otumami_favorites (user_id, otumami_id) VALUES (:user_id, :otumami_id)";
+        return $this->execute_query($debug, $query, [':user_id' => (int)$user_id, ':otumami_id' => (int)$otumami_id]);
+    }
+
+    public function remove_favorite($debug, $user_id, $otumami_id)
+    {
+        $query = "DELETE FROM otumami_favorites WHERE user_id = :user_id AND otumami_id = :otumami_id";
+        return $this->execute_query($debug, $query, [':user_id' => (int)$user_id, ':otumami_id' => (int)$otumami_id]);
+    }
+    public function get_favorite_otumami_by_user_id($debug, $user_id)
+    {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return [];
+        }
+        $query = "
+            SELECT
+                o.otumami_id,
+                o.otumami_name,
+                o.otumami_price,
+                ofav.created_at AS favorited_at,
+                (
+                    SELECT oi.image_path 
+                    FROM otumami_images oi 
+                    WHERE oi.otumami_id = o.otumami_id 
+                    ORDER BY oi.image_type = 'main' DESC, oi.display_order ASC, oi.image_id ASC 
+                    LIMIT 1
+                ) AS main_image_path,
+                GROUP_CONCAT(DISTINCT ot.tag_name ORDER BY ot.tag_id SEPARATOR ', ') AS tags
+            FROM
+                otumami_favorites AS ofav
+            JOIN
+                otumami AS o ON ofav.otumami_id = o.otumami_id
+            LEFT JOIN
+                otumami_otumami_tags AS otr ON o.otumami_id = otr.otumami_id
+            LEFT JOIN
+                otumami_tags AS ot ON otr.tag_id = ot.tag_id
+            WHERE
+                ofav.user_id = :user_id
+            GROUP BY
+                o.otumami_id, ofav.created_at
+            ORDER BY
+                ofav.created_at DESC
+        ";
+        $stmt = $this->execute_query($debug, $query, [':user_id' => (int)$user_id]);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
     }
 
     public function __destruct()

@@ -55,7 +55,7 @@ $submitted_username = ''; // 入力されたユーザー名を再表示するた
 
 // 既にログインしている場合は、管理者ページへリダイレクト
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header('Location: admin.php');
+    header('Location: admin_products.php');
     exit();
 }
 
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_user_id'] = $admin_user['admin_user_id'];
                 $_SESSION['admin_user_name'] = $admin_user['admin_user_name'];
 
-                header('Location: admin.php');
+                header('Location: admin_products.php');
                 exit();
             } else {
                 $_SESSION['admin_login_message'] = ['text' => 'ユーザー名またはパスワードが正しくありません。', 'type' => 'error'];

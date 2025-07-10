@@ -20,7 +20,10 @@ $favorites_db = new cproduct_favorites();
 
 $favorite_product_ids = [];
 if ($is_logged_in) {
-    $favorite_product_ids = $favorites_db->get_favorite_product_ids_by_user_id(DEBUG, $current_user_id);
+    // ★★★ ここを修正: 新しいメソッドを呼び出し、IDの配列を生成する ★★★
+    $favorite_products = $favorites_db->get_favorite_products_by_user_id(DEBUG, $current_user_id);
+    // get_favorite_products_by_user_id は詳細な配列を返すので、そこからIDだけを抜き出す
+    $favorite_product_ids = array_column($favorite_products, 'product_id');
 }
 
 // 新しいメソッドで、販売数を含む全商品データを取得
@@ -38,19 +41,16 @@ if (!empty($products_from_db)) {
         $main_image = !empty($product['main_image_path']) ? htmlspecialchars($product['main_image_path']) : 'https://placehold.co/300x200?text=NoImage';
         $tags_array = !empty($product['tags']) ? array_map('trim', explode(', ', $product['tags'])) : [];
 
-        // ★★★ ここからが修正箇所 ★★★
         $volume = htmlspecialchars($product['product_Contents'] ?? '');
-        // 内容量が数字のみの場合、末尾に 'ml' を追加する
         if (!empty($volume) && is_numeric($volume)) {
             $volume .= 'ml';
         }
-        // ★★★ ここまで修正 ★★★
 
         $products_for_js[] = [
             'id' => (int)$product['product_id'],
             'name' => htmlspecialchars($product['product_name']),
             'image' => $main_image,
-            'volume' => $volume, // 修正した内容量をセット
+            'volume' => $volume,
             'price' => (float)$product['product_price'],
             'tags' => $tags_array,
             'category' => htmlspecialchars($product['category_name']),
