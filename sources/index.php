@@ -11,11 +11,20 @@ $debug = false;
 
 $product_db = new cproduct_info();
 
-// メインカルーセル用の売上ランキングTOP3の商品を取得
-$top_products = $product_db->get_top_selling_products($debug, 3);
+// ★★★ ここからが修正箇所 ★★★
 
-// ランキングセクション用の商品を取得 (4位から5件)
-$ranking_products = $product_db->get_ranked_products($debug, 5, 3);
+// 1. ランキング商品をまとめて取得 (上位3件 + 次の5件 = 合計8件)
+$all_ranked_products = $product_db->get_ranked_products($debug, 8, 0);
+
+// 2. 取得した配列をPHPで分割する
+// メインカルーセル用: 最初の3件 (0番目から3つ)
+$top_products = array_slice($all_ranked_products, 0, 3);
+
+// ランキングセクション用: 4番目以降の5件 (3番目から5つ)
+$ranking_products = array_slice($all_ranked_products, 3, 5);
+
+// ★★★ ここまで修正 ★★★
+
 
 // 初心者向けセクション用の商品を取得
 $beginner_products = $product_db->get_top_selling_products_by_tag($debug, '初心者向け', 5);
