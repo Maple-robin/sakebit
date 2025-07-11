@@ -769,6 +769,35 @@ class cproduct_info extends crecord
         }
         return [];
     }
+    public function update_product($debug, $product_id, $product_name, $product_price, $product_category, $product_description, $product_discription, $product_How, $product_Contents, $product_stock, $product_degree)
+    {
+        $query = "
+            UPDATE product_info SET
+                product_name = :product_name,
+                product_price = :product_price,
+                product_category = :product_category,
+                product_description = :product_description,
+                product_discription = :product_discription,
+                product_How = :product_How,
+                product_Contents = :product_Contents,
+                product_stock = :product_stock,
+                product_degree = :product_degree
+            WHERE product_id = :product_id
+        ";
+        $prep_arr = [
+            ':product_name' => $product_name,
+            ':product_price' => (float)$product_price,
+            ':product_category' => $product_category,
+            ':product_description' => $product_description,
+            ':product_discription' => $product_discription,
+            ':product_How' => $product_How,
+            ':product_Contents' => $product_Contents,
+            ':product_stock' => (int)$product_stock,
+            ':product_degree' => (float)$product_degree,
+            ':product_id' => (int)$product_id
+        ];
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
 
     public function __destruct()
     {
@@ -1086,6 +1115,14 @@ class cproduct_tags_relation extends crecord
         $query = "DELETE FROM product_tags_relation WHERE product_id = :product_id";
         $prep_arr = array(':product_id' => (int)$product_id);
         return $this->execute_query($debug, $query, $prep_arr);
+    }
+    public function delete_tags_by_product_id($debug, $product_id)
+    {
+        if (!cutil::is_number($product_id) || $product_id < 1) {
+            return false;
+        }
+        $query = "DELETE FROM product_tags_relation WHERE product_id = :product_id";
+        return $this->execute_query($debug, $query, [':product_id' => (int)$product_id]);
     }
 
     public function __destruct()
