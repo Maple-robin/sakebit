@@ -37,7 +37,7 @@
         </section>
 
         <!-- ワインって何？ -->
-        <section class="guide-section intro-section">
+        <section class="guide-section guide-intro-section">
             <div class="section-inner">
                 <div class="section-title">
                     <h2 class="ja">ワインってなんだろう？</h2>

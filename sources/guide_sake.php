@@ -44,7 +44,7 @@
         </section>
 
         <!-- 日本酒って何？ -->
-        <section class="guide-section intro-section">
+        <section class="guide-section guide-intro-section">
             <div class="section-inner">
                 <div class="section-title">
                     <h2 class="ja">日本酒ってなんだろう？</h2>
