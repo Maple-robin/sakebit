@@ -43,6 +43,7 @@ main {
 }
 
 /* ヒーローセクション */
+
 .guide-hero {
     text-align: center;
     padding: 80px 20px;
@@ -51,6 +52,12 @@ main {
     background-position: center;
     color: #fff;
     position: relative;
+    width: 430px;
+    height: 291px;
+    max-width: 100%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .guide-hero::before {
@@ -129,8 +136,9 @@ main {
 
 .intro-content__image {
   display: block;
-  width: 100%;
-  height: auto;
+  width: 360px;
+  height: 280px;
+  object-fit: cover;
   border-radius: 8px; /* 角を少し丸める */
 }
 
