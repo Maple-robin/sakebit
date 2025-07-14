@@ -23,9 +23,9 @@
             <li><a href="privacy.php">プライバシーポリシー</a></li>
             <li><a href="terms.php">利用規約</a></li>
         </ul>            
-        <div class="footer__logo" style="margin: 24px 0 12px;">
+        <div class="footer__logo" style="text-align: center;">
             <a href="index.php">
-                <img src="img/logo.png" alt="OUR BRAND" style="height:32px;">
+                <img src="img/logo.png" alt="OUR BRAND" style="height:64px;">
             </a>
         </div>
         <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
