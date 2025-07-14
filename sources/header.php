@@ -25,8 +25,8 @@ $grouped_tags_for_header = $tags_obj_for_header->get_all_tags_grouped_by_categor
             <span></span>
             <span></span>
         </button>
-        <h1 class="header__logo">
-            <a href="index.php">OUR BRAND</a>
+        <h1 class="header__logo" style="margin-left: 10px;">
+            <a href="index.php">SAKE BIT</a>
         </h1>
         <nav class="header__nav">
             <ul class="nav__list pc-only">

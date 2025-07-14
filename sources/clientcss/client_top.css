@@ -34,6 +34,22 @@
     max-width: 300px;
 }
 
+/* 商品説明・特徴・おすすめの飲み方のセルをスクロール可能に */
+.admin-table td.product-description,
+.admin-table td.product-feature,
+.admin-table td.product-how {
+    max-height: 120px;
+    overflow-y: auto;
+    min-width: 180px;
+}
+
+.scrollable-cell {
+    max-height: 120px;
+    overflow-y: auto;
+    min-width: 180px;
+    white-space: pre-line;
+}
+
 .admin-table th {
     background-color: #f5f5f5;
     font-weight: 600;

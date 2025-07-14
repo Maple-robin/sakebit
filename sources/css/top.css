@@ -566,9 +566,11 @@ ul {
 .footer__sns img:hover { opacity: 0.7; }
 .footer__logo {
     margin: 32px 0 12px 0;
+    text-align: center;
 }
 .footer__logo img {
     height: 32px;
+    display: inline-block;
 }
 .footer__copyright {
     font-size: 1.1rem;
