@@ -103,7 +103,7 @@
                             <p>冷蔵庫で5〜10℃に冷やして。吟醸酒など香りの高いお酒は、その華やかさが引き立ちます。すっきりとした飲み口に。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/日本酒冷酒6.png" alt="グラスに注がれた冷たい日本酒">
+                            <img src="img/日本酒冷酒7.png" alt="グラスに注がれた冷たい日本酒">
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                             <p>15〜20℃くらいの温度帯。お酒本来の味と香りが最もよくわかります。純米酒など、米の旨味をじっくり味わいたい時に。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/日本酒常温4.png" alt="常温の日本酒">
+                            <img src="img/日本酒常温3.png" alt="常温の日本酒">
                         </div>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                             <p>徳利に入れて湯煎で温めます。温度によって「ぬる燗」「熱燗」など呼び名が変わり、風味も豊かになります。寒い日にぴったり。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/日本酒燗酒5.png" alt="温かいお酒、熱燗">
+                            <img src="img/日本酒燗酒6.png" alt="温かいお酒、熱燗">
                         </div>
                     </div>
                 </div>
