@@ -63,8 +63,8 @@
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">ベースのお酒で選ぶ</h2>
-                    <p class="en">Choose by Base Liquor</p>
+                    <h2 class="ja">主な種類</h2>
+                    <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/梅酒ホワイトリカー.png');">

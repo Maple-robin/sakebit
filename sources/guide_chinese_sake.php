@@ -37,7 +37,7 @@
                     <div class="intro-content__image-container">
                         <img src="img/Chinese_sake_all.png" alt="中国酒の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
-                            <p>中国酒は、数千年の歴史を持つ中国伝統のお酒の総称です。広大な国土と多様な気候風土を背景に、穀物を主原料とした白酒（バイチュウ）、もち米などを原料とする黄酒（ホアンチュウ）など、多種多様なお酒が造られています。</p>
+                            <p>中国酒は、数千年の歴史を持つ中国のお酒の総称です。<br>広大な国土と多様な気候風土を背景に、穀物を主原料とした白酒、もち米などを原料とする黄酒など、多種多様なお酒が造られています。</p>
                         </div>
                     </div>
                 </div>
@@ -54,15 +54,15 @@
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/白酒.png');">
                         <h4>白酒（バイチュウ）</h4>
-                        <p>高粱（こうりゃん）などを原料とする蒸留酒。アルコール度数が高く、独特の強い香りが特徴です。</p>
+                        <p>アルコール度数が高く、刺激的で力強い味わいと独特の香りが特徴です。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/黄酒.png');">
                         <h4>黄酒（ホアンチュウ）</h4>
-                        <p>もち米やうるち米を原料とする醸造酒。紹興酒が有名で、まろやかな口当たりと深いコクが特徴です。</p>
+                        <p>まろやかな口当たりと深いコク、やさしい甘みが特徴です。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/果酒.png');">
                         <h4>果酒（カシュ）</h4>
-                        <p>果実を原料としたお酒。杏露酒（シンルチュウ）などが知られ、フルーティーで甘い味わいが楽しめます。</p>
+                        <p>果実の風味が豊かで、フルーティーな甘さが楽しめます。</p>
                     </div>
                 </div>
             </div>
@@ -80,11 +80,11 @@
                     <!-- ストレート -->
                     <div class="drink-way-item">
                         <div class="drink-way-item__title">
-                            <h3>ストレート（常温・ロック）</h3>
+                            <h3>ストレート</h3>
                         </div>
                         <div class="drink-way-item__step">
                             <div class="drink-way-item__description">
-                                <p>白酒は小さなグラスで、黄酒は常温やロックで、それぞれの本来の風味をじっくりと味わうのが伝統的です。</p>
+                                <p>そのまま飲むと、しっかりした味わいや香りをダイレクトに感じられます。</p>
                             </div>
                             <div class="drink-way-item__image">
                                 <img src="img/baijiu_glass.png" alt="ストレートの中国酒">
@@ -101,7 +101,7 @@
                         </div>
                         <div class="drink-way-item__step">
                             <div class="drink-way-item__description">
-                                <p>特に紹興酒は、温めることで香りが豊かになり、口当たりもまろやかになります。ザラメや干し梅を入れるのもおすすめです。</p>
+                                <p>温めると香りや甘みが増し、まろやかな味わいになります。</p>
                             </div>
                             <div class="drink-way-item__image">
                                 <img src="img/hot_shaoxing.png" alt="温めた紹興酒">
@@ -111,17 +111,17 @@
 
                     <hr>
 
-                    <!-- 中華料理とのペアリング -->
+                    <!-- ソーダ割り -->
                     <div class="drink-way-item">
                         <div class="drink-way-item__title">
-                            <h3>中華料理とのペアリング</h3>
+                            <h3>ソーダ割り</h3>
                         </div>
                         <div class="drink-way-item__step">
                             <div class="drink-way-item__description">
-                                <p>中国酒は、やはり中華料理との相性が抜群です。油分の多い料理をすっきりとさせ、料理の旨味を引き立てます。</p>
+                                <p>炭酸水で割るとすっきりとした飲み口になり、軽やかな味わいが楽しめます。</p>
                             </div>
                             <div class="drink-way-item__image">
-                                <img src="img/chinese_food.png" alt="中華料理と中国酒">
+                                <img src="img/soda_chu.png" alt="中国酒のソーダ割り">
                             </div>
                         </div>
                     </div>
