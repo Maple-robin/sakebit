@@ -263,6 +263,8 @@ $beginner_products = $product_db->get_top_selling_products_by_tag($debug, '初�
 
     <?php 
     // 共通フッターを読み込む
+    // フッターのロゴ位置を中央にするCSSを追加
+    echo '<style>.footer__logo { text-align: center !important; }</style>';
     require_once 'footer.php'; 
     ?>
 

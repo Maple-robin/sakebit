@@ -106,7 +106,7 @@ $product_db = null;
                                         <?php endif; ?>
                                     </td>
                                     <td><?= htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8') ?></td>
-                                    <td><?= nl2br(htmlspecialchars($product['product_description'], ENT_QUOTES, 'UTF-8')) ?></td>
+                                    <td class="product-description"><div class="scrollable-cell"><?= nl2br(htmlspecialchars($product['product_description'], ENT_QUOTES, 'UTF-8')) ?></div></td>
                                     <td>¥ <?= number_format($product['product_price']) ?></td>
                                     <td><?= htmlspecialchars($product['category_name'] ?? '未分類', ENT_QUOTES, 'UTF-8') ?></td>
                                     <td>
@@ -121,8 +121,8 @@ $product_db = null;
                                             </div>
                                         <?php endif; ?>
                                     </td>
-                                    <td><?= nl2br(htmlspecialchars($product['product_discription'], ENT_QUOTES, 'UTF-8')) ?></td>
-                                    <td><?= nl2br(htmlspecialchars($product['product_How'], ENT_QUOTES, 'UTF-8')) ?></td>
+                                    <td class="product-feature"><div class="scrollable-cell"><?= nl2br(htmlspecialchars($product['product_discription'], ENT_QUOTES, 'UTF-8')) ?></div></td>
+                                    <td class="product-how"><div class="scrollable-cell"><?= nl2br(htmlspecialchars($product['product_How'], ENT_QUOTES, 'UTF-8')) ?></div></td>
                                     <td><?= htmlspecialchars($product['product_Contents'], ENT_QUOTES, 'UTF-8') ?></td>
                                     <td><?= htmlspecialchars($product['product_degree'] ?? 'N/A', ENT_QUOTES, 'UTF-8') ?> %</td>
                                     <td><?= htmlspecialchars($product['product_stock'], ENT_QUOTES, 'UTF-8') ?></td>
