@@ -213,9 +213,85 @@
                  <a href="products_list.php?category=umeshu" class="btn-all-products">梅酒一覧を見る</a>
             </div>
         </section>
+
+        <!-- ガイド一覧セクション -->
+        <section class="categories">
+            <div class="categories__inner">
+                <h2 class="section-title">
+                    <span class="ja">ガイド一覧</span>
+                    <span class="en">GUIDE LIST</span>
+                </h2>
+                <ul class="category-list">
+                    <li class="category-list__item">
+                        <a href="guide_sake.php" class="category-card">
+                            <img src="img/sake.png" alt="日本酒ガイド" class="category-card__img">
+                            <h3 class="category-card__name">日本酒</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_chinese_sake.php" class="category-card">
+                            <img src="img/国花瓷(こっかじ) 中国酒　斜めを向いて倒れている　中国風のものに囲まれている.png" alt="中国酒ガイド" class="category-card__img">
+                            <h3 class="category-card__name">中国酒</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_umeshu.php" class="category-card">
+                            <img src="img/梅酒原酒_image1.png" alt="梅酒ガイド" class="category-card__img">
+                            <h3 class="category-card__name">梅酒</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_chuhai.php" class="category-card">
+                            <img src="img/chuhai.png" alt="缶チューハイガイド" class="category-card__img">
+                            <h3 class="category-card__name">缶チューハイ</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_shochu.php" class="category-card">
+                            <img src="img/shochu.png" alt="焼酎ガイド" class="category-card__img">
+                            <h3 class="category-card__name">焼酎</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_whisky.php" class="category-card">
+                            <img src="img/whisky.png" alt="ウィスキーガイド" class="category-card__img">
+                            <h3 class="category-card__name">ウィスキー</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_spirits.php" class="category-card">
+                            <img src="img/ボンベイ・サファイア スピリッツ　大きく表示　斜めをむいて倒れている　レモンに囲まれている.png" alt="スピリッツガイド" class="category-card__img">
+                            <h3 class="category-card__name">スピリッツ</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_liquor.php" class="category-card">
+                            <img src="img/liqueur.png" alt="リキュールガイド" class="category-card__img">
+                            <h3 class="category-card__name">リキュール</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_wine.php" class="category-card">
+                            <img src="img/wine.png" alt="ワインガイド" class="category-card__img">
+                            <h3 class="category-card__name">ワイン</h3>
+                        </a>
+                    </li>
+                    <li class="category-list__item">
+                        <a href="guide_beer.php" class="category-card">
+                            <img src="img/beer.png" alt="ビールガイド" class="category-card__img">
+                            <h3 class="category-card__name">ビール</h3>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <!-- /ガイド一覧セクション -->
     </main>
 
-    <?php require_once 'footer.php'; ?>
+    <?php 
+    // 共通フッターを読み込む
+    require_once 'footer.php'; 
+    ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script src="js/script.js"></script>

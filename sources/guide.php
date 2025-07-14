@@ -240,8 +240,8 @@
         <section class="categories">
             <div class="categories__inner">
                 <h2 class="section-title">
-                    <span class="en">GUIDE LIST</span>
                     <span class="ja">ガイド一覧</span>
+                    <span class="en">GUIDE LIST</span>
                 </h2>
                 <ul class="category-list">
                     <li class="category-list__item">
