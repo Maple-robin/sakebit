@@ -54,7 +54,7 @@
                     <div class="intro-content__image-container">
                         <img src="img/日本酒 注ぐ2.png" alt="日本酒の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
-                            <p>日本酒は、米、米麹、水を主原料として発酵させて造られる、日本古来の醸造酒です。「清酒」とも呼ばれ、日本の食文化に深く根付いています。地域ごとの気候や水、米の違いが、多様な風味や香りを生み出します。</p>
+                            <p>日本酒は、米、米麹、水を主原料として発酵させて造られる、日本古来の醸造酒です。「清酒」とも呼ばれ、日本の食文化に深く根付いています。<br>地域ごとの気候や水、米の違いが、多様な風味や香りを生み出します。</p>
                         </div>
                     </div>
                 </div>
@@ -71,15 +71,15 @@
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/日本酒純米酒2.png');">
                         <h4>純米酒</h4>
-                        <p>米と米麹、水だけで造られた、米本来の旨味やコクが味わえるタイプ。料理との相性も抜群です。</p>
+                        <p>コクとしっかりした味わいが特徴で、料理と合わせやすい日本酒です。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/日本酒吟醸酒1.png');">
                         <h4>吟醸酒</h4>
-                        <p>よく磨いた米を低温でゆっくり発酵させて造られ、フルーティーで華やかな香りが特徴です。</p>
+                        <p>フルーティーで華やかな香りと、なめらかな口当たりが楽しめる日本酒です。</p>
                     </div>
                     <div class="type-card type-card--bg" style="background-image: url('img/日本酒本醸造酒2.png');">
                         <h4>本醸造酒</h4>
-                        <p>すっきりとキレのある味わいが特徴。冷やしても燗にしても美味しく、日常的に楽しめます。</p>
+                        <p>すっきりと軽快な味わいで、冷やしても燗にしても楽しめます。</p>
                     </div>
                 </div>
             </div>
