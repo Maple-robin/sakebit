@@ -61,7 +61,7 @@ if ($products === false) {
                     <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
                     <li><a href="admin_faq.php">FAQ管理</a></li>
                     <li><a href="admin_reports.php">通報管理</a></li>
-                    <li><a href="admin_login.php">ログイン</a></li>
+                    <li class="login-link"><a href="admin_login.php">ログイン</a></li>
                 </ul>
             </nav>
         </div>
