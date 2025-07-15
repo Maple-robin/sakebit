@@ -97,7 +97,7 @@
                                 ワインが料理の風味を広げ、新たな味わいが生まれます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/red_wine.png" alt="料理との相性を楽しむ">
+                            <img src="img/ワイン料理2.png" alt="料理との相性を楽しむ">
                         </div>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                             <p>飲むだけでなく、香りにも意識を向けてみましょう。いつもと違うワインの魅力が見つかります。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/white_wine.png" alt="香りを意識する">
+                            <img src="img/ワイン匂い2.png" alt="香りを意識する">
                         </div>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
                             <p>グラスに注ぐことでワインの香りがより引き立ち、見た目も美しく楽しめます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/cheese.png" alt="グラスに注いで楽しむ">
+                            <img src="img/ワイン注ぐ2.png" alt="グラスに注いで楽しむ">
                         </div>
                     </div>
                 </div>

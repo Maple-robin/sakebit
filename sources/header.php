@@ -7,6 +7,46 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+// --- ▼▼▼【ここから追記】サイト全体のアクセスログを記録する処理 ▼▼▼ ---
+try {
+    // --- 条件1: 無視するロボット（ユーザーエージェント）のリスト ---
+    $bot_list = ['Googlebot', 'bingbot', 'crawler', 'spider', 'YandexBot'];
+    $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+    $is_bot = false;
+    foreach ($bot_list as $bot) {
+        if (stripos($user_agent, $bot) !== false) {
+            $is_bot = true;
+            break;
+        }
+    }
+
+    // --- 条件2: 短時間での連続アクセスを無視する ---
+    $now = time();
+    $last_log_time = $_SESSION['last_log_time'] ?? 0;
+    $is_too_soon = ($now - $last_log_time) < 30; // 30秒以内の再アクセスは記録しない
+
+    // ★【条件判定】ロボットでなく、かつ連続アクセスでもない場合のみ記録する
+    if (!$is_bot && !$is_too_soon) {
+        // ログ記録用のクラスをインスタンス化
+        $clogs = new caccess_logs();
+
+        $session_id = session_id();
+        $ip_address = $_SERVER['REMOTE_ADDR'] ?? 'UNKNOWN';
+        $page_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . ($_SERVER['HTTP_HOST'] ?? 'UNKNOWN') . ($_SERVER['REQUEST_URI'] ?? '');
+
+        // データベースにアクセス記録を追加
+        $clogs->insert_log(defined('DEBUG') ? DEBUG : false, $session_id, $ip_address, $page_url);
+
+        // ★【追記】最後にログを記録した時間をセッションに保存
+        $_SESSION['last_log_time'] = $now;
+    }
+} catch (Exception $e) {
+    // サイトの表示に影響が出ないよう、エラーはログファイルにのみ記録します
+    error_log('Access Log Error: ' . $e->getMessage());
+}
+// --- ▲▲▲【ここまで追記】サイト全体のアクセスログを記録する処理 ▲▲▲ ---
+
+
 // ログイン状態に応じた変数を設定
 $is_logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 $login_link = $is_logged_in ? 'logout.php' : 'login.php';

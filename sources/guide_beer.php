@@ -96,7 +96,7 @@
                             <p>ビールの温度<br>冷蔵庫で冷やすとすっきり。少し温めると、香りが際立ち、ビールの奥深さが感じられます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/beer_bottle.png" alt="適温で風味を最大限に">
+                            <img src="img/ビール冷え1.png" alt="適温で風味を最大限に">
                         </div>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                             <p>グラスに注ぐと泡立ちが良くなり、香りが広がりやすくなります。見た目も美しく、より美味しく感じられます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/beer_collection.png" alt="グラスに注いで香り立ちを">
+                            <img src="img/ビール注ぐ2.png" alt="グラスに注いで香り立ちを">
                         </div>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
                             <p>ビールと料理を合わせることで、互いの美味しさが引き立ちます。すっきり系は揚げ物、フルーティー系はサラダなどがおすすめです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/red_wine.png" alt="料理との相性で深みを">
+                            <img src="img/ビールおつまみ1.png" alt="料理との相性で深みを">
                         </div>
                     </div>
                 </div>
