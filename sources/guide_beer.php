@@ -219,7 +219,7 @@
                 <ul class="category-list">
                     <li class="category-list__item">
                         <a href="guide_sake.php" class="category-card">
-                            <img src="img/sake.png" alt="日本酒ガイド" class="category-card__img">
+                            <img src="img/日本酒カテゴリ.png" alt="日本酒ガイド" class="category-card__img">
                             <h3 class="category-card__name">日本酒</h3>
                         </a>
                     </li>
@@ -237,19 +237,19 @@
                     </li>
                     <li class="category-list__item">
                         <a href="guide_chuhai.php" class="category-card">
-                            <img src="img/chuhai.png" alt="缶チューハイガイド" class="category-card__img">
+                            <img src="img/缶チューハイカテゴリ.png" alt="缶チューハイガイド" class="category-card__img">
                             <h3 class="category-card__name">缶チューハイ</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="guide_shochu.php" class="category-card">
-                            <img src="img/shochu.png" alt="焼酎ガイド" class="category-card__img">
+                            <img src="img/金次郎1.png" alt="焼酎ガイド" class="category-card__img">
                             <h3 class="category-card__name">焼酎</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="guide_whisky.php" class="category-card">
-                            <img src="img/whisky.png" alt="ウィスキーガイド" class="category-card__img">
+                            <img src="img/ウイスキーカテゴリ.png" alt="ウィスキーガイド" class="category-card__img">
                             <h3 class="category-card__name">ウィスキー</h3>
                         </a>
                     </li>
@@ -261,19 +261,19 @@
                     </li>
                     <li class="category-list__item">
                         <a href="guide_liquor.php" class="category-card">
-                            <img src="img/liqueur.png" alt="リキュールガイド" class="category-card__img">
+                            <img src="img/バラ梅酒1.png" alt="リキュールガイド" class="category-card__img">
                             <h3 class="category-card__name">リキュール</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="guide_wine.php" class="category-card">
-                            <img src="img/wine.png" alt="ワインガイド" class="category-card__img">
+                            <img src="img/ワインカテゴリ.png" alt="ワインガイド" class="category-card__img">
                             <h3 class="category-card__name">ワイン</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="guide_beer.php" class="category-card">
-                            <img src="img/beer.png" alt="ビールガイド" class="category-card__img">
+                            <img src="img/ビールカテゴリ.png" alt="ビールガイド" class="category-card__img">
                             <h3 class="category-card__name">ビール</h3>
                         </a>
                     </li>
