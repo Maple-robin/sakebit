@@ -189,5 +189,6 @@ unset($_SESSION['message'], $_SESSION['errors'], $_SESSION['old_input']);
     });
     </script>
 
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

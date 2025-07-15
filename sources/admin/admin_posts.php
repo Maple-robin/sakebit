@@ -65,5 +65,6 @@
     </footer>
 
     <script src="../adminjs/posts.js"></script>
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

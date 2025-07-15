@@ -247,5 +247,6 @@ if ($all_tags) {
             });
         });
     </script>
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

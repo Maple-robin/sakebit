@@ -90,5 +90,6 @@
     </footer>
 
     <script src="../adminjs/admin_users.js"></script>
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

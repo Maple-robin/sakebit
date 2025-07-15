@@ -64,5 +64,6 @@
     </footer>
 
     <script src="../adminjs/admin_inquiries.js"></script>
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

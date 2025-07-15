@@ -278,6 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
     </script>
+    <script src="../adminjs/admin.js"></script>
 </body>
 
 </html>

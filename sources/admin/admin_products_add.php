@@ -135,5 +135,6 @@
         </div>
     </footer>
 
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

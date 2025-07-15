@@ -137,5 +137,6 @@
 
     <script src="../adminjs/admin_liquor_edit.js"></script>
 
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

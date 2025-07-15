@@ -115,6 +115,50 @@ ul {
     padding: 0 30px; /* 左右パディングを広げる */
 }
 
+/* 2列レイアウト用 */
+.header-2col .admin-header__nav {
+    width: 100%;
+}
+
+/* 2列レイアウトを縦並びで美しく表示 */
+
+/* 2列レイアウトを左右均等に縦並びで表示 */
+.header-2col .admin-nav__list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(32px, auto));
+    gap: 0 24px;
+    align-items: center;
+    justify-items: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.header-2col .admin-nav__list li {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    list-style: none;
+}
+.header-2col .admin-nav__list li a {
+    display: inline-block;
+    min-width: 100px;
+    font-size: 1.6rem;
+    padding: 6px 0;
+    text-align: center;
+}
+/* 1行目（1～5番目）: お酒管理～投稿管理 */
+.header-2col .admin-nav__list li:nth-child(1) { grid-row: 1; grid-column: 1; }
+.header-2col .admin-nav__list li:nth-child(2) { grid-row: 1; grid-column: 2; }
+.header-2col .admin-nav__list li:nth-child(3) { grid-row: 1; grid-column: 3; }
+.header-2col .admin-nav__list li:nth-child(4) { grid-row: 1; grid-column: 4; }
+.header-2col .admin-nav__list li:nth-child(5) { grid-row: 1; grid-column: 5; }
+/* 2行目（6～9番目）: お問い合わせ管理～ログイン */
+.header-2col .admin-nav__list li:nth-child(6) { grid-row: 2; grid-column: 2; }
+.header-2col .admin-nav__list li:nth-child(7) { grid-row: 2; grid-column: 3; }
+.header-2col .admin-nav__list li:nth-child(8) { grid-row: 2; grid-column: 4; }
+.header-2col .admin-nav__list li:nth-child(9) { grid-row: 2; grid-column: 5; }
+
 .admin-header__logo a {
     font-family: 'Zen Old Mincho', serif;
     font-size: 2.4rem; /* ロゴのフォントサイズを少し小さく */
