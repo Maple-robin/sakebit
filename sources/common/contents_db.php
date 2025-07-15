@@ -2933,3 +2933,173 @@ class cotumami_favorites extends crecord
         parent::__destruct();
     }
 }
+class canalytics extends crecord
+{
+    /**
+     * サイト全体の統計情報を取得する
+     * @param object $db データベース接続オブジェクト
+     * @param string $date_from 集計開始日時
+     * @param string $date_to 集計終了日時
+     * @return array 統計情報
+     */
+    public function get_site_stats($db, $date_from, $date_to)
+    {
+        $stats = ['total_views' => 0, 'unique_users' => 0];
+        try {
+            // 総アクセス数
+            $sql = "SELECT COUNT(log_id) FROM access_logs WHERE access_datetime BETWEEN ? AND ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$date_from, $date_to]);
+            $stats['total_views'] = $stmt->fetchColumn();
+
+            // ユニークユーザー数 (セッションIDでカウント)
+            $sql = "SELECT COUNT(DISTINCT session_id) FROM access_logs WHERE access_datetime BETWEEN ? AND ?";
+            $stmt = $db->prepare($sql);
+            $stmt->execute([$date_from, $date_to]);
+            $stats['unique_users'] = $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Analytics Error (get_site_stats): " . $e->getMessage());
+            return $stats;
+        }
+        return $stats;
+    }
+
+    /**
+     * 売上ランキングを取得する
+     * @param object $db データベース接続オブジェクト
+     * @param string $date_from 集計開始日時
+     * @param string $date_to 集計終了日時
+     * @param int $limit 取得件数
+     * @return array ランキングデータ
+     */
+    public function get_sales_ranking($db, $date_from, $date_to, $limit)
+    {
+        $ranking = [];
+        try {
+            // ★【修正】並び順を売上金額(total_sales)から販売個数(total_quantity)に変更しました。
+            $sql = "
+                SELECT
+                    p.product_name,
+                    SUM(oi.quantity) AS total_quantity,
+                    SUM(oi.quantity * oi.price_at_purchase) AS total_sales
+                FROM order_items oi
+                JOIN orders o ON oi.order_id = o.order_id
+                JOIN product_info p ON oi.product_id = p.product_id
+                WHERE o.order_date BETWEEN ? AND ? AND oi.product_id IS NOT NULL
+                GROUP BY p.product_id, p.product_name
+                ORDER BY total_quantity DESC
+                LIMIT ?
+            ";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(1, $date_from, PDO::PARAM_STR);
+            $stmt->bindValue(2, $date_to, PDO::PARAM_STR);
+            $stmt->bindValue(3, (int)$limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $ranking = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Analytics Error (get_sales_ranking): " . $e->getMessage());
+            return $ranking;
+        }
+        return $ranking;
+    }
+
+    /**
+     * 人気カテゴリランキングを取得する
+     * @param object $db データベース接続オブジェクト
+     * @param string $date_from 集計開始日時
+     * @param string $date_to 集計終了日時
+     * @param int $limit 取得件数
+     * @return array ランキングデータ
+     */
+    public function get_category_view_ranking($db, $date_from, $date_to, $limit)
+    {
+        $ranking = [];
+        try {
+            $sql = "
+                SELECT
+                    c.category_name,
+                    COUNT(pv.view_id) AS view_count
+                FROM product_views pv
+                JOIN product_info p ON pv.product_id = p.product_id
+                JOIN categories c ON p.product_category = c.category_id
+                WHERE pv.view_timestamp BETWEEN ? AND ?
+                GROUP BY c.category_id, c.category_name
+                ORDER BY view_count DESC
+                LIMIT ?
+            ";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(1, $date_from, PDO::PARAM_STR);
+            $stmt->bindValue(2, $date_to, PDO::PARAM_STR);
+            $stmt->bindValue(3, (int)$limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $ranking = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Analytics Error (get_category_view_ranking): " . $e->getMessage());
+            return $ranking;
+        }
+        return $ranking;
+    }
+
+    /**
+     * 人気タグランキングを取得する
+     * @param object $db データベース接続オブジェクト
+     * @param string $date_from 集計開始日時
+     * @param string $date_to 集計終了日時
+     * @param int $limit 取得件数
+     * @return array ランキングデータ
+     */
+    public function get_tag_view_ranking($db, $date_from, $date_to, $limit)
+    {
+        $ranking = [];
+        try {
+            $sql = "
+                SELECT
+                    t.tag_name,
+                    COUNT(pv.view_id) AS view_count
+                FROM product_views pv
+                JOIN product_tags_relation ptr ON pv.product_id = ptr.product_id
+                JOIN tags t ON ptr.tag_id = t.tag_id
+                WHERE pv.view_timestamp BETWEEN ? AND ?
+                GROUP BY t.tag_id, t.tag_name
+                ORDER BY view_count DESC
+                LIMIT ?
+            ";
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(1, $date_from, PDO::PARAM_STR);
+            $stmt->bindValue(2, $date_to, PDO::PARAM_STR);
+            $stmt->bindValue(3, (int)$limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $ranking = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Analytics Error (get_tag_view_ranking): " . $e->getMessage());
+            return $ranking;
+        }
+        return $ranking;
+    }
+}
+class caccess_logs extends crecord
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * access_logs テーブルに新しい記録を追加する
+     * @param bool $debug デバッグモード
+     * @param string $session_id セッションID
+     * @param string $ip_address IPアドレス
+     * @param string $page_url アクセスされたURL
+     * @return bool 成功した場合はtrue, 失敗した場合はfalse
+     */
+    public function insert_log($debug, $session_id, $ip_address, $page_url)
+    {
+        $query = "INSERT INTO access_logs (session_id, ip_address, page_url) VALUES (:session_id, :ip_address, :page_url)";
+        $prep_arr = [
+            ':session_id' => $session_id,
+            ':ip_address' => $ip_address,
+            ':page_url' => $page_url
+        ];
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+}
