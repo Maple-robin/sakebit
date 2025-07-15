@@ -2012,6 +2012,7 @@ class cotumami extends crecord
                 COALESCE(SUM(order_items.quantity), 0) AS total_sold
             FROM
                 otumami o
+
             LEFT JOIN
                 order_items ON o.otumami_id = order_items.otumami_id
             WHERE
@@ -2429,21 +2430,27 @@ class corders extends crecord
      * @param string $shipping_address 配送先住所
      * @return int|false 作成された注文のID、失敗した場合はfalse
      */
-    public function create_order($debug, $user_id, $total_amount, $shipping_address)
+    public function create_order($debug, $user_id, $total_amount, $shipping_address, $delivery_date, $delivery_time)
     {
         $query = "
-            INSERT INTO orders (user_id, total_amount, shipping_address, order_status) 
-            VALUES (:user_id, :total_amount, :shipping_address, 'pending')
+            INSERT INTO orders (user_id, total_amount, shipping_address, order_status, delivery_date, delivery_time) 
+            VALUES (:user_id, :total_amount, :shipping_address, 'pending', :delivery_date, :delivery_time)
         ";
+        
+        // delivery_timeが'none'の場合はnullとしてDBに保存
+        $time_to_save = ($delivery_time === 'none' || empty($delivery_time)) ? null : $delivery_time;
+
         $prep_arr = [
             ':user_id' => (int)$user_id,
             ':total_amount' => (float)$total_amount,
-            ':shipping_address' => $shipping_address
+            ':shipping_address' => $shipping_address,
+            ':delivery_date' => !empty($delivery_date) ? $delivery_date : null,
+            ':delivery_time' => $time_to_save
         ];
 
         $result = $this->execute_query($debug, $query, $prep_arr);
         if ($result) {
-            return $this->last_insert_id(); // 作成された注文のIDを返す
+            return $this->last_insert_id();
         }
         return false;
     }

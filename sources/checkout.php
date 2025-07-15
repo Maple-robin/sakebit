@@ -56,6 +56,10 @@ foreach ($cart_items as $item) {
 // JavaScriptに渡すためにJSON形式にエンコード
 $cart_items_json = json_encode($cart_items_for_js, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
+// 配送希望日・時間をクエリから取得
+$delivery_date = $_GET['delivery_date'] ?? '';
+$delivery_time = $_GET['delivery_time'] ?? '';
+
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -318,6 +322,11 @@ $cart_items_json = json_encode($cart_items_for_js, JSON_UNESCAPED_UNICODE | JSON
                     <a href="cart.php" class="link-back-to-cart"><i class="fas fa-chevron-left"></i> 買い物かごに戻る</a>
                     <button type="submit" class="button-primary" id="place-order-button">今すぐ支払う</button>
                 </div>
+
+                <form id="checkout-form">
+                    <input type="hidden" id="delivery-date-hidden" name="delivery_date" value="<?= htmlspecialchars($delivery_date) ?>">
+                    <input type="hidden" id="delivery-time-hidden" name="delivery_time" value="<?= htmlspecialchars($delivery_time) ?>">
+                </form>
             </section>
 
             <!-- 注文概要セクション (PCでは右側に表示) -->

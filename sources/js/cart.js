@@ -1,12 +1,46 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // 配送希望日の設定
     const deliveryDateInput = document.getElementById('delivery-date');
-    if (deliveryDateInput) {
-        // 今日の日付を YYYY-MM-DD 形式で取得
-        const today = new Date().toISOString().split('T')[0];
-        // input type="date" の min 属性に今日の日付を設定
-        deliveryDateInput.setAttribute('min', today);
+    const deliveryTimeSelect = document.getElementById('delivery-time');
+    const checkoutBtn = document.querySelector('.btn-checkout');
+    
+    // --- ▼▼▼【ここから追記】配送日時をチェックアウトリンクに反映させる処理 ▼▼▼ ---
+    function updateCheckoutLink() {
+        if (!checkoutBtn) return;
+
+        let baseUrl = 'checkout.php';
+        const params = new URLSearchParams();
+
+        const deliveryDate = deliveryDateInput.value;
+        const deliveryTime = deliveryTimeSelect.value;
+
+        if (deliveryDate) {
+            params.append('delivery_date', deliveryDate);
+        }
+        if (deliveryTime && deliveryTime !== 'none') {
+            params.append('delivery_time', deliveryTime);
+        }
+
+        const queryString = params.toString();
+        checkoutBtn.href = queryString ? `${baseUrl}?${queryString}` : baseUrl;
     }
+
+    if (deliveryDateInput) {
+        // 今日の日付を YYYY-MM-DD 形式で取得し、min属性に設定
+        const today = new Date();
+        today.setDate(today.getDate() + 1); // 最短お届け日を明日に設定する例
+        const minDate = today.toISOString().split('T')[0];
+        deliveryDateInput.setAttribute('min', minDate);
+        
+        // イベントリスナーを追加
+        deliveryDateInput.addEventListener('change', updateCheckoutLink);
+    }
+    if (deliveryTimeSelect) {
+        deliveryTimeSelect.addEventListener('change', updateCheckoutLink);
+    }
+    // 初期読み込み時にもリンクを更新
+    updateCheckoutLink();
+    // --- ▲▲▲【ここまで追記】---
+
     const cartItemsContainer = document.getElementById('cart-items-container');
     const totalPriceEl = document.getElementById('total-price');
 
@@ -31,8 +65,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (cartItemsContainer) {
         cartItemsContainer.addEventListener('click', function (e) {
             const target = e.target;
-
-            // --- 削除ボタンの処理 ---
             const removeButton = target.closest('.cart-item__remove');
             if (removeButton) {
                 const itemDiv = removeButton.closest('.cart-item');
@@ -44,15 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
                 return;
             }
-
-            // --- 数量変更ボタンの処理 ---
             const quantityButton = target.closest('.quantity-plus, .quantity-minus');
             if (quantityButton) {
                 const itemDiv = quantityButton.closest('.cart-item');
                 const input = itemDiv.querySelector('.quantity-input');
                 const cartItemId = quantityButton.dataset.id;
                 let currentQuantity = parseInt(input.value);
-
                 if (quantityButton.classList.contains('quantity-plus')) {
                     currentQuantity++;
                 } else {
@@ -65,13 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // 数量入力欄の直接変更を監視
         cartItemsContainer.addEventListener('change', function (e) {
             if (e.target.matches('.quantity-input')) {
                 const input = e.target;
                 const cartItemId = input.dataset.id;
                 let newQuantity = parseInt(input.value);
-
                 if (isNaN(newQuantity) || newQuantity < 1) {
                     newQuantity = 1;
                     input.value = 1;
@@ -81,19 +108,11 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-
-    // API呼び出し：数量更新
     const updateCartItem = (itemId, quantity) => {
         fetch('api/api_cart_manager.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 'update',
-                    cart_item_id: itemId,
-                    quantity: quantity
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'update', cart_item_id: itemId, quantity: quantity })
             })
             .then(res => res.json())
             .then(data => {
@@ -110,17 +129,11 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     };
 
-    // API呼び出し：商品削除
     const deleteCartItem = (itemId, itemElement) => {
         fetch('api/api_cart_manager.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    action: 'delete',
-                    cart_item_id: itemId
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'delete', cart_item_id: itemId })
             })
             .then(res => res.json())
             .then(data => {
@@ -145,9 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     };
 
-    // カスタム確認モーダル表示関数
     function showCustomConfirm(message, callback) {
-        // bodyにモーダル用のHTMLがなければ追加
         if (!document.getElementById('custom-confirm-modal')) {
             const modalHtml = `
                 <div id="custom-confirm-modal" class="custom-modal-overlay">
@@ -161,28 +172,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>`;
             document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
-
         const modal = document.getElementById('custom-confirm-modal');
         const msgEl = document.getElementById('confirm-message');
         const yesBtn = document.getElementById('confirm-yes');
         const noBtn = document.getElementById('confirm-no');
-
         msgEl.textContent = message;
-        modal.classList.add('is-active'); // ★ is-active クラスを追加して表示
-
+        modal.classList.add('is-active');
         const newYesBtn = yesBtn.cloneNode(true);
         yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
-
         const newNoBtn = noBtn.cloneNode(true);
         noBtn.parentNode.replaceChild(newNoBtn, noBtn);
-
         newYesBtn.addEventListener('click', () => {
-            modal.classList.remove('is-active'); // ★ is-active クラスを削除して非表示
+            modal.classList.remove('is-active');
             callback();
         });
         newNoBtn.addEventListener('click', () => {
-            modal.classList.remove('is-active'); // ★ is-active クラスを削除して非表示
+            modal.classList.remove('is-active');
         });
     }
-
 });
