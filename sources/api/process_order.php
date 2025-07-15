@@ -30,6 +30,10 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 
 $shipping_address = $input['shipping_address'] ?? null;
 $total_amount = $input['total_amount'] ?? null;
+// --- ▼▼▼【ここから追記】配送日時をリクエストから取得 ▼▼▼ ---
+$delivery_date = $input['delivery_date'] ?? null;
+$delivery_time = $input['delivery_time'] ?? null;
+// --- ▲▲▲【ここまで追記】---
 
 if (empty($shipping_address) || !is_numeric($total_amount) || $total_amount <= 0) {
     echo json_encode(['success' => false, 'message' => '送信された注文データ（住所または合計金額）が無効です。']);
@@ -47,7 +51,7 @@ try {
     $orders_db = new corders();
     $order_items_db = new corder_items();
     $product_info_db = new cproduct_info();
-    $otumami_db = new cotumami(); // ★おつまみDB操作のために追加
+    $otumami_db = new cotumami();
 
     $pdo = $orders_db->get_pdo();
     if (!$pdo) {
@@ -63,7 +67,10 @@ try {
     $cart_items = $cart_items_db->get_items_by_cart_id($debug_mode, $cart_id);
     if (empty($cart_items)) throw new Exception('カートが空です。決済処理を中断しました。');
 
-    $order_id = $orders_db->create_order($debug_mode, $current_user_id, $total_amount, $shipping_address);
+    // --- ▼▼▼【ここを修正】create_orderに配送日時を渡す ▼▼▼ ---
+    $order_id = $orders_db->create_order($debug_mode, $current_user_id, $total_amount, $shipping_address, $delivery_date, $delivery_time);
+    // --- ▲▲▲【ここまで修正】---
+
     if (!$order_id) throw new Exception('注文の作成(ordersテーブルへのINSERT)に失敗しました。');
     
     $pdo->commit();
@@ -74,9 +81,7 @@ try {
     $result_add_items = $order_items_db->add_items_to_order($debug_mode, $order_id, $cart_items);
     if (!$result_add_items) throw new Exception('注文商品の登録(order_itemsテーブルへのINSERT)に失敗しました。');
 
-    // ★★★ ここからが在庫削減処理 ★★★
     foreach ($cart_items as $item) {
-        // 商品(product)の場合
         if (isset($item['product_id']) && !empty($item['product_id'])) {
             $product_id = $item['product_id'];
             $quantity = $item['cart_quantity'];
@@ -88,7 +93,6 @@ try {
                 throw new Exception("在庫不足のため注文を完了できませんでした。商品:「{$product_name}」");
             }
         } 
-        // おつまみ(otumami)の場合
         elseif (isset($item['otumami_id']) && !empty($item['otumami_id'])) {
             $otumami_id = $item['otumami_id'];
             $quantity = $item['cart_quantity'];
@@ -101,7 +105,6 @@ try {
             }
         }
     }
-    // ★★★ 在庫削減処理ここまで ★★★
 
     $result_clear_cart = $cart_items_db->clear_items_by_cart_id($debug_mode, $cart_id);
     if (!$result_clear_cart) {
