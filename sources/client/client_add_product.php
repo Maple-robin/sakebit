@@ -59,7 +59,7 @@ unset($_SESSION['product_add_errors'], $_SESSION['product_add_old_data'], $_SESS
                     <li><a href="client_analytics.php">情報確認</a></li>
                 </ul>
                 <div class="admin-header__actions">
-                    <a href="logout.php" class="admin-header__logout">
+                    <a href="client_login.php" class="admin-header__logout">
                         <i class="fas fa-sign-out-alt"></i> ログアウト
                     </a>
                 </div>
