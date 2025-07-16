@@ -86,7 +86,7 @@
                             <p>缶のまま飲むのも手軽で良いですが、氷を入れたグラスに注ぐと、炭酸の泡が立ち上り、香りも楽しめます。冷たさもキープできます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/lemon_sour.png" alt="グラスに注いだレモンサワー">
+                            <img src="img/チューハイレモン.png" alt="グラスに注いだレモンサワー">
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                             <p>レモンサワーにカットレモン、ピーチ味に冷凍ピーチを入れるなど、生のフルーツを加えると、見た目も華やかになり、フレッシュな風味がアップします。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/grape_sour.png" alt="フルーツを入れたチューハイ">
+                            <img src="img/チューハイグレフル.png" alt="フルーツを入れたチューハイ">
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                             <p>カルピスサワーにアイスの実を入れたり、塩をひとつまみ加えてソルティテイストにしたりと、簡単なアレンジで新しいおいしさが発見できます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/calpis_sour.png" alt="アレンジチューハイ">
+                            <img src="img/チューハイアレンジ.png" alt="アレンジチューハイ">
                         </div>
                     </div>
                 </div>
