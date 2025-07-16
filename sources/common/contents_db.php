@@ -2402,16 +2402,20 @@ class corders extends crecord
         return $this->fetch_assoc();
     }
 
-    public function get_orders_by_user_id($debug, $user_id)
+    public function get_orders_by_user_id($debug, $user_id, $limit, $offset)
     {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
 
         $arr = [];
-        // 注文を新しい順に取得
-        $query = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_date DESC";
-        $prep_arr = [':user_id' => (int)$user_id];
+        // ★ LIMIT と OFFSET を使って取得範囲を指定
+        $query = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_date DESC LIMIT :limit OFFSET :offset";
+        $prep_arr = [
+            ':user_id' => (int)$user_id,
+            ':limit'   => (int)$limit,
+            ':offset'  => (int)$offset
+        ];
 
         $this->select_query($debug, $query, $prep_arr);
 
@@ -2419,6 +2423,18 @@ class corders extends crecord
             $arr[] = $row;
         }
         return $arr;
+    }
+    
+    public function get_orders_count_by_user_id($debug, $user_id)
+    {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return 0;
+        }
+        $query = "SELECT COUNT(order_id) AS total_count FROM orders WHERE user_id = :user_id";
+        $prep_arr = [':user_id' => (int)$user_id];
+        $this->select_query($debug, $query, $prep_arr);
+        $result = $this->fetch_assoc();
+        return $result ? (int)$result['total_count'] : 0;
     }
 
     /**
@@ -2436,7 +2452,7 @@ class corders extends crecord
             INSERT INTO orders (user_id, total_amount, shipping_address, order_status, delivery_date, delivery_time) 
             VALUES (:user_id, :total_amount, :shipping_address, 'pending', :delivery_date, :delivery_time)
         ";
-        
+
         // delivery_timeが'none'の場合はnullとしてDBに保存
         $time_to_save = ($delivery_time === 'none' || empty($delivery_time)) ? null : $delivery_time;
 
@@ -2453,6 +2469,106 @@ class corders extends crecord
             return $this->last_insert_id();
         }
         return false;
+    }
+    public function get_orders_for_client($debug, $client_id, $filter_status, $filter_date_from, $filter_date_to, $filter_time)
+    {
+        // SQLクエリの基本部分を構築
+        $query = "
+            SELECT DISTINCT
+                o.order_id, o.user_id, o.total_amount, o.shipping_address,
+                o.order_status, o.order_date, o.delivery_date, o.delivery_time,
+                u.user_name
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN product_info p ON oi.product_id = p.product_id
+            LEFT JOIN user_info u ON o.user_id = u.user_id
+        ";
+
+        $where_clauses = [];
+        $prep_arr = [];
+
+        // 必須条件：クライアントIDで絞り込み
+        $where_clauses[] = "p.client_id = :client_id";
+        $prep_arr[':client_id'] = (int)$client_id;
+
+        // 絞り込み条件：商品ステータス
+        if (!empty($filter_status)) {
+            $where_clauses[] = "oi.item_status = :status";
+            $prep_arr[':status'] = $filter_status;
+        }
+        // 絞り込み条件：配送希望日 (From)
+        if (!empty($filter_date_from)) {
+            $where_clauses[] = "o.delivery_date >= :date_from";
+            $prep_arr[':date_from'] = $filter_date_from;
+        }
+        // 絞り込み条件：配送希望日 (To)
+        if (!empty($filter_date_to)) {
+            $where_clauses[] = "o.delivery_date <= :date_to";
+            $prep_arr[':date_to'] = $filter_date_to;
+        }
+        // ★★★ 新規追加：配送希望時間 ★★★
+        if (!empty($filter_time)) {
+            $where_clauses[] = "o.delivery_time = :time";
+            $prep_arr[':time'] = $filter_time;
+        }
+
+        if (!empty($where_clauses)) {
+            $query .= " WHERE " . implode(" AND ", $where_clauses);
+        }
+
+        $query .= " ORDER BY o.order_date DESC";
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        $orders = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+
+        // 各注文に紐づく商品リストを取得する
+        if (!empty($orders)) {
+            $order_items_db = new corder_items();
+            foreach ($orders as &$order) {
+                $order['items'] = $order_items_db->get_items_by_order_id($debug, $order['order_id']);
+            }
+            unset($order);
+        }
+
+        return $orders;
+    }
+
+    public function update_order_status($debug, $order_id, $status)
+    {
+        $query = "UPDATE orders SET order_status = :status WHERE order_id = :order_id";
+        $prep_arr = [
+            ':status' => $status,
+            ':order_id' => (int)$order_id
+        ];
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+
+    /**
+     * 【新規追加】指定された注文が、指定されたクライアントのものであるか検証する
+     * @param bool $debug デバッグモード
+     * @param int $order_id 検証する注文ID
+     * @param int $client_id 検証するクライアントID
+     * @return bool 注文がクライアントのものであればtrue, 違えばfalse
+     */
+    public function verify_order_ownership($debug, $order_id, $client_id)
+    {
+        // 注文内のいずれかの商品が、指定されたクライアントのものであればOKとする
+        $query = "
+            SELECT COUNT(o.order_id) as count
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            JOIN product_info p ON oi.product_id = p.product_id
+            WHERE o.order_id = :order_id AND p.client_id = :client_id
+        ";
+        $prep_arr = [
+            ':order_id' => (int)$order_id,
+            ':client_id' => (int)$client_id
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result && $result['count'] > 0;
     }
 
     public function __destruct()
@@ -2538,6 +2654,8 @@ class corder_items extends crecord
                 oi.otumami_id,
                 oi.quantity,
                 oi.price_at_purchase,
+                oi.item_status, -- ★追加：商品ごとのステータス
+                p.client_id,    -- ★追加：商品の所属クライアントID
                 -- 商品かおつまみかによって名前を切り替える
                 COALESCE(p.product_name, o.otumami_name) AS item_name,
                 -- 商品かおつまみかを示すタイプを追加
@@ -2571,6 +2689,28 @@ class corder_items extends crecord
             $arr[] = $row;
         }
         return $arr;
+    }
+    public function update_item_status($debug, $order_item_id, $status, $client_id)
+    {
+        // 更新しようとしている商品が、本当にこのクライアントのものであるかを確認
+        $query = "
+            UPDATE order_items oi
+            JOIN product_info p ON oi.product_id = p.product_id
+            SET oi.item_status = :status
+            WHERE oi.order_item_id = :order_item_id AND p.client_id = :client_id
+        ";
+        $prep_arr = [
+            ':status' => $status,
+            ':order_item_id' => (int)$order_item_id,
+            ':client_id' => (int)$client_id
+        ];
+
+        // execute_queryは成功したかどうかを返す
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($prep_arr);
+
+        // rowCount()で実際に更新された行数をチェックし、1行以上なら成功とみなす
+        return $stmt->rowCount() > 0;
     }
 
     public function get_total_sold_count_by_product_id($debug, $product_id)

@@ -5,34 +5,86 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// session_start()を、全ての処理の一番最初に呼び出す
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ログイン状態を確認
 if (!isset($_SESSION['user_id'])) {
-    // ログインしていなければ、ログインページにリダイレクト
     header('Location: login.php');
     exit;
 }
 
-// DB接続ファイルを読み込む
 require_once __DIR__ . '/common/contents_db.php';
 
+/**
+ * 【新規追加】中略機能付きのページネーションHTMLを生成する関数
+ * @param int $current_page 現在のページ番号
+ * @param int $total_pages 全ページ数
+ * @param int $range 現在ページの前後いくつのリンクを表示するか
+ * @return string 生成されたHTML
+ */
+function generate_pagination_links($current_page, $total_pages, $range = 1) {
+    $html = '<nav class="pagination">';
 
-// ログインユーザーのIDを取得
+    // 「前へ」ボタン
+    if ($current_page > 1) {
+        $html .= '<a href="?page=' . ($current_page - 1) . '" class="page-link prev">&laquo; 前へ</a>';
+    }
+
+    $show_ellipsis_start = false;
+    $show_ellipsis_end = false;
+
+    for ($i = 1; $i <= $total_pages; $i++) {
+        // 表示するページの条件:
+        // 1. 最初のページまたは最後のページ
+        // 2. 現在のページの周辺（$rangeで指定した範囲）
+        if ($i == 1 || $i == $total_pages || ($i >= $current_page - $range && $i <= $current_page + $range)) {
+            if ($i == $current_page) {
+                $html .= '<a href="?page=' . $i . '" class="page-link is-active">' . $i . '</a>';
+            } else {
+                $html .= '<a href="?page=' . $i . '" class="page-link">' . $i . '</a>';
+            }
+        } else {
+            // 省略記号「...」の表示ロジック
+            if ($i < $current_page && !$show_ellipsis_start) {
+                $html .= '<span class="pagination-ellipsis">...</span>';
+                $show_ellipsis_start = true;
+            }
+            if ($i > $current_page && !$show_ellipsis_end) {
+                $html .= '<span class="pagination-ellipsis">...</span>';
+                $show_ellipsis_end = true;
+            }
+        }
+    }
+
+    // 「次へ」ボタン
+    if ($current_page < $total_pages) {
+        $html .= '<a href="?page=' . ($current_page + 1) . '" class="page-link next">次へ &raquo;</a>';
+    }
+
+    $html .= '</nav>';
+    return $html;
+}
+
 $user_id = $_SESSION['user_id'];
-$debug = false; // デバッグモード（必要に応じてtrueに変更）
+$debug = false;
 
-// データベース操作クラスのインスタンスを作成
+// --- ページネーションの準備 ---
+$items_per_page = 5;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($current_page < 1) {
+    $current_page = 1;
+}
+$offset = ($current_page - 1) * $items_per_page;
+
 $orders_db = new corders();
 $order_items_db = new corder_items();
 
-// ユーザーの注文履歴を取得
-$orders = $orders_db->get_orders_by_user_id($debug, $user_id);
+$total_orders = $orders_db->get_orders_count_by_user_id($debug, $user_id);
+$total_pages = ceil($total_orders / $items_per_page);
 
-// 各注文に紐づく商品情報を取得して、注文データに格納する
+$orders = $orders_db->get_orders_by_user_id($debug, $user_id, $items_per_page, $offset);
+
 foreach ($orders as $key => $order) {
     $orders[$key]['items'] = $order_items_db->get_items_by_order_id($debug, $order['order_id']);
 }
@@ -40,27 +92,16 @@ foreach ($orders as $key => $order) {
 ?>
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>購入履歴 | SAKE BIT</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <title>購入履歴 | OUR BRAND</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="css/history.css">
 </head>
-
 <body>
-    <?php
-    // 共通ヘッダーを読み込む
-    require_once 'header.php';
-    ?>
+    <?php require_once 'header.php'; ?>
 
     <main>
         <section class="history">
@@ -75,6 +116,7 @@ foreach ($orders as $key => $order) {
                 <?php else: ?>
                     <div class="history-list">
                         <?php foreach ($orders as $order): ?>
+                            <!-- (注文カードの表示部分は変更なし) -->
                             <div class="history-order-card">
                                 <div class="card-header">
                                     <div class="order-date">
@@ -82,26 +124,7 @@ foreach ($orders as $key => $order) {
                                         <?php echo htmlspecialchars(date('Y年m月d日', strtotime($order['order_date'])), ENT_QUOTES, 'UTF-8'); ?>
                                     </div>
                                     <div class="order-meta">
-                                        <span class="order-total">合計: &yen;<?php echo htmlspecialchars(number_format($order['total_amount']), ENT_QUOTES, 'UTF-8'); ?></span>
-                                        <?php
-                                        // 注文状況に応じてCSSクラスを切り替える
-                                        $status_class = '';
-                                        switch ($order['order_status']) {
-                                            case 'shipped':
-                                                $status_class = 'status-shipped';
-                                                break;
-                                            case 'delivered':
-                                                $status_class = 'status-delivered';
-                                                break;
-                                            case 'pending':
-                                                $status_class = 'status-pending';
-                                                break;
-                                            case 'cancelled':
-                                                $status_class = 'status-cancelled';
-                                                break;
-                                        }
-                                        ?>
-                                        <span class="status-badge <?php echo $status_class; ?>"><?php echo htmlspecialchars($order['order_status'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                        <span class="order-total">&yen;<?php echo htmlspecialchars(number_format($order['total_amount']), ENT_QUOTES, 'UTF-8'); ?></span>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -109,12 +132,30 @@ foreach ($orders as $key => $order) {
                                         <div class="history-item">
                                             <?php
                                             $image_path = !empty($item['image_path']) ? htmlspecialchars($item['image_path'], ENT_QUOTES, 'UTF-8') : 'img/no-image.png';
-                                            
-                                            // ★★★ ここを修正 ★★★
-                                            // リンク先を otumami.php から otsumami.php に修正
                                             $link_url = ($item['item_type'] === 'product') 
                                                         ? 'product.php?id=' . $item['product_id'] 
                                                         : 'otsumami.php?id=' . $item['otumami_id'];
+                                            
+                                            $item_status_class = '';
+                                            $item_status_text = '';
+                                            switch ($item['item_status']) {
+                                                case 'shipped':
+                                                    $item_status_class = 'status-shipped';
+                                                    $item_status_text = '発送済み';
+                                                    break;
+                                                case 'delivered':
+                                                    $item_status_class = 'status-delivered';
+                                                    $item_status_text = '配達済み';
+                                                    break;
+                                                case 'cancelled':
+                                                    $item_status_class = 'status-cancelled';
+                                                    $item_status_text = 'キャンセル';
+                                                    break;
+                                                default:
+                                                    $item_status_class = 'status-pending';
+                                                    $item_status_text = '未対応';
+                                                    break;
+                                            }
                                             ?>
                                             <img src="<?php echo $image_path; ?>" alt="<?php echo htmlspecialchars($item['item_name'], ENT_QUOTES, 'UTF-8'); ?>" class="history-item__img">
                                             <div class="history-item__details">
@@ -123,12 +164,18 @@ foreach ($orders as $key => $order) {
                                                         <?php echo htmlspecialchars($item['item_name'], ENT_QUOTES, 'UTF-8'); ?>
                                                     </a>
                                                 </h3>
-                                                <p class="history-item__price">
-                                                    &yen;<?php echo htmlspecialchars(number_format($item['price_at_purchase']), ENT_QUOTES, 'UTF-8'); ?> (購入時単価)
-                                                </p>
-                                                <p class="history-item__quantity">
-                                                    数量: <?php echo htmlspecialchars($item['quantity'], ENT_QUOTES, 'UTF-8'); ?>
-                                                </p>
+                                                <div class="history-item__meta">
+                                                    <p class="history-item__price">
+                                                        &yen;<?php echo htmlspecialchars(number_format($item['price_at_purchase']), ENT_QUOTES, 'UTF-8'); ?>
+                                                    </p>
+                                                    <p class="history-item__quantity">
+                                                        数量: <?php echo htmlspecialchars($item['quantity'], ENT_QUOTES, 'UTF-8'); ?>
+                                                    </p>
+                                                    <div class="item-status <?php echo $item_status_class; ?>">
+                                                        <span class="item-status-dot"></span>
+                                                        <span class="item-status-text"><?php echo $item_status_text; ?></span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
@@ -136,6 +183,12 @@ foreach ($orders as $key => $order) {
                             </div>
                         <?php endforeach; ?>
                     </div>
+
+                    <!-- ★★★ 新しい関数を呼び出してページネーションを表示 ★★★ -->
+                    <?php if ($total_pages > 1): ?>
+                        <?php echo generate_pagination_links($current_page, $total_pages); ?>
+                    <?php endif; ?>
+
                 <?php endif; ?>
 
                 <button class="return-button" onclick="window.location.href='MyPage.php'">マイページへ戻る</button>
@@ -143,13 +196,7 @@ foreach ($orders as $key => $order) {
         </section>
     </main>
 
-    <?php
-    // 共通フッターを読み込む
-    require_once 'footer.php';
-    ?>
-
-    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <?php require_once 'footer.php'; ?>
     <script src="js/script.js"></script>
 </body>
-
 </html>

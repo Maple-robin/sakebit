@@ -1,164 +1,279 @@
-/* === 既存のスタイルを調整 === */
+/*----------------------------------------
+  history.css - 購入履歴ページ (スマホ最適化・デザイン改善版)
+----------------------------------------*/
+
+/* サイトの基本色やフォントを商品一覧ページと統一 */
+:root {
+    --font-family-base: "Noto Sans JP", sans-serif;
+    --font-family-serif: "Zen Old Mincho", serif;
+    --text-color-primary: #333;
+    --text-color-secondary: #888;
+    --border-color-light: #f0f0f0;
+    --border-color-base: #e0e0e0;
+    --background-color-light: #f8f8f8;
+    --background-color-white: #ffffff;
+    
+    /* アクセントカラーを商品一覧ページに合わせて茶色系に */
+    --accent-color: #A0522D; 
+    
+    /* ステータスカラーもサイトの雰囲気に合わせて調整 */
+    --status-pending-color: #E67E22;
+    --status-shipped-color: #3498DB;
+    --status-delivered-color: #27AE60;
+    --status-cancelled-color: #C0392B;
+}
 
 .history {
-    padding: 60px 20px; /* 上下のpaddingを調整 */
-    background-color: #f9f9f9; /* 背景色を少しグレーにするとカードが映えます */
+    padding: 30px 0; /* スマホ向けに上下の余白を調整 */
+    padding-top: 80px; /* ヘッダー高さ分の余白を追加 */
+    background-color: var(--background-color-light);
+    font-family: var(--font-family-base);
 }
 
 .history__inner {
-    max-width: 900px; /* 幅を少し調整 */
+    max-width: 100%; /* スマホでは画面幅いっぱい */
     margin: 0 auto;
-    padding: 0; /* 内側のpaddingは不要に */
+    padding: 0 15px; /* 左右に少し余白 */
 }
 
-/* history-listは注文カードのコンテナとして機能させます */
+/* ページタイトル */
+.section-title {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 50px;
+    font-family: var(--font-family-serif);
+    padding-top: 0;
+}
+.section-title .en {
+    display: block;
+    font-size: 2.4rem;
+    color: #000;
+    letter-spacing: 0.1em;
+    margin-bottom: 5px;
+}
+.section-title .ja {
+    display: block;
+    font-size: 1.4rem;
+    color: #555;
+}
+
 .history-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* カード間のスペース */
+    gap: 15px; /* カード間の隙間を少し詰める */
 }
-
-/* history-itemはカード内の各商品アイテムになります */
-.history-item {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 20px 0; /* 上下のpaddingのみに */
-    margin-bottom: 0; /* カードが間隔を管理するので不要に */
-}
-
-/* 最後のアイテム以外は下に線を引くのを、最初のアイテム以外は上に線を引くように変更 */
-.history-item:not(:first-child) {
-    border-top: 1px solid #eee;
-}
-
-.history-item__img {
-    width: 80px; /* 少し小さくしてバランス調整 */
-    height: 80px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 1px solid #eee;
-}
-
-.history-item__details {
-    text-align: left;
-    flex: 1; /* 幅が可変になるように */
-}
-
-.history-item__name {
-    font-size: 1.6rem; /* サイズ調整 */
-    font-weight: 500;
-    margin-bottom: 8px; /* 少し詰める */
-}
-
-/* 商品名にリンクがついた場合の下線などを消す */
-.history-item__name a {
-    color: inherit; /* 親要素の色を継承 */
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.history-item__name a:hover {
-    color: #007bff; /* ブランドカラーに合わせて変更してください */
-}
-
-.history-item__price,
-.history-item__quantity { /* 数量表示用のクラスも追加 */
-    font-size: 1.4rem;
-    color: #666;
-    line-height: 1.5;
-}
-
-
-/* === ▼▼▼ ここから新しいカードデザイン用のスタイルを追加 ▼▼▼ === */
 
 /* カード全体 */
 .history-order-card {
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    text-align: left;
-    overflow: hidden; /* 角丸を維持するため */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    background-color: var(--background-color-white);
+    border: 1px solid var(--border-color-base);
+    border-radius: 6px;
+    overflow: hidden;
 }
 
-/* カードヘッダー（注文日、合計、ステータス） */
+/* カードヘッダー */
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 12px 15px;
     background-color: #fafafa;
-    border-bottom: 1px solid #eee;
-    font-size: 1.4rem;
+    border-bottom: 1px solid var(--border-color-light);
 }
 
 .order-date {
+    font-size: 1.3rem;
     font-weight: 500;
-    color: #333;
+    color: var(--text-color-primary);
 }
-
 .order-date .fa-calendar-alt {
     margin-right: 8px;
-    color: #888;
-}
-
-.order-meta {
-    display: flex;
-    align-items: center;
-    gap: 15px;
 }
 
 .order-total {
-    color: #555;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-color-primary);
+    font-family: var(--font-family-serif);
+}
+
+/* カードボディ */
+.card-body {
+    padding: 0 15px;
+}
+
+/* 商品アイテム */
+.history-item {
+    display: flex;
+    gap: 15px;
+    padding: 15px 0;
+}
+.history-item:not(:first-child) {
+    border-top: 1px solid var(--border-color-light);
+}
+
+.history-item__img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.history-item__details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.history-item__name {
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0 0 8px 0;
+    /* 2行までに制限して、超える場合は...で表示 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.history-item__name a {
+    color: var(--text-color-primary);
+}
+
+.history-item__meta {
+    display: flex;
+    flex-direction: column; /* スマホでは縦に並べる */
+    align-items: flex-start; /* 左揃え */
+    gap: 8px;
+}
+
+.history-item__price,
+.history-item__quantity {
+    font-size: 1.3rem;
+    color: var(--text-color-secondary);
+    margin: 0;
+}
+
+/* ステータス表示 */
+.item-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.3rem;
     font-weight: 500;
 }
-
-/* ステータスバッジ */
-.status-badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
-    white-space: nowrap;
+.item-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
 }
+.item-status.status-pending .item-status-dot { background-color: var(--status-pending-color); }
+.item-status.status-shipped .item-status-dot { background-color: var(--status-shipped-color); }
+.item-status.status-delivered .item-status-dot { background-color: var(--status-delivered-color); }
+.item-status.status-cancelled .item-status-dot { background-color: var(--status-cancelled-color); }
+.item-status.status-pending .item-status-text { color: var(--status-pending-color); }
+.item-status.status-shipped .item-status-text { color: var(--status-shipped-color); }
+.item-status.status-delivered .item-status-text { color: var(--status-delivered-color); }
+.item-status.status-cancelled .item-status-text { color: var(--status-cancelled-color); }
 
-.status-pending { background-color: #6c757d; } /* 注文受付: グレー */
-.status-shipped { background-color: #17a2b8; } /* 発送済み: 青緑 */
-.status-delivered { background-color: #28a745; } /* 配達完了: 緑 */
-.status-cancelled { background-color: #dc3545; } /* キャンセル: 赤 */
-
-/* カードボディ（商品リスト部分） */
-.card-body {
-    padding: 0 20px; /* 左右にパディングを追加 */
-}
-
-
-/* === 既存のボタンのスタイルを流用 === */
-.return-button {
-    display: block; /* block要素に変更 */
+/* ページネーション */
+.pagination {
+    display: flex;
     justify-content: center;
     align-items: center;
-    margin: 40px auto 0; /* 上のスペースを調整 */
-    width: 200px;
-    height: 50px;
-    line-height: 50px; /* 高さと合わせることでテキストを中央に */
-    text-align: center;
-    font-size: 1.4rem;
-    color: #fff;
-    background-color: #555;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none; /* aタグの場合も考慮 */
+    gap: 8px;
+    margin-top: 30px;
 }
 
+.page-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 36px;
+    padding: 0 12px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-color-secondary);
+    background-color: var(--background-color-white);
+    border: 1px solid var(--border-color-base);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap; /* 文字崩れ防止 */
+}
+
+/* ★★★ 省略記号「...」のスタイルを追記 ★★★ */
+.pagination-ellipsis {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 4px;
+    color: var(--text-color-secondary);
+}
+
+/* アクティブなページ */
+.page-link.is-active {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--background-color-white);
+    cursor: default;
+}
+.page-link:not(.is-active):hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+/* 戻るボタン */
+.return-button {
+    display: block;
+    width: 100%;
+    max-width: 280px;
+    height: 44px;
+    line-height: 44px;
+    margin: 40px auto 0;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--accent-color);
+    background-color: var(--background-color-white);
+    border: 1px solid var(--accent-color);
+    border-radius: 22px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
 .return-button:hover {
-    background-color: #333;
+    background-color: var(--accent-color);
+    color: var(--background-color-white);
+}
+
+/* PC表示用のスタイル */
+@media (min-width: 768px) {
+    .history {
+        padding: 60px 20px;
+        padding-top: 100px; /* PC時はさらに余白を増やす */
+    }
+    .history__inner {
+        max-width: 800px;
+        padding: 0;
+    }
+    .section-title {
+        margin-top: 50px;
+        margin-bottom: 60px;
+        padding-top: 0;
+    }
+    .history-item__meta {
+        flex-direction: row; /* PCでは横並びに戻す */
+        align-items: center;
+        gap: 20px;
+    }
+    .pagination {
+        margin-top: 50px;
+    }
+    .return-button {
+        margin-top: 50px;
+    }
 }

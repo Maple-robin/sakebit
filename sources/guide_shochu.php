@@ -96,7 +96,7 @@
                             <p>焼酎と水を6:4で割ります。焼酎本来の味わいを楽しみながら、さっぱりとした飲み口に仕上げます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/mizuwari.png" alt="水割り">
+                            <img src="img/焼酎水割り.png" alt="水割り">
                         </div>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                             <p>水ではなくお湯で割ることで、焼酎の香りがより一層引き立ち、焼酎本来の深みが際立つ飲み方です。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/oyuwari.png" alt="お湯割り">
+                            <img src="img/焼酎お湯割り.png" alt="お湯割り">
                         </div>
                     </div>
                 </div>
@@ -130,7 +130,7 @@
                             <p>焼酎を氷とグラスに注ぎシンプルに味わう飲み方です。時間と共に味が変化し、焼酎本来の味を楽しめます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/rock_glass.png" alt="ロック">
+                            <img src="img/焼酎ロック.png" alt="ロック">
                         </div>
                     </div>
                 </div>
