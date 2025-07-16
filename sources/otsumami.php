@@ -116,16 +116,18 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- タグ表示機能は後で実装 -->
-                    </div>
+                        </div>
                 </div>
 
+                <?php // ★★★ここから修正★★★ 「おつまみの説明」が空でなければ表示 ?>
+                <?php if (!empty($otumami['otumami_discription'])): ?>
                 <div class="product-accordion-item is-closed">
                     <h3 class="product-accordion-item__title product-description__title">おつまみの説明<span class="accordion-icon"></span></h3>
                     <div class="product-accordion-item__content">
-                        <p><?= nl2br(htmlspecialchars($otumami['otumami_discription'] ?? '')) ?></p>
+                        <p><?= nl2br(htmlspecialchars($otumami['otumami_discription'])) ?></p>
                     </div>
                 </div>
+                <?php endif; ?>
                 
                 <?php if (!empty($recommended_products)): ?>
                 <div class="paired-snacks">
