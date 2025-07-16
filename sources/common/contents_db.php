@@ -2402,16 +2402,20 @@ class corders extends crecord
         return $this->fetch_assoc();
     }
 
-    public function get_orders_by_user_id($debug, $user_id)
+    public function get_orders_by_user_id($debug, $user_id, $limit, $offset)
     {
         if (!cutil::is_number($user_id) || $user_id < 1) {
             return [];
         }
 
         $arr = [];
-        // 注文を新しい順に取得
-        $query = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_date DESC";
-        $prep_arr = [':user_id' => (int)$user_id];
+        // ★ LIMIT と OFFSET を使って取得範囲を指定
+        $query = "SELECT * FROM orders WHERE user_id = :user_id ORDER BY order_date DESC LIMIT :limit OFFSET :offset";
+        $prep_arr = [
+            ':user_id' => (int)$user_id,
+            ':limit'   => (int)$limit,
+            ':offset'  => (int)$offset
+        ];
 
         $this->select_query($debug, $query, $prep_arr);
 
@@ -2419,6 +2423,18 @@ class corders extends crecord
             $arr[] = $row;
         }
         return $arr;
+    }
+    
+    public function get_orders_count_by_user_id($debug, $user_id)
+    {
+        if (!cutil::is_number($user_id) || $user_id < 1) {
+            return 0;
+        }
+        $query = "SELECT COUNT(order_id) AS total_count FROM orders WHERE user_id = :user_id";
+        $prep_arr = [':user_id' => (int)$user_id];
+        $this->select_query($debug, $query, $prep_arr);
+        $result = $this->fetch_assoc();
+        return $result ? (int)$result['total_count'] : 0;
     }
 
     /**

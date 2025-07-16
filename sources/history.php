@@ -16,13 +16,74 @@ if (!isset($_SESSION['user_id'])) {
 
 require_once __DIR__ . '/common/contents_db.php';
 
+/**
+ * 【新規追加】中略機能付きのページネーションHTMLを生成する関数
+ * @param int $current_page 現在のページ番号
+ * @param int $total_pages 全ページ数
+ * @param int $range 現在ページの前後いくつのリンクを表示するか
+ * @return string 生成されたHTML
+ */
+function generate_pagination_links($current_page, $total_pages, $range = 1) {
+    $html = '<nav class="pagination">';
+
+    // 「前へ」ボタン
+    if ($current_page > 1) {
+        $html .= '<a href="?page=' . ($current_page - 1) . '" class="page-link prev">&laquo; 前へ</a>';
+    }
+
+    $show_ellipsis_start = false;
+    $show_ellipsis_end = false;
+
+    for ($i = 1; $i <= $total_pages; $i++) {
+        // 表示するページの条件:
+        // 1. 最初のページまたは最後のページ
+        // 2. 現在のページの周辺（$rangeで指定した範囲）
+        if ($i == 1 || $i == $total_pages || ($i >= $current_page - $range && $i <= $current_page + $range)) {
+            if ($i == $current_page) {
+                $html .= '<a href="?page=' . $i . '" class="page-link is-active">' . $i . '</a>';
+            } else {
+                $html .= '<a href="?page=' . $i . '" class="page-link">' . $i . '</a>';
+            }
+        } else {
+            // 省略記号「...」の表示ロジック
+            if ($i < $current_page && !$show_ellipsis_start) {
+                $html .= '<span class="pagination-ellipsis">...</span>';
+                $show_ellipsis_start = true;
+            }
+            if ($i > $current_page && !$show_ellipsis_end) {
+                $html .= '<span class="pagination-ellipsis">...</span>';
+                $show_ellipsis_end = true;
+            }
+        }
+    }
+
+    // 「次へ」ボタン
+    if ($current_page < $total_pages) {
+        $html .= '<a href="?page=' . ($current_page + 1) . '" class="page-link next">次へ &raquo;</a>';
+    }
+
+    $html .= '</nav>';
+    return $html;
+}
+
 $user_id = $_SESSION['user_id'];
-$debug = false; 
+$debug = false;
+
+// --- ページネーションの準備 ---
+$items_per_page = 5;
+$current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($current_page < 1) {
+    $current_page = 1;
+}
+$offset = ($current_page - 1) * $items_per_page;
 
 $orders_db = new corders();
 $order_items_db = new corder_items();
 
-$orders = $orders_db->get_orders_by_user_id($debug, $user_id);
+$total_orders = $orders_db->get_orders_count_by_user_id($debug, $user_id);
+$total_pages = ceil($total_orders / $items_per_page);
+
+$orders = $orders_db->get_orders_by_user_id($debug, $user_id, $items_per_page, $offset);
 
 foreach ($orders as $key => $order) {
     $orders[$key]['items'] = $order_items_db->get_items_by_order_id($debug, $order['order_id']);
@@ -55,6 +116,7 @@ foreach ($orders as $key => $order) {
                 <?php else: ?>
                     <div class="history-list">
                         <?php foreach ($orders as $order): ?>
+                            <!-- (注文カードの表示部分は変更なし) -->
                             <div class="history-order-card">
                                 <div class="card-header">
                                     <div class="order-date">
@@ -109,13 +171,10 @@ foreach ($orders as $key => $order) {
                                                     <p class="history-item__quantity">
                                                         数量: <?php echo htmlspecialchars($item['quantity'], ENT_QUOTES, 'UTF-8'); ?>
                                                     </p>
-                                                    
-                                                    <!-- ★★★ ここを新しいHTML構造に修正 ★★★ -->
                                                     <div class="item-status <?php echo $item_status_class; ?>">
                                                         <span class="item-status-dot"></span>
                                                         <span class="item-status-text"><?php echo $item_status_text; ?></span>
                                                     </div>
-
                                                 </div>
                                             </div>
                                         </div>
@@ -124,6 +183,12 @@ foreach ($orders as $key => $order) {
                             </div>
                         <?php endforeach; ?>
                     </div>
+
+                    <!-- ★★★ 新しい関数を呼び出してページネーションを表示 ★★★ -->
+                    <?php if ($total_pages > 1): ?>
+                        <?php echo generate_pagination_links($current_page, $total_pages); ?>
+                    <?php endif; ?>
+
                 <?php endif; ?>
 
                 <button class="return-button" onclick="window.location.href='MyPage.php'">マイページへ戻る</button>
