@@ -60,24 +60,51 @@ document.addEventListener('DOMContentLoaded', function() {
         let subtotal = cartProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
         let shippingCost = 0;
         const selectedShippingMethod = document.querySelector('input[name="shipping-method"]:checked');
-        if (selectedShippingMethod) {
-            shippingCost = parseFloat(selectedShippingMethod.dataset.price || 0);
+        const deliveryDate = document.getElementById('delivery-date-hidden')?.value;
+        const deliveryTime = document.getElementById('delivery-time-hidden')?.value;
+        let shippingText = '';
+        let shippingMethodText = '';
+        if (deliveryDate) {
+            // 配送指定時は送料・配送方法を明示
+            const today = new Date();
+            const target = new Date(deliveryDate);
+            const diffDays = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+            let method = '';
+            let price = 0;
+            if (diffDays <= 2) {
+                method = 'お急ぎ便（1-2営業日）';
+                price = 800;
+            } else if (diffDays >= 3 && diffDays <= 5) {
+                method = '通常配送（3-5営業日）';
+                price = 500;
+            }
+            if (subtotal >= 5200) price = 0;
+            shippingCost = price;
+            shippingText = `${price === 0 ? '無料' : `¥ ${price.toLocaleString()}`}`;
+            shippingMethodText = method;
+        } else {
+            if (selectedShippingMethod) {
+                shippingCost = parseFloat(selectedShippingMethod.dataset.price || 0);
+                shippingText = shippingCost === 0 ? '無料' : `¥ ${shippingCost.toLocaleString()}`;
+                shippingMethodText = selectedShippingMethod.parentElement.querySelector('.shipping-method-name')?.textContent || '';
+            } else {
+                shippingText = '住所入力待ち';
+            }
         }
 
         let total = subtotal + shippingCost;
         let tax = total - (total / (1 + TAX_RATE));
-        const shippingCostText = shippingCost === 0 ? '無料' : `¥ ${shippingCost.toLocaleString()}`;
 
         // モバイル版
         document.getElementById('summary-total-mobile').textContent = `¥ ${Math.round(total).toLocaleString()}`;
         document.getElementById('summary-subtotal-mobile-content').textContent = `¥ ${subtotal.toLocaleString()}`;
-        document.getElementById('summary-shipping-mobile-content').textContent = selectedShippingMethod ? shippingCostText : '住所入力待ち';
+        document.getElementById('summary-shipping-mobile-content').innerHTML = shippingMethodText ? `${shippingText} <span style='font-size:0.9em;'>(${shippingMethodText})</span>` : shippingText;
         document.getElementById('summary-total-mobile-content-final').textContent = `¥ ${Math.round(total).toLocaleString()} JPY`;
         document.getElementById('summary-tax-info').textContent = `(内、消費税 ¥ ${Math.round(tax).toLocaleString()})`;
 
         // PC版
         document.getElementById('summary-subtotal-pc').textContent = `¥ ${subtotal.toLocaleString()}`;
-        document.getElementById('summary-shipping-pc').textContent = selectedShippingMethod ? shippingCostText : '住所入力待ち';
+        document.getElementById('summary-shipping-pc').innerHTML = shippingMethodText ? `${shippingText} <span style='font-size:0.9em;'>(${shippingMethodText})</span>` : shippingText;
         document.getElementById('summary-total-pc').textContent = `¥ ${Math.round(total).toLocaleString()} JPY`;
         document.getElementById('summary-tax-info-pc').textContent = `(内、消費税 ¥ ${Math.round(tax).toLocaleString()})`;
     }
@@ -88,19 +115,52 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateShippingMethods() {
         if (!shippingOptionsContainer) return;
         const subtotal = cartProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+
+        // 配送指定日・時間の取得
+        const deliveryDate = document.getElementById('delivery-date-hidden')?.value;
+        const deliveryTime = document.getElementById('delivery-time-hidden')?.value;
         let shippingMethods = [
             { id: 'standard', name: '通常配送', price: 500, note: '（3-5営業日）' },
             { id: 'express', name: 'お急ぎ便', price: 800, note: '（1-2営業日）' }
         ];
 
-        if (subtotal >= FREE_SHIPPING_THRESHOLD) {
-            const standardMethod = shippingMethods.find(m => m.id === 'standard');
-            if (standardMethod) standardMethod.price = 0;
+        let autoSelected = false;
+        let selectedShipping = null;
+        let shippingInfoHtml = '';
+        if (deliveryDate) {
+            const today = new Date();
+            const target = new Date(deliveryDate);
+            const diffDays = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+            if (diffDays <= 2) {
+                // 1-2営業日
+                selectedShipping = { name: 'お急ぎ便', price: 800, note: '（1-2営業日）' };
+            } else if (diffDays >= 3 && diffDays <= 5) {
+                // 3-5営業日
+                selectedShipping = { name: '通常配送', price: 500, note: '（3-5営業日）' };
+            }
+            if (subtotal >= 5200) {
+                selectedShipping.price = 0;
+            }
+            // 配送日・時間・送料を表示
+            shippingInfoHtml = `<div class="shipping-info-confirm">
+                <div><strong>配送指定日:</strong> ${deliveryDate}</div>
+                ${deliveryTime ? `<div><strong>配送時間:</strong> ${deliveryTime}</div>` : ''}
+                <div><strong>配送料:</strong> ${selectedShipping.price === 0 ? '無料' : `¥ ${selectedShipping.price.toLocaleString()}`}</div>
+                <div><strong>配送方法:</strong> ${selectedShipping.name} ${selectedShipping.note}</div>
+            </div>`;
+            shippingOptionsContainer.innerHTML = shippingInfoHtml;
+            // 配送方法選択肢は表示しない
+            return;
+        }
+
+        // 送料無料判定
+        if (subtotal >= 5200) {
+            shippingMethods = shippingMethods.map(m => ({ ...m, price: 0 }));
         }
 
         let html = '';
         shippingMethods.forEach((method, index) => {
-            const checked = index === 0 ? 'checked' : '';
+            const checked = (!autoSelected && index === 0) ? 'checked' : '';
             const priceText = method.price === 0 ? '無料' : `¥ ${method.price.toLocaleString()}`;
             html += `
                 <div class="shipping-option">
@@ -287,10 +347,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('お届け先の必須項目（都道府県、市区町村、住所）を入力してください。');
                 return;
             }
-            if (!selectedShippingMethod) {
-                alert('配送方法が選択されていません。お届け先をすべて入力してください。');
-                return;
-            }
             if (total_amount <= 0) {
                 alert('合計金額が正しくありません。');
                 return;
@@ -298,7 +354,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const orderData = {
                 shipping_address: shipping_address,
-                total_amount: total_amount
+                total_amount: total_amount,
+                delivery_date: document.getElementById('delivery-date-hidden')?.value || '',
+                delivery_time: document.getElementById('delivery-time-hidden')?.value || ''
             };
 
             placeOrderButton.disabled = true;

@@ -191,7 +191,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         paginationContainer.appendChild(prevButton);
 
-        for (let i = 1; i <= totalPages; i++) {
+        // --- ここからページ番号ボタンの省略ロジック ---
+        const MAX_VISIBLE = 7; // 最大表示数（両端+前後+現在）
+        let start = 1;
+        let end = totalPages;
+        if (totalPages > MAX_VISIBLE) {
+            if (currentPage <= 4) {
+                start = 1;
+                end = MAX_VISIBLE - 2;
+            } else if (currentPage >= totalPages - 3) {
+                start = totalPages - (MAX_VISIBLE - 3);
+                end = totalPages;
+            } else {
+                start = currentPage - 2;
+                end = currentPage + 2;
+            }
+        }
+
+        if (start > 1) {
+            addPageBtn(1);
+            if (start > 2) {
+                addEllipsis();
+            }
+        }
+        for (let i = start; i <= end; i++) {
+            addPageBtn(i);
+        }
+        if (end < totalPages) {
+            if (end < totalPages - 1) {
+                addEllipsis();
+            }
+            addPageBtn(totalPages);
+        }
+
+        function addPageBtn(i) {
             const pageButton = document.createElement('button');
             pageButton.textContent = i;
             pageButton.classList.add('page-btn');
@@ -204,6 +237,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             paginationContainer.appendChild(pageButton);
         }
+        function addEllipsis() {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.classList.add('page-ellipsis');
+            paginationContainer.appendChild(ellipsis);
+        }
+        // --- ここまで ---
 
         const nextButton = document.createElement('button');
         nextButton.innerHTML = '&raquo;';
@@ -371,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case '度数高め':
                     enTitle = "HIGH ALCOHOL";
                     jaTitle = "( 度数高め一覧 )";
-                    description = "アルコール<ruby>度数<rt>どすう</rt></ruby>20%<ruby>以上<rt>いじょう</rt></ruby>の<ruby>本格的<rt>ほんかくてき</rt></ruby>なお<ruby>酒<rt>さけ</rt></ruby>をお<ruby>探<rt>さが</rt></ruby>しの<ruby>方<rt>かた</rt></ruby>に。しっかりとした<ruby>飲<rt>の</rt></ruby>みごたえと<ruby>深<rt>ふか</rt></ruby>い<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しめます。ストレートやロックで、お<ruby>酒<rt>さけ</rt></ruby><ruby>本来<rt>ほんらい</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しみたい<ruby>方<rt>かた</rt></ruby>におすすめです。";
+                    description = "アルコール<ruby>度数<rt>どすう</rt></ruby>20%<ruby>以上<rt>いじょう</rt></ruby>の<ruby>本格的<rt>ほんかくてき</rt></ruby>なお<ruby>酒<rt>さけ</rt></ruby>をお<ruby>探<rt>さが</rt></ruby>しの<ruby>方<rt>かた</rt></ruby>に。しっかりとした<ruby>飲<rt>の</rt></ruby>みごたえと<ruby>深<rt>ふか</rt></ruby>い<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しめます。ストレートやロックで、お<ruby>酒<rt>さけ</rt><ruby>本来<rt>ほんらい</rt></ruby>の<ruby>味<rt>あじ</rt></ruby>わいを<ruby>楽<rt>たの</rt></ruby>しみたい<ruby>方<rt>かた</rt></ruby>におすすめです。";
                     break;
                 case '新発売':
                     enTitle = "NEW ARRIVALS";
@@ -384,7 +424,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     description = "";
                     break;
             }
-            guideLink = "#"; 
         }        
         else {
             enTitle = "PRODUCTS LIST";

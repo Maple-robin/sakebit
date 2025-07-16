@@ -61,5 +61,7 @@
         </div>
     </footer>
 
-    <script src="../adminjs/admin_client_users.js"></script> </body>
+    <script src="../adminjs/admin_client_users.js"></script>
+    <script src="../adminjs/admin.js"></script>
+</body>
 </html>

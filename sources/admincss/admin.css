@@ -113,6 +113,77 @@ ul {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 30px; /* 左右パディングを広げる */
+    position: relative; /* ログイン絶対配置用 */
+}
+
+/* 2列レイアウト用 */
+.header-2col .admin-header__nav {
+    width: 100%;
+}
+
+/* 2列レイアウトを縦並びで美しく表示 */
+
+/* 2列レイアウトを左右均等に縦並びで表示 */
+
+/* 2列レイアウト（ログイン以外は上下4:4グリッド、ログインは右端中央固定） */
+.header-2col .admin-nav__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(32px, auto));
+    gap: 0 24px;
+    align-items: center;
+    justify-items: center;
+    width: calc(100% - 220px); /* ログイン分右端スペースをさらに広げる */
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+}
+.header-2col .admin-nav__list li {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    list-style: none;
+}
+.header-2col .admin-nav__list li a {
+    display: inline-block;
+    min-width: 100px;
+    font-size: 1.6rem;
+    padding: 6px 0;
+    text-align: center;
+}
+/* 1行目（1～4番目）: お酒管理～4番目 */
+.header-2col .admin-nav__list li:nth-child(1) { grid-row: 1; grid-column: 1; }
+.header-2col .admin-nav__list li:nth-child(2) { grid-row: 1; grid-column: 2; }
+.header-2col .admin-nav__list li:nth-child(3) { grid-row: 1; grid-column: 3; }
+.header-2col .admin-nav__list li:nth-child(4) { grid-row: 1; grid-column: 4; }
+/* 2行目（5～8番目）: 5番目～8番目 */
+.header-2col .admin-nav__list li:nth-child(5) { grid-row: 2; grid-column: 1; }
+.header-2col .admin-nav__list li:nth-child(6) { grid-row: 2; grid-column: 2; }
+.header-2col .admin-nav__list li:nth-child(7) { grid-row: 2; grid-column: 3; }
+.header-2col .admin-nav__list li:nth-child(8) { grid-row: 2; grid-column: 4; }
+
+/* ログイン（9番目）は右端中央固定 */
+.header-2col .admin-nav__list li.login-link {
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    list-style: none;
+    z-index: 2000;
+}
+}
+.header-2col .admin-nav__list li.login-link a {
+    min-width: 100px;
+    font-size: 1.6rem;
+    padding: 6px 0;
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+    color: inherit;
+    font-weight: normal;
+    vertical-align: middle;
 }
 
 .admin-header__logo a {

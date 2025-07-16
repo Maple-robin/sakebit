@@ -82,5 +82,6 @@
     </footer>
 
     <script src="../adminjs/admin_inquiry_reply.js"></script>
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

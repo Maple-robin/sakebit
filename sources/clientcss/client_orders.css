@@ -1,0 +1,300 @@
+/*----------------------------------------
+  client_orders.css - 注文管理ページ専用のスタイル (改善版)
+----------------------------------------*/
+
+:root {
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --success-hover: #218838;
+    --info-color: #17a2b8;
+    --info-hover: #138496;
+    --pending-color: #ffc107;
+    --cancelled-color: #dc3545;
+    --shipped-color: #007bff;
+    --delivered-color: #28a745;
+    
+    --base-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --border-color: #dee2e6;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --border-radius: 6px;
+}
+
+/* --- フォームの共通スタイル --- */
+.filter-box,
+.batch-actions {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    margin-bottom: 25px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-end;
+    box-shadow: var(--shadow);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+    color: var(--secondary-color);
+    font-weight: 500;
+}
+
+.filter-group input,
+.filter-group select,
+.batch-actions select {
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ccc;
+    font-size: 1.4rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.filter-group input:focus,
+.filter-group select:focus,
+.batch-actions select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+
+/* --- ボタンの共通スタイル --- */
+.filter-btn,
+.batch-update-btn,
+.update-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    color: white;
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.1s;
+}
+.filter-btn:hover,
+.batch-update-btn:hover,
+.update-btn:hover {
+    transform: translateY(-1px);
+}
+.filter-btn {
+    background-color: var(--success-color);
+}
+.filter-btn:hover {
+    background-color: var(--success-hover);
+}
+.batch-update-btn {
+    background-color: var(--primary-color);
+}
+.batch-update-btn:hover {
+    background-color: var(--primary-hover);
+}
+.update-btn {
+    width: 80px;
+    padding: 8px 12px;
+    background-color: var(--info-color);
+}
+.update-btn:hover {
+    background-color: var(--info-hover);
+}
+
+
+/* --- メッセージボックス --- */
+.message-box {
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    font-size: 1.5rem;
+    display: none;
+    border-left: 5px solid;
+}
+.message-box.success {
+    background-color: #e9f7ef;
+    color: #155724;
+    border-color: var(--success-color);
+}
+.message-box.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: var(--cancelled-color);
+}
+
+/* --- テーブルデザインの改善 --- */
+.admin-table-wrapper {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    overflow-x: auto; /* テーブルがはみ出した場合に横スクロールを許可 */
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse; /* 枠線を結合 */
+}
+
+.admin-table th {
+    background-color: var(--base-bg);
+    padding: 15px 12px;
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap; /* ヘッダーは折り返さない */
+    border-bottom: 2px solid var(--border-color);
+}
+
+.admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle; /* セル内のコンテンツを中央揃えに */
+}
+
+.admin-table tbody tr:last-child td {
+    border-bottom: none; /* 最後の行の下線を消す */
+}
+
+/* テーブル行のホバー効果と交互色 */
+.admin-table tbody tr {
+    transition: background-color 0.2s;
+}
+.admin-table tbody tr:nth-child(even) {
+    background-color: var(--base-bg);
+}
+.admin-table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+.admin-table th:first-child,
+.admin-table td:first-child {
+    width: 40px;
+    text-align: center;
+}
+
+.order-items-cell ul {
+    margin: 0;
+    padding-left: 18px;
+}
+.order-items-cell li {
+    margin-bottom: 5px;
+    color: #495057;
+}
+.order-items-cell li:last-child {
+    margin-bottom: 0;
+}
+
+.delivery-info {
+    font-size: 1.3rem;
+    color: var(--secondary-color);
+    white-space: nowrap;
+}
+
+
+/* --- ステータス毎の見た目 --- */
+.status-select {
+    width: 120px;
+    padding: 8px;
+    border-radius: var(--border-radius);
+    font-size: 1.4rem;
+    font-weight: 500;
+    border: 2px solid; /* 枠線に色を付ける準備 */
+}
+
+/* JavaScriptでのクラス付与を想定していますが、
+   現状でも選択肢によってある程度見た目が変わるようにします */
+select.status-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-position: right 10px center;
+    background-repeat: no-repeat;
+    background-size: 10px;
+}
+select.status-select[data-order-status="pending"] {
+    border-color: var(--pending-color);
+    color: #856404;
+    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%23ffc107"><path d="M5 10L0 0h10z"/></svg>');
+}
+select.status-select[data-order-status="shipped"] {
+    border-color: var(--shipped-color);
+    color: var(--primary-color);
+    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%23007bff"><path d="M5 10L0 0h10z"/></svg>');
+}
+select.status-select[data-order-status="delivered"] {
+    border-color: var(--delivered-color);
+    color: var(--success-color);
+    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%2328a745"><path d="M5 10L0 0h10z"/></svg>');
+}
+select.status-select[data-order-status="cancelled"] {
+    border-color: var(--cancelled-color);
+    color: var(--cancelled-color);
+    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%23dc3545"><path d="M5 10L0 0h10z"/></svg>');
+}
+/* --- アコーディオンフィルターのスタイル --- */
+.filter-wrapper {
+    margin-bottom: 25px;
+}
+
+.filter-toggle-btn {
+    width: 100%;
+    padding: 12px 20px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--secondary-color);
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.filter-toggle-btn:hover {
+    background-color: #e9ecef;
+}
+
+.filter-toggle-btn .fa-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+.filter-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+    background-color: var(--card-bg);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+.filter-wrapper.is-open .filter-toggle-btn {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+}
+
+.filter-wrapper.is-open .filter-toggle-btn .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.filter-wrapper.is-open .filter-content {
+    max-height: 500px; /* 十分な高さを確保 */
+    overflow: visible;
+    border: 1px solid var(--border-color);
+    border-top: none;
+    box-shadow: var(--shadow);
+}
+
+/* アコーディオン内のfilter-boxのスタイル調整 */
+.filter-content .filter-box {
+    box-shadow: none;
+    border: none;
+    margin-bottom: 0;
+}

@@ -197,7 +197,7 @@ $beginner_products = $product_db->get_top_selling_products_by_tag($debug, '初�
                 <ul class="category-list">
                     <li class="category-list__item">
                         <a href="products_list.php?category=日本酒" class="category-card">
-                            <img src="img/sake.png" alt="日本酒" class="category-card__img">
+                            <img src="img/日本酒カテゴリ.png" alt="日本酒" class="category-card__img">
                             <h3 class="category-card__name">日本酒</h3>
                         </a>
                     </li>
@@ -215,19 +215,19 @@ $beginner_products = $product_db->get_top_selling_products_by_tag($debug, '初�
                     </li>
                     <li class="category-list__item">
                         <a href="products_list.php?category=缶チューハイ" class="category-card">
-                            <img src="img/chuhai.png" alt="缶チューハイ" class="category-card__img">
+                            <img src="img/缶チューハイカテゴリ.png" alt="缶チューハイ" class="category-card__img">
                             <h3 class="category-card__name">缶チューハイ</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="products_list.php?category=焼酎" class="category-card">
-                            <img src="img/shochu.png" alt="焼酎" class="category-card__img">
+                            <img src="img/金次郎1.png" alt="焼酎" class="category-card__img">
                             <h3 class="category-card__name">焼酎</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="products_list.php?category=ウィスキー" class="category-card">
-                            <img src="img/whisky.png" alt="ウィスキー" class="category-card__img">
+                            <img src="img/ウイスキーカテゴリ.png" alt="ウィスキー" class="category-card__img">
                             <h3 class="category-card__name">ウィスキー</h3>
                         </a>
                     </li>
@@ -239,19 +239,19 @@ $beginner_products = $product_db->get_top_selling_products_by_tag($debug, '初�
                     </li>
                     <li class="category-list__item">
                         <a href="products_list.php?category=リキュール" class="category-card">
-                            <img src="img/liqueur.png" alt="リキュール" class="category-card__img">
+                            <img src="img/バラ梅酒1.png" alt="リキュール" class="category-card__img">
                             <h3 class="category-card__name">リキュール</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="products_list.php?category=ワイン" class="category-card">
-                            <img src="img/wine.png" alt="ワイン" class="category-card__img">
+                            <img src="img/ワインカテゴリ.png" alt="ワイン" class="category-card__img">
                             <h3 class="category-card__name">ワイン</h3>
                         </a>
                     </li>
                     <li class="category-list__item">
                         <a href="products_list.php?category=ビール" class="category-card">
-                            <img src="img/beer.png" alt="ビール" class="category-card__img">
+                            <img src="img/ビールカテゴリ.png" alt="ビール" class="category-card__img">
                             <h3 class="category-card__name">ビール</h3>
                         </a>
                     </li>

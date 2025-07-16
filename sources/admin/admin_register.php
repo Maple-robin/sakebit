@@ -173,5 +173,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
         </div>
     </footer>
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>

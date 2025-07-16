@@ -127,5 +127,6 @@
 
     <script src="../adminjs/admin_otumami_edit.js"></script>
 
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>
