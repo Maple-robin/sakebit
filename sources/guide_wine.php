@@ -114,7 +114,7 @@
                             <p>飲むだけでなく、香りにも意識を向けてみましょう。いつもと違うワインの魅力が見つかります。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/ワイン匂い2.png" alt="香りを意識する">
+                            <img src="img/ワイン香り.png" alt="香りを意識する">
                         </div>
                     </div>
                 </div>
