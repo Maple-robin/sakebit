@@ -46,26 +46,7 @@ unset($_SESSION['product_add_errors'], $_SESSION['product_add_old_data'], $_SESS
     <link rel="stylesheet" href="../clientcss/client_add_product.css">
 </head>
 <body class="admin-page-layout">
-    <header class="admin-header">
-        <div class="admin-header__inner">
-            <h1 class="admin-header__logo">
-                <a href="client_top.php">OUR BRAND 管理者画面</a>
-            </h1>
-            <nav class="admin-header__nav">
-                <ul class="admin-nav__list">
-                    <li><a href="client_top.php">商品一覧</a></li>
-                    <li><a href="client_add_product.php" class="is-active">お酒追加</a></li>
-                    <li><a href="client_preview.php">プレビュー</a></li>
-                    <li><a href="client_analytics.php">情報確認</a></li>
-                </ul>
-                <div class="admin-header__actions">
-                    <a href="client_login.php" class="admin-header__logout">
-                        <i class="fas fa-sign-out-alt"></i> ログアウト
-                    </a>
-                </div>
-            </nav>
-        </div>
-    </header>
+    <?php include 'client_header.php'; ?>
 
     <main class="admin-main">
         <div class="admin-container">
