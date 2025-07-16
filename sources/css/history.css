@@ -12,10 +12,10 @@
     --border-color-base: #e0e0e0;
     --background-color-light: #f8f8f8;
     --background-color-white: #ffffff;
-    
+
     /* アクセントカラーを商品一覧ページに合わせて茶色系に */
-    --accent-color: #A0522D; 
-    
+    --accent-color: #A0522D;
+
     /* ステータスカラーもサイトの雰囲気に合わせて調整 */
     --status-pending-color: #E67E22;
     --status-shipped-color: #3498DB;
@@ -24,16 +24,20 @@
 }
 
 .history {
-    padding: 30px 0; /* スマホ向けに上下の余白を調整 */
-    padding-top: 80px; /* ヘッダー高さ分の余白を追加 */
+    padding: 30px 0;
+    /* スマホ向けに上下の余白を調整 */
+    padding-top: 80px;
+    /* ヘッダー高さ分の余白を追加 */
     background-color: var(--background-color-light);
     font-family: var(--font-family-base);
 }
 
 .history__inner {
-    max-width: 100%; /* スマホでは画面幅いっぱい */
+    max-width: 100%;
+    /* スマホでは画面幅いっぱい */
     margin: 0 auto;
-    padding: 0 15px; /* 左右に少し余白 */
+    padding: 0 15px;
+    /* 左右に少し余白 */
 }
 
 /* ページタイトル */
@@ -44,6 +48,7 @@
     font-family: var(--font-family-serif);
     padding-top: 0;
 }
+
 .section-title .en {
     display: block;
     font-size: 2.4rem;
@@ -51,6 +56,7 @@
     letter-spacing: 0.1em;
     margin-bottom: 5px;
 }
+
 .section-title .ja {
     display: block;
     font-size: 1.4rem;
@@ -60,7 +66,8 @@
 .history-list {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* カード間の隙間を少し詰める */
+    gap: 15px;
+    /* カード間の隙間を少し詰める */
 }
 
 /* カード全体 */
@@ -86,6 +93,7 @@
     font-weight: 500;
     color: var(--text-color-primary);
 }
+
 .order-date .fa-calendar-alt {
     margin-right: 8px;
 }
@@ -108,6 +116,7 @@
     gap: 15px;
     padding: 15px 0;
 }
+
 .history-item:not(:first-child) {
     border-top: 1px solid var(--border-color-light);
 }
@@ -138,14 +147,17 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
 .history-item__name a {
     color: var(--text-color-primary);
 }
 
 .history-item__meta {
     display: flex;
-    flex-direction: column; /* スマホでは縦に並べる */
-    align-items: flex-start; /* 左揃え */
+    flex-direction: column;
+    /* スマホでは縦に並べる */
+    align-items: flex-start;
+    /* 左揃え */
     gap: 8px;
 }
 
@@ -164,19 +176,66 @@
     font-size: 1.3rem;
     font-weight: 500;
 }
+
 .item-status-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
 }
-.item-status.status-pending .item-status-dot { background-color: var(--status-pending-color); }
-.item-status.status-shipped .item-status-dot { background-color: var(--status-shipped-color); }
-.item-status.status-delivered .item-status-dot { background-color: var(--status-delivered-color); }
-.item-status.status-cancelled .item-status-dot { background-color: var(--status-cancelled-color); }
-.item-status.status-pending .item-status-text { color: var(--status-pending-color); }
-.item-status.status-shipped .item-status-text { color: var(--status-shipped-color); }
-.item-status.status-delivered .item-status-text { color: var(--status-delivered-color); }
-.item-status.status-cancelled .item-status-text { color: var(--status-cancelled-color); }
+
+.item-status.status-pending .item-status-dot {
+    background-color: var(--status-pending-color);
+}
+
+.item-status.status-shipped .item-status-dot {
+    background-color: var(--status-shipped-color);
+}
+
+.item-status.status-delivered .item-status-dot {
+    background-color: var(--status-delivered-color);
+}
+
+.item-status.status-cancelled .item-status-dot {
+    background-color: var(--status-cancelled-color);
+}
+
+.item-status.status-pending .item-status-text {
+    color: var(--status-pending-color);
+}
+
+.item-status.status-shipped .item-status-text {
+    color: var(--status-shipped-color);
+}
+
+.item-status.status-delivered .item-status-text {
+    color: var(--status-delivered-color);
+}
+
+.item-status.status-cancelled .item-status-text {
+    color: var(--status-cancelled-color);
+}
+
+
+/* ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ */
+/* ★★★ ここからが修正箇所 (media queryの外に移動) ★★★ */
+/* ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ */
+
+/* 個数とステータスを囲むラッパーを横並び(flex)にする */
+.history-item__quantity-status {
+    display: flex;
+    align-items: center;
+    /* 要素を縦方向に中央揃え */
+    gap: 20px;
+    /* 要素間の余白 */
+    margin-top: 8px;
+    /* 上の価格との余白 */
+}
+
+/* 数量(pタグ)に付与されている可能性のある上下の余白をリセット */
+.history-item__quantity-status .history-item__quantity {
+    margin: 0;
+}
+
 
 /* ページネーション */
 .pagination {
@@ -201,7 +260,8 @@
     border-radius: 4px;
     text-decoration: none;
     transition: all 0.2s ease;
-    white-space: nowrap; /* 文字崩れ防止 */
+    white-space: nowrap;
+    /* 文字崩れ防止 */
 }
 
 /* ★★★ 省略記号「...」のスタイルを追記 ★★★ */
@@ -221,6 +281,7 @@
     color: var(--background-color-white);
     cursor: default;
 }
+
 .page-link:not(.is-active):hover {
     border-color: var(--accent-color);
     color: var(--accent-color);
@@ -245,6 +306,7 @@
     transition: all 0.3s ease;
     text-decoration: none;
 }
+
 .return-button:hover {
     background-color: var(--accent-color);
     color: var(--background-color-white);
@@ -254,26 +316,35 @@
 @media (min-width: 768px) {
     .history {
         padding: 60px 20px;
-        padding-top: 100px; /* PC時はさらに余白を増やす */
+        padding-top: 100px;
+        /* PC時はさらに余白を増やす */
     }
+
     .history__inner {
         max-width: 800px;
         padding: 0;
     }
+
     .section-title {
         margin-top: 50px;
         margin-bottom: 60px;
         padding-top: 0;
     }
+
     .history-item__meta {
-        flex-direction: row; /* PCでは横並びに戻す */
+        flex-direction: row;
+        /* PCでは横並びに戻す */
         align-items: center;
         gap: 20px;
     }
+
     .pagination {
         margin-top: 50px;
     }
+
     .return-button {
         margin-top: 50px;
     }
+
+    /* ★★★ media queryの中からは該当コードを削除 ★★★ */
 }

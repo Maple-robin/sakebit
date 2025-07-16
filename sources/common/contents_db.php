@@ -2424,7 +2424,7 @@ class corders extends crecord
         }
         return $arr;
     }
-    
+
     public function get_orders_count_by_user_id($debug, $user_id)
     {
         if (!cutil::is_number($user_id) || $user_id < 1) {
@@ -2569,6 +2569,61 @@ class corders extends crecord
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $result && $result['count'] > 0;
+    }
+    public function get_otumami_orders_for_admin($debug, $filter_status, $filter_date_from, $filter_date_to, $filter_time)
+    {
+        // おつまみが1つ以上含まれる注文をDISTINCTで取得
+        $query = "
+            SELECT DISTINCT
+                o.order_id, o.user_id, o.total_amount, o.shipping_address,
+                o.order_status, o.order_date, o.delivery_date, o.delivery_time,
+                u.user_name
+            FROM orders o
+            JOIN order_items oi ON o.order_id = oi.order_id
+            LEFT JOIN user_info u ON o.user_id = u.user_id
+        ";
+
+        // ★ おつまみ注文に絞り込むための必須条件
+        $where_clauses[] = "oi.otumami_id IS NOT NULL";
+        $prep_arr = [];
+
+        // --- 各種絞り込み条件を追加 ---
+        if (!empty($filter_status)) {
+            $where_clauses[] = "oi.item_status = :status";
+            $prep_arr[':status'] = $filter_status;
+        }
+        if (!empty($filter_date_from)) {
+            $where_clauses[] = "o.delivery_date >= :date_from";
+            $prep_arr[':date_from'] = $filter_date_from;
+        }
+        if (!empty($filter_date_to)) {
+            $where_clauses[] = "o.delivery_date <= :date_to";
+            $prep_arr[':date_to'] = $filter_date_to;
+        }
+        if (!empty($filter_time)) {
+            $where_clauses[] = "o.delivery_time = :time";
+            $prep_arr[':time'] = $filter_time;
+        }
+
+        if (!empty($where_clauses)) {
+            $query .= " WHERE " . implode(" AND ", $where_clauses);
+        }
+
+        $query .= " ORDER BY o.order_date DESC";
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        $orders = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+
+        // 各注文に紐づく全商品リストを取得（後のPHP側でのフィルタリング用）
+        if (!empty($orders)) {
+            $order_items_db = new corder_items();
+            foreach ($orders as &$order) {
+                $order['items'] = $order_items_db->get_items_by_order_id($debug, $order['order_id']);
+            }
+            unset($order);
+        }
+
+        return $orders;
     }
 
     public function __destruct()
@@ -2806,6 +2861,25 @@ class corder_items extends crecord
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         return [];
+    }
+    public function update_otumami_item_status($debug, $order_item_id, $status)
+    {
+        // おつまみであることを確認しつつ更新
+        $query = "
+            UPDATE order_items
+            SET item_status = :status
+            WHERE order_item_id = :order_item_id AND otumami_id IS NOT NULL
+        ";
+        $prep_arr = [
+            ':status' => $status,
+            ':order_item_id' => (int)$order_item_id
+        ];
+
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($prep_arr);
+
+        // 実際に更新された行が1行以上あるかチェック
+        return $stmt->rowCount() > 0;
     }
 
     public function __destruct()

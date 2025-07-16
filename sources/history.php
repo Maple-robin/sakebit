@@ -23,7 +23,8 @@ require_once __DIR__ . '/common/contents_db.php';
  * @param int $range 現在ページの前後いくつのリンクを表示するか
  * @return string 生成されたHTML
  */
-function generate_pagination_links($current_page, $total_pages, $range = 1) {
+function generate_pagination_links($current_page, $total_pages, $range = 1)
+{
     $html = '<nav class="pagination">';
 
     // 「前へ」ボタン
@@ -82,7 +83,7 @@ $order_items_db = new corder_items();
 
 $total_orders = $orders_db->get_orders_count_by_user_id($debug, $user_id);
 $total_pages = ceil($total_orders / $items_per_page);
-
+// ★★★ ここが修正箇所です ★★★
 $orders = $orders_db->get_orders_by_user_id($debug, $user_id, $items_per_page, $offset);
 
 foreach ($orders as $key => $order) {
@@ -92,6 +93,7 @@ foreach ($orders as $key => $order) {
 ?>
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -100,6 +102,7 @@ foreach ($orders as $key => $order) {
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="css/history.css">
 </head>
+
 <body>
     <?php require_once 'header.php'; ?>
 
@@ -132,10 +135,10 @@ foreach ($orders as $key => $order) {
                                         <div class="history-item">
                                             <?php
                                             $image_path = !empty($item['image_path']) ? htmlspecialchars($item['image_path'], ENT_QUOTES, 'UTF-8') : 'img/no-image.png';
-                                            $link_url = ($item['item_type'] === 'product') 
-                                                        ? 'product.php?id=' . $item['product_id'] 
-                                                        : 'otsumami.php?id=' . $item['otumami_id'];
-                                            
+                                            $link_url = ($item['item_type'] === 'product')
+                                                ? 'product.php?id=' . $item['product_id']
+                                                : 'otsumami.php?id=' . $item['otumami_id'];
+
                                             $item_status_class = '';
                                             $item_status_text = '';
                                             switch ($item['item_status']) {
@@ -168,12 +171,15 @@ foreach ($orders as $key => $order) {
                                                     <p class="history-item__price">
                                                         &yen;<?php echo htmlspecialchars(number_format($item['price_at_purchase']), ENT_QUOTES, 'UTF-8'); ?>
                                                     </p>
-                                                    <p class="history-item__quantity">
-                                                        数量: <?php echo htmlspecialchars($item['quantity'], ENT_QUOTES, 'UTF-8'); ?>
-                                                    </p>
-                                                    <div class="item-status <?php echo $item_status_class; ?>">
-                                                        <span class="item-status-dot"></span>
-                                                        <span class="item-status-text"><?php echo $item_status_text; ?></span>
+
+                                                    <div class="history-item__quantity-status">
+                                                        <p class="history-item__quantity">
+                                                            数量: <?php echo htmlspecialchars($item['quantity'], ENT_QUOTES, 'UTF-8'); ?>
+                                                        </p>
+                                                        <div class="item-status <?php echo $item_status_class; ?>">
+                                                            <span class="item-status-dot"></span>
+                                                            <span class="item-status-text"><?php echo $item_status_text; ?></span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -199,4 +205,5 @@ foreach ($orders as $key => $order) {
     <?php require_once 'footer.php'; ?>
     <script src="js/script.js"></script>
 </body>
+
 </html>
