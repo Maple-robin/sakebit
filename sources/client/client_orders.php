@@ -6,9 +6,7 @@ require_once '../common/contents_db.php';
 
 // --- 絞り込み条件の取得 ---
 $filter_status = $_GET['status'] ?? '';
-$filter_time = $_GET['time'] ?? ''; // ★配送時間フィルターの値を取得
-
-// ★ページ初回アクセス時（GETパラメータが何もない時）に、日付を本日付にデフォルト設定
+$filter_time = $_GET['time'] ?? '';
 $is_initial_load = empty($_GET);
 if ($is_initial_load) {
     $today = date('Y-m-d');
@@ -21,7 +19,6 @@ if ($is_initial_load) {
 
 // --- 注文データを取得 ---
 $orders_db = new corders();
-// ★get_orders_for_client に配送時間フィルターの変数を渡す
 $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, $filter_date_from, $filter_date_to, $filter_time);
 
 ?>
@@ -36,13 +33,29 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
     <link rel="stylesheet" href="../clientcss/client_orders.css">
 </head>
 <body class="admin-page-layout">
-    <?php include 'client_header.php'; ?>
+    <header class="admin-header">
+        <div class="admin-header__inner">
+            <h1 class="admin-header__logo"><a href="client_top.php">OUR BRAND 管理者画面</a></h1>
+            <nav class="admin-header__nav">
+                <ul class="admin-nav__list">
+                    <li><a href="client_top.php">商品一覧</a></li>
+                    <li><a href="client_add_product.php">お酒追加</a></li>
+                    <li><a href="client_orders.php" class="is-active">注文管理</a></li>
+                    <li><a href="client_preview.php">プレビュー</a></li>
+                    <li><a href="client_analytics.php">情報確認</a></li>
+                </ul>
+                <div class="admin-header__actions">
+                    <a href="client_login.php" class="admin-header__logout"><i class="fas fa-sign-out-alt"></i> ログアウト</a>
+                </div>
+            </nav>
+        </div>
+    </header>
 
     <main class="admin-main">
         <div class="admin-container">
             <h2 class="admin-section-title">注文管理</h2>
 
-            <!-- ★絞り込みフォーム (アコーディオンがデフォルトで開くようにPHPで制御) -->
+            <!-- 絞り込みフォーム (変更なし) -->
             <div class="filter-wrapper <?php if ($is_initial_load || !empty($_GET)) echo 'is-open'; ?>">
                 <button type="button" class="filter-toggle-btn">絞り込み条件 <i class="fas fa-chevron-down"></i></button>
                 <div class="filter-content">
@@ -65,7 +78,6 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
                             <label for="date_to">配送希望日 (To)</label>
                             <input type="date" id="date_to" name="date_to" value="<?php echo htmlspecialchars($filter_date_to); ?>">
                         </div>
-                        <!-- ★★★ 配送希望時間のプルダウンを追加 ★★★ -->
                         <div class="filter-group">
                             <label for="time">配送希望時間</label>
                             <select id="time" name="time">
@@ -86,7 +98,6 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
 
             <div id="message-box" class="message-box"></div>
 
-            <!-- ... (一括操作フォーム、テーブル部分は変更なし) ... -->
             <div class="batch-actions">
                 <select id="batch-status-select">
                     <option value="">一括操作を選択</option>
@@ -117,16 +128,27 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
                         <?php else: ?>
                             <?php foreach ($orders as $order): ?>
                                 <?php
+                                // ★★★ この注文に含まれる商品の中から、自社のものだけをフィルタリング ★★★
                                 $client_items = array_filter($order['items'], function($item) use ($client_id) {
-                                    return $item['item_type'] === 'product' && $item['client_id'] == $client_id;
+                                    return $item['item_type'] === 'product' && isset($item['client_id']) && $item['client_id'] == $client_id;
                                 });
+
+                                // 自社の商品がなければ、この注文に関する行は一切表示しない
                                 if (empty($client_items)) {
                                     continue;
                                 }
                                 ?>
-                                <?php foreach ($client_items as $item): ?>
-                                    <tr>
-                                        <td><input type="checkbox" class="item-checkbox" value="<?php echo $item['order_item_id']; ?>"></td>
+                                <?php foreach ($client_items as $item): // ★★★ フィルタリング済みの配列をループ ★★★ ?>
+                                    <?php
+                                    $is_final_status = in_array($item['item_status'], ['delivered', 'cancelled']);
+                                    $is_operable = !$is_final_status;
+                                    ?>
+                                    <tr class="own-item <?php if($is_final_status) echo 'final-status-row'; ?>">
+                                        <td>
+                                            <?php if ($is_operable): ?>
+                                                <input type="checkbox" class="item-checkbox" value="<?php echo $item['order_item_id']; ?>">
+                                            <?php endif; ?>
+                                        </td>
                                         <td><?php echo htmlspecialchars($order['order_id']); ?></td>
                                         <td>
                                             <?php echo htmlspecialchars(date('Y/m/d H:i', strtotime($order['order_date']))); ?><br>
@@ -139,7 +161,7 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
                                             <?php echo htmlspecialchars($order['delivery_time'] ?? ''); ?>
                                         </td>
                                         <td>
-                                            <select class="status-select" data-order-item-id="<?php echo $item['order_item_id']; ?>" data-order-status="<?php echo htmlspecialchars($item['item_status']); ?>">
+                                            <select class="status-select" data-order-item-id="<?php echo $item['order_item_id']; ?>" data-order-status="<?php echo htmlspecialchars($item['item_status']); ?>" <?php if ($is_final_status) echo 'disabled'; ?>>
                                                 <option value="pending" <?php if ($item['item_status'] == 'pending') echo 'selected'; ?>>未対応</option>
                                                 <option value="shipped" <?php if ($item['item_status'] == 'shipped') echo 'selected'; ?>>発送済み</option>
                                                 <option value="delivered" <?php if ($item['item_status'] == 'delivered') echo 'selected'; ?>>配達済み</option>
@@ -147,7 +169,9 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
                                             </select>
                                         </td>
                                         <td>
-                                            <button class="update-btn" data-order-item-id="<?php echo $item['order_item_id']; ?>">更新</button>
+                                            <?php if ($is_operable): ?>
+                                                <button class="update-btn" data-order-item-id="<?php echo $item['order_item_id']; ?>">更新</button>
+                                            <?php endif; ?>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -161,10 +185,9 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
     <footer class="admin-footer">
         <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
     </footer>
-
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ... (showMessage, updateItemStatus 関数、ボタンのイベントリスナーは変更なし) ...
+        // (JavaScript部分は変更なし)
         const messageBox = document.getElementById('message-box');
         const selectAllCheckbox = document.getElementById('select-all-checkbox');
         const itemCheckboxes = document.querySelectorAll('.item-checkbox');
@@ -208,7 +231,7 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
 
         if (selectAllCheckbox) {
             selectAllCheckbox.addEventListener('change', function() {
-                itemCheckboxes.forEach(checkbox => {
+                document.querySelectorAll('.item-checkbox:not(:disabled)').forEach(checkbox => {
                     checkbox.checked = this.checked;
                 });
             });
@@ -221,7 +244,7 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
                     .filter(checkbox => checkbox.checked)
                     .map(checkbox => checkbox.value);
                 if (selectedIds.length === 0) {
-                    showMessage('一括更新する商品を選択してください。', false);
+                    showMessage('一括更新する注文を選択してください。', false);
                     return;
                 }
                 const batchStatus = document.getElementById('batch-status-select').value;
@@ -233,7 +256,6 @@ $orders = $orders_db->get_orders_for_client($debug, $client_id, $filter_status, 
             });
         }
         
-        // ★★★ アコーディオンの開閉を制御するシンプルなスクリプト ★★★
         const filterToggleBtn = document.querySelector('.filter-toggle-btn');
         if (filterToggleBtn) {
             const filterWrapper = filterToggleBtn.closest('.filter-wrapper');

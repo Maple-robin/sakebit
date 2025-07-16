@@ -133,12 +133,12 @@
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
-    overflow-x: auto; /* テーブルがはみ出した場合に横スクロールを許可 */
+    overflow-x: auto;
 }
 
 .admin-table {
     width: 100%;
-    border-collapse: collapse; /* 枠線を結合 */
+    border-collapse: collapse;
 }
 
 .admin-table th {
@@ -146,28 +146,27 @@
     padding: 15px 12px;
     font-weight: 500;
     text-align: left;
-    white-space: nowrap; /* ヘッダーは折り返さない */
+    white-space: nowrap;
     border-bottom: 2px solid var(--border-color);
 }
 
 .admin-table td {
     padding: 12px;
     border-bottom: 1px solid var(--border-color);
-    vertical-align: middle; /* セル内のコンテンツを中央揃えに */
+    vertical-align: middle;
 }
 
 .admin-table tbody tr:last-child td {
-    border-bottom: none; /* 最後の行の下線を消す */
+    border-bottom: none;
 }
 
-/* テーブル行のホバー効果と交互色 */
 .admin-table tbody tr {
     transition: background-color 0.2s;
 }
-.admin-table tbody tr:nth-child(even) {
+.admin-table tbody tr.own-item:nth-child(even) {
     background-color: var(--base-bg);
 }
-.admin-table tbody tr:hover {
+.admin-table tbody tr.own-item:hover {
     background-color: #e9ecef;
 }
 
@@ -177,65 +176,6 @@
     text-align: center;
 }
 
-.order-items-cell ul {
-    margin: 0;
-    padding-left: 18px;
-}
-.order-items-cell li {
-    margin-bottom: 5px;
-    color: #495057;
-}
-.order-items-cell li:last-child {
-    margin-bottom: 0;
-}
-
-.delivery-info {
-    font-size: 1.3rem;
-    color: var(--secondary-color);
-    white-space: nowrap;
-}
-
-
-/* --- ステータス毎の見た目 --- */
-.status-select {
-    width: 120px;
-    padding: 8px;
-    border-radius: var(--border-radius);
-    font-size: 1.4rem;
-    font-weight: 500;
-    border: 2px solid; /* 枠線に色を付ける準備 */
-}
-
-/* JavaScriptでのクラス付与を想定していますが、
-   現状でも選択肢によってある程度見た目が変わるようにします */
-select.status-select {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-position: right 10px center;
-    background-repeat: no-repeat;
-    background-size: 10px;
-}
-select.status-select[data-order-status="pending"] {
-    border-color: var(--pending-color);
-    color: #856404;
-    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%23ffc107"><path d="M5 10L0 0h10z"/></svg>');
-}
-select.status-select[data-order-status="shipped"] {
-    border-color: var(--shipped-color);
-    color: var(--primary-color);
-    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%23007bff"><path d="M5 10L0 0h10z"/></svg>');
-}
-select.status-select[data-order-status="delivered"] {
-    border-color: var(--delivered-color);
-    color: var(--success-color);
-    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%2328a745"><path d="M5 10L0 0h10z"/></svg>');
-}
-select.status-select[data-order-status="cancelled"] {
-    border-color: var(--cancelled-color);
-    color: var(--cancelled-color);
-    background-image: url('data:image/svg+xml;charset=UTF8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" fill="%23dc3545"><path d="M5 10L0 0h10z"/></svg>');
-}
 /* --- アコーディオンフィルターのスタイル --- */
 .filter-wrapper {
     margin-bottom: 25px;
@@ -285,16 +225,82 @@ select.status-select[data-order-status="cancelled"] {
 }
 
 .filter-wrapper.is-open .filter-content {
-    max-height: 500px; /* 十分な高さを確保 */
+    max-height: 500px;
     overflow: visible;
     border: 1px solid var(--border-color);
     border-top: none;
     box-shadow: var(--shadow);
 }
 
-/* アコーディオン内のfilter-boxのスタイル調整 */
 .filter-content .filter-box {
     box-shadow: none;
     border: none;
     margin-bottom: 0;
+}
+
+/* --- ステータス毎の見た目 --- */
+.status-select {
+    width: 120px;
+    padding: 8px;
+    border-radius: var(--border-radius);
+    font-size: 1.4rem;
+    font-weight: 500;
+    border: 2px solid;
+}
+
+/* 他社製品/おつまみの行の背景色を少し変えて区別しやすくする */
+.admin-table tbody tr.other-item {
+    background-color: #f8f9fa;
+}
+.admin-table tbody tr.other-item:hover {
+    background-color: #f1f3f5;
+}
+
+/* 操作不可のステータステキストのスタイル */
+.status-text-display {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #fff;
+    background-color: #6c757d; /* デフォルトはグレー */
+}
+
+.status-text-display.status-pending {
+    background-color: #ffc107;
+    color: #212529;
+}
+.status-text-display.status-shipped {
+    background-color: #17a2b8;
+}
+.status-text-display.status-delivered {
+    background-color: #28a745;
+}
+.status-text-display.status-cancelled {
+    background-color: #dc3545;
+}
+
+/* ★★★ 完了済みステータスの行のスタイルを追加 ★★★ */
+.admin-table tbody tr.final-status-row {
+    color: #6c757d; /* 文字色を少し薄くする */
+    background-color: #f8f9fa !important; /* 背景色を固定 */
+}
+
+/* ★★★ disabled状態の要素のスタイルを追加 ★★★ */
+.status-select:disabled,
+.update-btn:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.update-btn:disabled:hover {
+    background-color: #e9ecef; /* ホバーしても色が変わらないように */
+    transform: none;
+}
+
+input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }

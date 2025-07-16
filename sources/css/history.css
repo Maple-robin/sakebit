@@ -25,6 +25,7 @@
 
 .history {
     padding: 30px 0; /* スマホ向けに上下の余白を調整 */
+    padding-top: 80px; /* ヘッダー高さ分の余白を追加 */
     background-color: var(--background-color-light);
     font-family: var(--font-family-base);
 }
@@ -38,8 +39,10 @@
 /* ページタイトル */
 .section-title {
     text-align: center;
-    margin-bottom: 30px;
+    margin-top: 30px;
+    margin-bottom: 50px;
     font-family: var(--font-family-serif);
+    padding-top: 0;
 }
 .section-title .en {
     display: block;
@@ -251,19 +254,16 @@
 @media (min-width: 768px) {
     .history {
         padding: 60px 20px;
+        padding-top: 100px; /* PC時はさらに余白を増やす */
     }
     .history__inner {
         max-width: 800px;
         padding: 0;
     }
     .section-title {
-        margin-bottom: 40px;
-    }
-    .section-title .en {
-        font-size: 2.8rem;
-    }
-    .section-title .ja {
-        font-size: 1.6rem;
+        margin-top: 50px;
+        margin-bottom: 60px;
+        padding-top: 0;
     }
     .history-item__meta {
         flex-direction: row; /* PCでは横並びに戻す */
