@@ -86,7 +86,7 @@
                             <p>ウィスキー本来の香りや味わいを最も楽しめる飲み方。チェイサー（水）を用意しながら、ゆっくりと味わうのがおすすめです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/straight_whisky.png" alt="ストレートウィスキー">
+                            <img src="img/ウィスキーストレート.png" alt="ストレートウィスキー">
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                             <p>ウィスキーをソーダで割った爽快な飲み方。食事との相性も抜群です。レモンピールを加えると香りが引き立ちます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/highball.png" alt="ハイボール">
+                            <img src="img/ウィスキーハイボール.png" alt="ハイボール">
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                             <p>ウイスキーと水を1:1で混ぜて飲む方法です。ウイスキーの良い香りが一番よくわかる飲み方です。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/twice_up.png" alt="トワイスアップ">
+                            <img src="img/ウィスキートワイステップ.png" alt="トワイスアップ">
                         </div>
                     </div>
                 </div>
