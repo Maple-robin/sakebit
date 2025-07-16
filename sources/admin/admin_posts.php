@@ -42,7 +42,7 @@
 
     <footer class="admin-footer">
         <div class="admin-footer__inner">
-            <p class="admin-footer__copyright">© SAKE BIT All Rights Reserved.</p>
+            <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
         </div>
     </footer>
 

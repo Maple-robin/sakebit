@@ -42,7 +42,7 @@ $orders = $orders_db->get_otumami_orders_for_admin($debug, $filter_status, $filt
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OUR BRAND | おつまみ注文管理</title>
+    <title>SAKE BIT | おつまみ注文管理</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
@@ -191,7 +191,7 @@ $orders = $orders_db->get_otumami_orders_for_admin($debug, $filter_status, $filt
 
     <footer class="admin-footer">
         <div class="admin-footer__inner">
-            <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
+            <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
         </div>
     </footer>
     
@@ -280,5 +280,6 @@ $orders = $orders_db->get_otumami_orders_for_admin($debug, $filter_status, $filt
         }
     });
     </script>
+    <script src="../adminjs/admin.js"></script>
 </body>
 </html>
