@@ -86,7 +86,7 @@
                             <p>カシスリキュールをオレンジジュースで割り、フルーティーでジュースのように甘く飲みやすいカクテルです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/cassis_orange.png" alt="カシスオレンジ">
+                            <img src="img/スピッツカシスオレンジ.png" alt="カシスオレンジ">
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
                             <p>ジンをトニックウォーターで割り、爽やかな香りとすっきりとしたほろ苦さが楽しめる定番カクテルです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/gin_tonic.png" alt="ジントニック">
+                            <img src="img/スピッツジントニック.png" alt="ジントニック">
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                             <p>ウォッカをオレンジジュースで割り、オレンジの甘みでアルコール感をほとんど感じさせない飲みやすいカクテルです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/screwdriver.png" alt="スクリュードライバー">
+                            <img src="img/スピッツスクリュードライバー.png" alt="スクリュードライバー">
                         </div>
                     </div>
                 </div>
