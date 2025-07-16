@@ -123,24 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 <body>
-    <header class="admin-header">
-        <div class="admin-header__inner">
-            <h1 class="admin-header__logo">
-                <a href="admin_products.php">SAKE BIT 管理者ページ</a>
-            </h1>
-            <nav class="admin-header__nav">
-                <ul class="admin-nav__list">
-                    <li><a href="admin_products.php">お酒管理</a></li>
-                    <li><a href="admin_otsumami.php">おつまみ管理</a></li>
-                    <li><a href="admin_users.php">ユーザー管理</a></li>
-                    <li><a href="admin_posts.php">投稿管理</a></li>
-                    <li><a href="admin_inquiries.php">お問い合わせ管理</a></li>
-                    <li><a href="admin_faq.php">FAQ管理</a></li>
-                    <li><a href="admin_reports.php">通報管理</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <?php require_once 'admin_header.php'; ?>
 
     <div class="login-container"> <h1 class="login-title">管理者ユーザー登録</h1>
 
