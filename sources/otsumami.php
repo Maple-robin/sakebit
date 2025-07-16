@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>おつまみ詳細 | OUR BRAND</title>
+    <title>おつまみ詳細 | SAKE BIT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
@@ -68,7 +68,7 @@
     }
     
     if ($otumami) {
-        echo "<script>document.title = '" . htmlspecialchars($otumami['otumami_name'], ENT_QUOTES, 'UTF-8') . " | OUR BRAND';</script>";
+        echo "<script>document.title = '" . htmlspecialchars($otumami['otumami_name'], ENT_QUOTES, 'UTF-8') . " | SAKE BIT';</script>";
     }
     ?>
 

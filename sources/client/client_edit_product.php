@@ -66,7 +66,7 @@ unset($_SESSION['edit_errors'], $_SESSION['edit_old_data']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品情報を編集 | OUR BRAND 管理者画面</title>
+    <title>商品情報を編集 | SAKE BIT 管理者画面</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
@@ -77,7 +77,7 @@ unset($_SESSION['edit_errors'], $_SESSION['edit_old_data']);
 <body class="admin-page-layout">
     <header class="admin-header">
         <div class="admin-header__inner">
-            <h1 class="admin-header__logo"><a href="client_top.php">OUR BRAND 管理者画面</a></h1>
+            <h1 class="admin-header__logo"><a href="client_top.php">SAKE BIT 管理者画面</a></h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
                     <li><a href="client_top.php" class="is-active">商品一覧</a></li>
@@ -214,7 +214,7 @@ unset($_SESSION['edit_errors'], $_SESSION['edit_old_data']);
     </main>
 
     <footer class="admin-footer">
-        <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
+        <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
     </footer>
 
     <script>

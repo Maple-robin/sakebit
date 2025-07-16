@@ -1,0 +1,60 @@
+body {
+    font-family: 'Noto Sans JP', 'Zen Old Mincho', serif;
+    background: #fff;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+.policy-main {
+    min-height: 100vh;
+    padding-top: 96px;
+}
+.policy-main .policy-title,
+.policy-main .policy-section,
+.policy-main .policy-section h2,
+.policy-main .policy-section p,
+.policy-main .policy-section a {
+    font-size: 2.1rem;
+}
+.policy-title {
+    font-family: 'Zen Old Mincho', serif;
+    font-size: 3.2rem;
+    text-align: center;
+    margin-bottom: 48px;
+    color: #3b2e1a;
+    letter-spacing: 0.1em;
+}
+.policy-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 16px 48px 16px;
+}
+.policy-section h2 {
+    font-size: 2.2rem;
+    margin-top: 48px;
+    color: #6b4f1d;
+    border-left: 4px solid #e0c68a;
+    padding-left: 18px;
+    font-family: 'Zen Old Mincho', serif;
+}
+.policy-section p, .policy-section a {
+    font-size: 1.7rem;
+    line-height: 2.5;
+    color: #222;
+}
+.policy-section a {
+    color: #b48a3b;
+    text-decoration: underline;
+}
+@media (max-width: 600px) {
+    .policy-main .policy-title {
+        font-size: 3rem;
+    }
+    .policy-main .policy-section h2 {
+        font-size: 2.3rem;
+    }
+    .policy-main .policy-section p,
+    .policy-main .policy-section a {
+        font-size: 2rem;
+    }
+}

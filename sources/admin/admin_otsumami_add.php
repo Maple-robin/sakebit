@@ -30,7 +30,7 @@ unset($_SESSION['message'], $_SESSION['errors'], $_SESSION['old_input']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OUR BRAND | 新しいおつまみを登録</title>
+    <title>SAKE BIT | 新しいおつまみを登録</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@ unset($_SESSION['message'], $_SESSION['errors'], $_SESSION['old_input']);
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
-                <a href="admin_products.php">OUR BRAND 管理者ページ</a>
+                <a href="admin_products.php">SAKE BIT 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
@@ -161,7 +161,7 @@ unset($_SESSION['message'], $_SESSION['errors'], $_SESSION['old_input']);
 
     <footer class="admin-footer">
         <div class="admin-footer__inner">
-            <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
+            <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
         </div>
     </footer>
 

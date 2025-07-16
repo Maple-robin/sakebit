@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OUR BRAND | 管理者ログイン</title>
+    <title>SAKE BIT | 管理者ログイン</title>
     <!-- Google Fonts: Noto Sans JP と Zen Old Mincho を読み込み -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
-                <a href="admin_products.php">OUR BRAND 管理者ページ</a>
+                <a href="admin_products.php">SAKE BIT 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
@@ -211,7 +211,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- ログインフォーム全体を囲むコンテナ -->
     <div class="login-container">
         <!-- ログインページのタイトル -->
-        <h1 class="login-title">OUR BRAND 管理者ログイン</h1>
+        <h1 class="login-title">SAKE BIT 管理者ログイン</h1>
 
         <!-- ログインフォーム -->
         <!-- action="admin_login.php" で同じページに送信し、処理を行う -->
@@ -235,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- フッター -->
     <footer class="admin-footer">
         <div class="admin-footer__inner">
-            <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
+            <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
         </div>
     </footer>
 

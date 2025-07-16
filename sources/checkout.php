@@ -67,7 +67,7 @@ $delivery_time = $_GET['delivery_time'] ?? '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>チェックアウト | OUR BRAND</title>
+    <title>チェックアウト | SAKE BIT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -86,7 +86,7 @@ $delivery_time = $_GET['delivery_time'] ?? '';
     <header class="header">
         <div class="header__inner">
             <h1 class="header__logo">
-                <a href="index.php">OUR BRAND</a>
+                <a href="index.php">SAKE BIT</a>
             </h1>
         </div>
     </header>

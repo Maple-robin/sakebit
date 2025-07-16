@@ -36,7 +36,7 @@ $tag_ranking = $canalytics->get_tag_view_ranking($db_connection, $date_from, $da
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>情報確認 | OUR BRAND 管理者画面</title>
+    <title>情報確認 | SAKE BIT 管理者画面</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@ $tag_ranking = $canalytics->get_tag_view_ranking($db_connection, $date_from, $da
     <header class="admin-header">
         <div class="admin-header__inner">
             <h1 class="admin-header__logo">
-                <a href="client_top.php">OUR BRAND 管理者画面</a>
+                <a href="client_top.php">SAKE BIT 管理者画面</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
@@ -149,7 +149,7 @@ $tag_ranking = $canalytics->get_tag_view_ranking($db_connection, $date_from, $da
     </main>
 
     <footer class="admin-footer">
-        <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
+        <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
     </footer>
 </body>
 </html>

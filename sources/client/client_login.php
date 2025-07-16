@@ -29,7 +29,7 @@ unset($_SESSION['login_error'], $_SESSION['registration_success_message'], $_SES
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>管理者ログイン | OUR BRAND</title>
+    <title>管理者ログイン | SAKE BIT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@ unset($_SESSION['login_error'], $_SESSION['registration_success_message'], $_SES
 <body>
     <div class="login-container">
         <h1 class="login-title">
-            OUR BRAND<br>管理者ログイン
+            SAKE BIT<br>管理者ログイン
         </h1>
 
         <?php

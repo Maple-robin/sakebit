@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>お問い合わせ管理 | OUR BRAND 管理者ページ</title>
+    <title>お問い合わせ管理 | SAKE BIT 管理者ページ</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -13,7 +13,7 @@
 <body>
     <header class="admin-header">
         <div class="admin-header__inner">            <h1 class="admin-header__logo">
-                <a href="admin.php">OUR BRAND 管理者ページ</a>
+                <a href="admin.php">SAKE BIT 管理者ページ</a>
             </h1>
             <nav class="admin-header__nav">
                 <ul class="admin-nav__list">
@@ -59,7 +59,7 @@
 
     <footer class="admin-footer">
         <div class="admin-footer__inner">
-            <p class="admin-footer__copyright">© OUR BRAND Admin All Rights Reserved.</p>
+            <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
         </div>
     </footer>
 

@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン | OUR BRAND</title>
+    <title>ログイン | SAKE BIT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -133,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <main>
         <div class="login-container">
-            <h1 class="login-logo">OUR BRAND</h1>
+            <h1 class="login-logo">SAKE BIT</h1>
             <form class="login-form" method="post" action="login.php">
                 <?php if (!empty($login_error_message)): ?>
                     <p class="error-message"><?= htmlspecialchars($login_error_message) ?></p>

@@ -20,14 +20,14 @@
             <li><a href="MyPage.php">会員登録・ログイン</a></li>
             <li><a href="history.php">購入履歴</a></li>
             <li><a href="cart.php">買い物かごを見る</a></li>
-            <li><a href="privacy.php">プライバシーポリシー</a></li>
-            <li><a href="terms.php">利用規約</a></li>
+            <li><a href="privacy_policy.php">プライバシーポリシー</a></li>
+            <li><a href="terms_of_service.php">利用規約</a></li>
         </ul>            
         <div class="footer__logo" style="text-align: center;">
             <a href="index.php">
-                <img src="img/logo.png" alt="OUR BRAND" style="height:64px;">
+                <img src="img/logo.png" alt="SAKE BIT" style="height:64px;">
             </a>
         </div>
-        <p class="footer__copyright">© OUR BRAND All Rights Reserved.</p>
+        <p class="footer__copyright">© SAKE BIT All Rights Reserved.</p>
     </div>
 </footer>
