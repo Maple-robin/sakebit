@@ -100,9 +100,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (document.querySelector('.mySwiperProducts')) {
             new Swiper('.mySwiperProducts', {
-                slidesPerView: 'auto',
-                spaceBetween: 20,
-                freeMode: true,
+                slidesPerView: 'auto', // 元のレイアウトを維持
+                spaceBetween: 20,      // 元のレイアウトを維持
+                freeMode: false,       // 挙動のみ変更 (スナップを有効に)
                 pagination: {
                     el: '.swiper-pagination',
                     clickable: true,
@@ -119,9 +119,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (document.querySelector('.mySwiperBeginners')) {
             new Swiper('.mySwiperBeginners', {
-                slidesPerView: 'auto',
-                spaceBetween: 20,
-                freeMode: true,
+                slidesPerView: 'auto', // 元のレイアウトを維持
+                spaceBetween: 20,      // 元のレイアウトを維持
+                freeMode: false,       // 挙動のみ変更 (スナップを有効に)
                 pagination: {
                     el: '.swiper-pagination',
                     clickable: true,
