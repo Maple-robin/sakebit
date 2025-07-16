@@ -53,7 +53,7 @@
                 </div>
                 <div class="intro-content">
                     <div class="intro-content__image-container">
-                        <img src="img/gingerale.png" alt="お酒の紹介画像" class="intro-content__image">
+                        <img src="img/いろんなお酒.png" alt="お酒の紹介画像" class="intro-content__image">
                         <div class="intro-content__overlay">
                             <p>お酒は、リラックスしたり、食事をより楽しんだり、人とのコミュニケーションを円滑にする飲み物です。世界にはビール、ワイン、日本酒など、さまざまな種類のお酒があり、それぞれに独自の文化や味わいがあります。</p>
                         </div>
