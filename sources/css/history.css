@@ -1,164 +1,192 @@
-/* === 既存のスタイルを調整 === */
+/*----------------------------------------
+  history.css - 購入履歴ページ (新デザイン改善版)
+----------------------------------------*/
+
+/* :rootでサイトの基調となる色を定義すると、後から変更しやすくなります */
+:root {
+    --font-family-base: "Noto Sans JP", sans-serif;
+    --font-family-serif: "Zen Old Mincho", serif;
+    --text-color-primary: #333;
+    --text-color-secondary: #777;
+    --border-color-light: #f0f0f0;
+    --border-color-base: #e0e0e0;
+    --background-color-light: #f9f9f9;
+    --background-color-white: #ffffff;
+    
+    /* ステータスカラー */
+    --status-pending-color: #f39c12;  /* 保留: 落ち着いたオレンジ */
+    --status-shipped-color: #3498db;  /* 発送済: 穏やかな青 */
+    --status-delivered-color: #2ecc71; /* 配達済: ソフトな緑 */
+    --status-cancelled-color: #e74c3c; /* キャンセル: 主張しすぎない赤 */
+}
 
 .history {
-    padding: 60px 20px; /* 上下のpaddingを調整 */
-    background-color: #f9f9f9; /* 背景色を少しグレーにするとカードが映えます */
+    padding: 60px 20px;
+    background-color: var(--background-color-light);
+    font-family: var(--font-family-base);
 }
 
 .history__inner {
-    max-width: 900px; /* 幅を少し調整 */
+    max-width: 800px; /* 少しスリムに */
     margin: 0 auto;
-    padding: 0; /* 内側のpaddingは不要に */
 }
 
-/* history-listは注文カードのコンテナとして機能させます */
 .history-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 20px; /* カード間のスペース */
+    gap: 25px;
 }
 
-/* history-itemはカード内の各商品アイテムになります */
+/* カード全体 */
+.history-order-card {
+    background-color: var(--background-color-white);
+    border: 1px solid var(--border-color-base);
+    border-radius: 6px;
+    text-align: left;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.3s ease;
+}
+.history-order-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.07);
+}
+
+/* カードヘッダー */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: var(--background-color-white);
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.order-date {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text-color-primary);
+}
+
+.order-date .fa-calendar-alt {
+    margin-right: 10px;
+    color: var(--text-color-secondary);
+}
+
+.order-total {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-color-primary);
+    font-family: var(--font-family-serif);
+}
+
+/* カードボディ */
+.card-body {
+    padding: 5px 25px; /* 上下のpaddingを少し減らす */
+}
+
+/* 商品アイテム */
 .history-item {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 20px 0; /* 上下のpaddingのみに */
-    margin-bottom: 0; /* カードが間隔を管理するので不要に */
+    padding: 20px 0;
 }
 
-/* 最後のアイテム以外は下に線を引くのを、最初のアイテム以外は上に線を引くように変更 */
 .history-item:not(:first-child) {
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color-light);
 }
 
 .history-item__img {
-    width: 80px; /* 少し小さくしてバランス調整 */
-    height: 80px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
     border-radius: 4px;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color-light);
 }
 
 .history-item__details {
-    text-align: left;
-    flex: 1; /* 幅が可変になるように */
+    flex: 1;
 }
 
 .history-item__name {
-    font-size: 1.6rem; /* サイズ調整 */
+    font-size: 1.6rem;
     font-weight: 500;
-    margin-bottom: 8px; /* 少し詰める */
+    margin: 0 0 10px 0;
 }
 
-/* 商品名にリンクがついた場合の下線などを消す */
 .history-item__name a {
-    color: inherit; /* 親要素の色を継承 */
+    color: var(--text-color-primary);
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .history-item__name a:hover {
-    color: #007bff; /* ブランドカラーに合わせて変更してください */
+    color: var(--status-shipped-color); /* サイトのテーマカラーに合わせる */
+}
+
+/* 価格、数量、ステータスをまとめるコンテナ */
+.history-item__meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px 20px; /* 縦横のgapを調整 */
 }
 
 .history-item__price,
-.history-item__quantity { /* 数量表示用のクラスも追加 */
+.history-item__quantity {
     font-size: 1.4rem;
-    color: #666;
+    color: var(--text-color-secondary);
     line-height: 1.5;
+    margin: 0;
 }
 
-
-/* === ▼▼▼ ここから新しいカードデザイン用のスタイルを追加 ▼▼▼ === */
-
-/* カード全体 */
-.history-order-card {
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    text-align: left;
-    overflow: hidden; /* 角丸を維持するため */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-/* カードヘッダー（注文日、合計、ステータス） */
-.card-header {
+/* ★★★ 新しいステータス表示のデザイン ★★★ */
+.item-status {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
-    background-color: #fafafa;
-    border-bottom: 1px solid #eee;
+    gap: 8px;
     font-size: 1.4rem;
-}
-
-.order-date {
-    font-weight: 500;
-    color: #333;
-}
-
-.order-date .fa-calendar-alt {
-    margin-right: 8px;
-    color: #888;
-}
-
-.order-meta {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.order-total {
-    color: #555;
     font-weight: 500;
 }
 
-/* ステータスバッジ */
-.status-badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
-    white-space: nowrap;
+.item-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
 }
 
-.status-pending { background-color: #6c757d; } /* 注文受付: グレー */
-.status-shipped { background-color: #17a2b8; } /* 発送済み: 青緑 */
-.status-delivered { background-color: #28a745; } /* 配達完了: 緑 */
-.status-cancelled { background-color: #dc3545; } /* キャンセル: 赤 */
+.item-status.status-pending .item-status-dot { background-color: var(--status-pending-color); }
+.item-status.status-shipped .item-status-dot { background-color: var(--status-shipped-color); }
+.item-status.status-delivered .item-status-dot { background-color: var(--status-delivered-color); }
+.item-status.status-cancelled .item-status-dot { background-color: var(--status-cancelled-color); }
 
-/* カードボディ（商品リスト部分） */
-.card-body {
-    padding: 0 20px; /* 左右にパディングを追加 */
-}
+.item-status.status-pending .item-status-text { color: var(--status-pending-color); }
+.item-status.status-shipped .item-status-text { color: var(--status-shipped-color); }
+.item-status.status-delivered .item-status-text { color: var(--status-delivered-color); }
+.item-status.status-cancelled .item-status-text { color: var(--status-cancelled-color); }
 
 
-/* === 既存のボタンのスタイルを流用 === */
+/* 戻るボタン */
 .return-button {
-    display: block; /* block要素に変更 */
-    justify-content: center;
-    align-items: center;
-    margin: 40px auto 0; /* 上のスペースを調整 */
-    width: 200px;
+    display: block;
+    width: 220px;
     height: 50px;
-    line-height: 50px; /* 高さと合わせることでテキストを中央に */
+    line-height: 50px;
+    margin: 50px auto 0;
     text-align: center;
-    font-size: 1.4rem;
-    color: #fff;
-    background-color: #555;
-    border: none;
-    border-radius: 5px;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-color-primary);
+    background-color: var(--background-color-white);
+    border: 1px solid var(--border-color-base);
+    border-radius: 25px; /* 角を丸くする */
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none; /* aタグの場合も考慮 */
+    transition: all 0.3s ease;
+    text-decoration: none;
 }
 
 .return-button:hover {
-    background-color: #333;
+    background-color: var(--text-color-primary);
+    color: var(--background-color-white);
+    border-color: var(--text-color-primary);
 }
