@@ -5,29 +5,20 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: このページのPHPロジックはヘッダー出力前に実行する必要があるため、
-// DB接続とセッション開始はこのファイルで先に行います。
-// header.php内のrequire_onceとsession_start()は、重複実行が防止されるので問題ありません。
-
-// セッションを開始 (HTML出力の前に置く)
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// エラー表示設定 (開発中のみ)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// 必要なファイルをインクルード
 require_once __DIR__ . '/common/contents_db.php';
 require_once __DIR__ . '/common/config.php';
 
-// DEBUG_MODE が config.php で定義されていない場合はここで定義
 if (!defined('DEBUG_MODE')) {
-    define('DEBUG_MODE', false); // 本番環境ではfalseに設定
+    define('DEBUG_MODE', false);
 }
 
-// ログイン状態をチェック
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['login_message'] = ['text' => '投稿するにはログインが必要です。', 'type' => 'error'];
     header('Location: login.php');
@@ -35,7 +26,6 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
-
 $post_message = '';
 $message_type = '';
 
@@ -45,6 +35,7 @@ if (isset($_SESSION['post_message'])) {
     unset($_SESSION['post_message']);
 }
 
+// （POST処理部分は変更なし）
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $post_title = $_POST['post_title'] ?? '';
     $post_content = $_POST['post_content'] ?? '';
@@ -57,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $uploaded_image_paths = [];
-    $upload_dir = __DIR__ . '/img/'; 
-    
+    $upload_dir = __DIR__ . '/img/';
+
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0755, true);
     }
@@ -80,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($file_error !== UPLOAD_ERR_OK) {
                 if ($file_error === UPLOAD_ERR_NO_FILE) continue;
-                // エラーメッセージを設定してリダイレクト
                 $_SESSION['post_message'] = ['text' => "画像のアップロード中にエラーが発生しました (コード: {$file_error})。", 'type' => 'error'];
                 header('Location: post.php');
                 exit();
@@ -94,13 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: post.php');
                 exit();
             }
-            
+
             $extension = pathinfo($file_name, PATHINFO_EXTENSION);
             $new_file_name = uniqid('post_img_') . '.' . $extension;
             $destination_path = $upload_dir . $new_file_name;
 
             if (move_uploaded_file($file_tmp_name, $destination_path)) {
-                $web_path = 'img/' . $new_file_name; 
+                $web_path = 'img/' . $new_file_name;
                 $uploaded_image_paths[] = ['path' => $web_path, 'order' => $i + 1];
             } else {
                 $_SESSION['post_message'] = ['text' => 'ファイルの保存に失敗しました。', 'type' => 'error'];
@@ -133,7 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             header('Location: posts.php');
             exit();
-
         } else {
             $_SESSION['post_message'] = ['text' => '投稿の保存に失敗しました。', 'type' => 'error'];
             header('Location: post.php');
@@ -156,55 +145,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>新規投稿作成 | SAKE BIT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap"
-        rel="stylesheet">
-
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/top.css">
     <link rel="stylesheet" href="css/post.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* カスタムメッセージボックスのスタイル */
         .custom-message-box {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            padding: 15px 25px; border-radius: 8px; font-size: 1.6rem; color: #fff;
-            z-index: 10000; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            opacity: 0; animation: fadeInOut 3s forwards; min-width: 300px; text-align: center;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.6rem;
+            color: #fff;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            min-width: 300px;
+            text-align: center;
         }
-        .custom-message-box.success { background-color: #28a745; }
-        .custom-message-box.error { background-color: #dc3545; }
+
+        .custom-message-box.success {
+            background-color: #28a745;
+        }
+
+        .custom-message-box.error {
+            background-color: #dc3545;
+        }
+
         @keyframes fadeInOut {
-            0%, 100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            10%, 90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+
+            10%,
+            90% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
         }
-        /* 画像プレビューのスタイル */
-        #image-preview {
-            display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
-            justify-content: center; padding: 10px; border: 1px dashed #ccc;
-            border-radius: 8px; min-height: 80px; align-items: center;
-        }
-        .post-image-preview {
-            max-width: 100px; max-height: 100px; object-fit: contain;
-            border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .image-upload-label {
-            display: inline-flex; align-items: center; padding: 10px 20px;
-            background-color: #f0f0f0; border: 2px dashed #007bff; border-radius: 8px;
-            cursor: pointer; font-size: 1.1rem; color: #007bff;
-            transition: background-color 0.3s ease; margin-top: 10px;
-        }
-        .image-upload-label:hover { background-color: #e2e6ea; }
-        .image-upload-icon { font-size: 2rem; margin-right: 10px; line-height: 1; }
     </style>
 </head>
 
 <body>
-
-    <?php 
-    // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
-    ?>
+    <?php require_once 'header.php'; ?>
 
     <main>
         <section class="post-creation-section">
@@ -216,20 +205,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <form action="post.php" method="POST" id="postForm" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="post-title">タイトル</label>
-                        <input type="text" id="post-title" name="post_title" placeholder="投稿のタイトルを入力してください" required>
+                        <input type="text" id="post-title" name="post_title" placeholder="投稿のタイトルを入力" required>
                     </div>
                     <div class="form-group">
                         <label for="post-content">内容</label>
-                        <textarea id="post-content" name="post_content" placeholder="こちらに投稿内容を入力してください"
-                            required></textarea>
+                        <textarea id="post-content" name="post_content" placeholder="お酒の感想や、おすすめのペアリングなどを共有しましょう" required></textarea>
                     </div>
                     <div class="form-group">
+                        <label for="post-images">画像 (最大4枚)</label>
+                        <!-- ▼▼▼ ここからHTML構造を変更 ▼▼▼ -->
                         <label for="post-images" class="image-upload-label">
-                            <span class="image-upload-icon">＋</span>
-                            画像を追加（最大4枚）
+                            <i class="fas fa-camera icon"></i>
+                            <span>画像を選択</span>
                         </label>
-                        <input type="file" id="post-images" name="post_images[]" accept="image/*" multiple style="display:none;">
-                        <div id="image-preview" class="image-preview-simple"></div>
+                        <input type="file" id="post-images" name="post_images[]" accept="image/*" multiple>
+                        <div id="image-preview-grid" class="image-preview-grid">
+                            <!-- プレビュー画像がここに表示されます -->
+                        </div>
+                        <!-- ▲▲▲ ここまでHTML構造を変更 ▲▲▲ -->
                     </div>
                     <div class="form-actions">
                         <button type="button" class="cancel-btn">キャンセル</button>
@@ -240,22 +233,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </section>
     </main>
 
-    <?php 
-    // 共通フッターを読み込む
-    require_once 'footer.php'; 
-    ?>
+    <?php require_once 'footer.php'; ?>
 
-    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script src="js/script.js"></script>
     <script>
         const postPhpMessage = <?php echo json_encode($post_message); ?>;
         const postPhpMessageType = <?php echo json_encode($message_type); ?>;
 
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             function displayMessage(message, type) {
                 if (!message) return;
                 const messageBox = document.createElement('div');
-                messageBox.classList.add('custom-message-box', type);
+                messageBox.classList.add('custom-message-box', type === 'success' ? 'success' : 'error');
                 messageBox.textContent = message;
                 document.body.appendChild(messageBox);
                 setTimeout(() => messageBox.remove(), 3000);
