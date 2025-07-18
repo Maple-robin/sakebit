@@ -2,6 +2,11 @@
   history.css - 購入履歴ページ (スマホ最適化・デザイン改善版)
 ----------------------------------------*/
 
+/* bodyの背景を白に設定 */
+body {
+    background-color: #ffffff;
+}
+
 /* サイトの基本色やフォントを商品一覧ページと統一 */
 :root {
     --font-family-base: "Noto Sans JP", sans-serif;
@@ -28,7 +33,7 @@
     /* スマホ向けに上下の余白を調整 */
     padding-top: 80px;
     /* ヘッダー高さ分の余白を追加 */
-    background-color: var(--background-color-light);
+    background-color: #ffffff;
     font-family: var(--font-family-base);
 }
 
