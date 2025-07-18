@@ -14,7 +14,10 @@
 <body>
     <?php require_once 'header.php'; ?>
     <main class="policy-main">
-        <h1 class="policy-title">プライバシーポリシー</h1>
+        <h1 class="section-title">
+            <span class="en">PRIVACY POLICY</span>
+            <span class="ja">( プライバシーポリシー )</span>
+        </h1>
         <section class="policy-section">
             <p>SAKE BIT（以下「当店」）は、お客様の個人情報の保護を最重要視し、以下の方針に基づき適切な管理・運用に努めます。</p>
             <h2>1. 個人情報の取得について</h2>

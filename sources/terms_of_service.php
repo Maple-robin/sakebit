@@ -17,7 +17,10 @@ require_once 'header.php';
 </head>
 <body>
     <main class="policy-main">
-        <h1 class="policy-title">利用規約</h1>
+        <h1 class="section-title">
+            <span class="en">TERMS OF SERVICE</span>
+            <span class="ja">( 利用規約 )</span>
+        </h1>
         <section class="policy-section">
             <p>この利用規約（以下「本規約」）は、SAKE BIT（以下「当店」）が提供するサービスの利用条件を定めるものです。ご利用の際は本規約に同意いただいたものとみなします。</p>
             <h2>1. サービスの利用</h2>
