@@ -1,3 +1,12 @@
+<?php
+// admin_header.php でセッションは開始されている想定
+// パスは環境に合わせて適宜調整してください
+require_once __DIR__ . '/../common/contents_db.php';
+
+$faq_db = new cfaqs();
+// falseはデバッグモードOFFを示す
+$faqs = $faq_db->get_all_faqs_with_category(false);
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -33,39 +42,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>注文の変更・キャンセルはできますか？</td>
-                                <td>このサイトについて</td>
-                                <td>ご注文完了後の内容変更やキャンセルは、原則として承っておりません。お間違えのないようご注意ください。</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="admin_faq_edit.php" class="btn btn-sm btn-edit">編集</a>
-                                        <button class="btn btn-sm btn-delete">削除</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>パスワードを忘れました</td>
-                                <td>ログイン・会員登録について</td>
-                                <td>ログイン画面の「パスワードをお忘れの方はこちら」より、再設定手続きを行ってください。</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="admin_faq_edit.php" class="btn btn-sm btn-edit">編集</a>
-                                        <button class="btn btn-sm btn-delete">削除</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>お酒の選び方がわかりません</td>
-                                <td>お酒の情報について</td>
-                                <td>当サイトでは、お酒の好みや気分に合わせた選び方のガイドを公開しています。ぜひご参照ください。</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="admin_faq_edit.php" class="btn btn-sm btn-edit">編集</a>
-                                        <button class="btn btn-sm btn-delete">削除</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <?php if (!empty($faqs)): ?>
+                                <?php foreach ($faqs as $faq): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($faq['faq_title']); ?></td>
+                                        <td><?php echo htmlspecialchars($faq['faq_category_name']); ?></td>
+                                        <!-- 内容が長いとレイアウトが崩れるため、50文字で省略表示 -->
+                                        <td><?php echo htmlspecialchars(mb_strimwidth($faq['faq_content'], 0, 50, '...')); ?></td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <!-- 編集・削除ボタンにIDを付与 -->
+                                                <a href="admin_faq_edit.php?id=<?php echo htmlspecialchars($faq['faq_id']); ?>" class="btn btn-sm btn-edit">編集</a>
+                                                <button class="btn btn-sm btn-delete" data-id="<?php echo htmlspecialchars($faq['faq_id']); ?>">削除</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4">FAQが登録されていません。</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -87,5 +84,7 @@
     </footer>
 
     <script src="../adminjs/admin.js"></script>
+    <!-- 今後の削除機能実装のために、削除処理用のJSを読み込む（ファイルは別途作成想定） -->
+    <!-- <script src="../adminjs/admin_faq.js"></script> -->
 </body>
 </html>

@@ -1378,6 +1378,67 @@ class cfaqs extends crecord
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
+    public function get_all_faqs_grouped_by_category($debug)
+    {
+        $query = "
+            SELECT
+                fc.faq_category_name,
+                f.faq_title,
+                f.faq_content
+            FROM
+                faqs f
+            JOIN
+                faq_categories fc ON f.faq_category_id = fc.faq_category_id
+            ORDER BY
+                fc.faq_category_id, f.faq_id;
+        ";
+
+        $stmt = $this->execute_query($debug, $query, []);
+        $grouped_faqs = [];
+
+        if ($stmt) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $category_name = $row['faq_category_name'];
+                // まだこのカテゴリが配列になければ初期化
+                if (!isset($grouped_faqs[$category_name])) {
+                    $grouped_faqs[$category_name] = [
+                        'category_name' => $category_name,
+                        'faqs' => []
+                    ];
+                }
+                // 該当カテゴリに質問と回答を追加
+                $grouped_faqs[$category_name]['faqs'][] = [
+                    'question' => $row['faq_title'],
+                    'answer' => $row['faq_content']
+                ];
+            }
+        }
+        // 連想配列のキーをリセットして、数値添字の配列として返す
+        return array_values($grouped_faqs);
+    }
+    public function get_all_faqs_with_category($debug)
+    {
+        $query = "
+            SELECT
+                f.faq_id,
+                f.faq_title,
+                f.faq_content,
+                fc.faq_category_name
+            FROM
+                faqs f
+            JOIN
+                faq_categories fc ON f.faq_category_id = fc.faq_category_id
+            ORDER BY
+                fc.faq_category_id ASC, f.faq_id ASC;
+        ";
+
+        $stmt = $this->execute_query($debug, $query, []);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
 
     public function __destruct()
     {
