@@ -1,273 +1,187 @@
 /* * post.css
- * 投稿作成ページ専用スタイル
+ * 投稿作成ページ専用スタイル (リニューアル版)
  * ----------------------------------------
  */
 
 .post-creation-section {
-    padding: 80px 0;
-    /* 上下の余白 */
+    padding: 60px 20px;
+    /* 上下の余白を調整 */
     background-color: #f8f8f8;
-    /* 背景色をデフォルトに合わせる */
+    min-height: calc(100vh - 150px);
+    /* ヘッダーとフッターの高さを考慮 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .post-form-container {
     width: 100%;
-    max-width: 800px;
+    max-width: 720px;
     /* フォームの最大幅 */
-    margin: 60px auto 0;
-    /* ヘッダーの高さ分調整 + 中央寄せ + 下の余白はセクションのpaddingに任せる */
-    padding: 20px;
+    margin: 0 auto;
+    padding: 30px 40px;
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9e9e9;
 }
 
-/* section-titleはtop.cssに定義済みのためここでは不要 */
+.section-title {
+    margin-bottom: 35px;
+    /* タイトル下の余白 */
+}
 
 .form-group {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .form-group label {
     display: block;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     font-weight: 500;
     color: #333;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     font-family: 'Zen Old Mincho', serif;
-    /* 和文フォント */
 }
 
 .form-group input[type="text"],
 .form-group textarea {
     width: 100%;
-    padding: 12px 15px;
+    padding: 14px 18px;
     border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1.5rem;
+    border-radius: 8px;
+    font-size: 1.6rem;
     font-family: 'Noto Sans JP', sans-serif;
-    /* 日本語フォント */
     box-sizing: border-box;
-    /* paddingとborderをwidthに含める */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #A0522D;
+    box-shadow: 0 0 0 3px rgba(160, 82, 45, 0.15);
 }
 
 .form-group textarea {
-    min-height: 250px;
-    /* ある程度の高さを確保 */
+    min-height: 200px;
     resize: vertical;
-    /* 縦方向のみリサイズ可能に */
 }
 
+/* --- 画像アップロードボタン --- */
+.image-upload-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f9fafb;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.image-upload-label:hover {
+    background-color: #f3f4f6;
+    border-color: #adb5bd;
+}
+
+.image-upload-label .icon {
+    font-size: 1.2em;
+}
+
+#post-images {
+    display: none;
+    /* 元のinputは非表示 */
+}
+
+/* 画像プレビュー */
+.image-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.preview-item {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    /* 1:1のアスペクト比を維持 */
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-item img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* フォームアクションボタン */
 .form-actions {
-    display: flex;             /* Flexboxを有効にする */
-    flex-direction: column;    /* アイテムを縦方向に並べる */
-    align-items: center;       /* 横方向の中央に揃える */
-    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
 }
 
 .form-actions button {
-    padding: 12px 25px;
+    padding: 14px 30px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 1.6rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.3s ease, opacity 0.3s ease;
-    /* ホバーアニメーション */
-    width: 100%;               /* ボタンの幅を親要素に合わせる */
-    max-width: 250px;          /* ボタンの最大幅を制限（任意） */
-    margin-bottom: 20px;       /* 各ボタンの下に20pxのスペース */
-    margin-left: 0;            /* 不要なマージンをリセット */
-    margin-right: 0;           /* 不要なマージンをリセット */
+    transition: all 0.3s ease;
+    min-width: 160px;
 }
 
 .form-actions .submit-btn {
     background-color: #A0522D;
-    /* ブランドカラーを使用 */
     color: #fff;
-    /* 投稿ボタンを1番目（上）に配置 */
-    order: 1;
+    box-shadow: 0 4px 14px rgba(160, 82, 45, 0.25);
 }
 
 .form-actions .submit-btn:hover {
     background-color: #8B4513;
-    /* ホバーで少し濃く */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(160, 82, 45, 0.3);
 }
 
 .form-actions .cancel-btn {
-    background-color: #ccc;
-    color: #333;
-    /* キャンセルボタンを2番目（下）に配置 */
-    order: 2;
+    background-color: #e9ecef;
+    color: #495057;
 }
 
 .form-actions .cancel-btn:hover {
-    background-color: #bbb;
+    background-color: #dee2e6;
 }
 
-/* 画像プレビュー */
-.image-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.image-preview img {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.07);
-    transition: box-shadow 0.2s;
-}
-
-.image-preview img:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-/* モダンな画像プレビュー */
-.image-preview-modern {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.image-preview-modern img {
-  width: 96px;
-  height: 96px;
-  object-fit: cover;
-  border-radius: 14px;
-  border: 1.5px solid #e2e8f0;
-  box-shadow: 0 2px 8px rgba(80,120,180,0.07);
-  transition: box-shadow 0.2s, border 0.2s;
-  background: #fff;
-}
-
-.image-preview-modern img:hover {
-  box-shadow: 0 4px 16px rgba(80,120,180,0.18);
-  border-color: #7b93b3;
-}
-
-/* カスタムファイルラベル */
-.custom-file-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: linear-gradient(90deg, #f8fafc 60%, #e0e7ef 100%);
-  color: #333;
-  border: 1.5px solid #a0aec0;
-  border-radius: 24px;
-  padding: 10px 22px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.2s, border 0.2s;
-  margin-bottom: 12px;
-}
-
-.custom-file-label:hover {
-  background: linear-gradient(90deg, #e0e7ef 60%, #f8fafc 100%);
-  border-color: #7b93b3;
-}
-
-.custom-file-label .icon {
-  font-size: 1.4em;
-}
-
-/* 画像アップロードラベル */
-.image-upload-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #f7f7f7;
-  color: #444;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 8px 18px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.2s, border 0.2s;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-}
-
-.image-upload-label:hover {
-  background: #ececec;
-  border-color: #bdbdbd;
-}
-
-.image-upload-icon {
-  font-size: 1.2em;
-  color: #888;
-}
-
-/* シンプルな画像プレビュー */
-.image-preview-simple {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.image-preview-simple img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid #e0e0e0;
-  background: #fafafa;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  transition: box-shadow 0.2s, border 0.2s;
-}
-
-.image-preview-simple img:hover {
-  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-  border-color: #bdbdbd;
-}
-
-/* PC (min-width: 768px) */
-@media (min-width: 768px) {
-    .post-creation-section {
-        padding: 120px 0;
-    }
-
-    .post-form-container {
-        padding: 40px;
-        margin-top: 80px; /* PCヘッダーの高さ調整 */
-    }
-
-    .form-group input[type="text"],
-    .form-group textarea {
-        font-size: 1.6rem;
-    }
-
-    .form-actions button {
-        padding: 15px 30px;
-        font-size: 1.7rem;
-        max-width: 300px; /* PCでのボタンの最大幅を調整（任意） */
-    }
-}
-
-
-/* スマートフォンでの調整 (max-width: 767px) */
+/* レスポンシブ対応 */
 @media (max-width: 767px) {
     .post-creation-section {
-        padding: 40px 0; /* スマホでのセクションパディング調整 */
+        padding: 120px 15px 40px;
     }
 
     .post-form-container {
-        margin-top: 80px;
-        /* スマホ時のヘッダー下の余白調整 */
-        padding: 15px;
-        /* スマホ時のパディング調整 */
+        padding: 20px;
     }
 
     .form-actions {
-        /* flex-direction: column; と align-items: center; は共通で適用済み */
+        flex-direction: column-reverse;
+        /* スマホでは縦並び（投稿が上） */
+        gap: 15px;
     }
 
     .form-actions button {
-        /* width: 100%; や max-width、margin-bottom も共通で適用済み */
+        width: 100%;
     }
 }
