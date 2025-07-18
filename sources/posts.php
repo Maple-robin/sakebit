@@ -48,7 +48,7 @@ try {
 
         $user = $user_info_db->get_tgt(DEBUG_MODE, $post['user_id']);
         $user_name = $user ? htmlspecialchars($user['user_name']) : '名無しユーザー';
-        
+
         $user_profile = $user_profiles_db->get_profile_by_user_id(DEBUG_MODE, $post['user_id']);
         $user_icon_text = strtoupper(mb_substr($user_name, 0, 1, 'UTF-8'));
         $user_icon_url = 'https://placehold.co/40x40/5CB85C/FFFFFF?text=' . $user_icon_text;
@@ -101,26 +101,57 @@ $json_current_user_id = json_encode($current_user_id);
     <style>
         /* カスタムメッセージボックスのスタイル */
         .custom-message-box {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            padding: 15px 25px; border-radius: 8px; font-size: 1.6rem; color: #fff;
-            z-index: 10000; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            opacity: 0; animation: fadeInOut 3s forwards; min-width: 300px; text-align: center;
-        }
-        .custom-message-box.success { background-color: #28a745; }
-        .custom-message-box.error { background-color: #dc3545; }
-        @keyframes fadeInOut {
-            0%, 100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
-            10%, 90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-size: 1.6rem;
+            color: #fff;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            animation: fadeInOut 3s forwards;
+            min-width: 300px;
+            text-align: center;
         }
 
-        /* 並び替えボタンのスタイル */
+        .custom-message-box.success {
+            background-color: #28a745;
+        }
+
+        .custom-message-box.error {
+            background-color: #dc3545;
+        }
+
+        @keyframes fadeInOut {
+
+            0%,
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+
+            10%,
+            90% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* ▼▼▼ 並び替えボタンのスタイル（ここを修正） ▼▼▼ */
         .sort-container {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 80px;
+            /* ボタン間のスペースを広げました (30px -> 80px) */
             margin-bottom: 30px;
             border-bottom: 1px solid #e5e5e5;
         }
+
+        /* ▲▲▲ ここまで修正 ▲▲▲ */
+
         .sort-button {
             padding: 12px 16px;
             border: none;
@@ -134,35 +165,43 @@ $json_current_user_id = json_encode($current_user_id);
             text-decoration: none;
             transform: translateY(1px);
         }
+
         .sort-button:hover {
             color: #333;
         }
+
         .sort-button.is-active {
             color: #A0522D;
             border-bottom-color: #A0522D;
             font-weight: 700;
         }
 
-        /* ▼▼▼ ここから追加 ▼▼▼ */
         /* 画像拡大モーダルのスタイル */
         .image-viewer-overlay {
-            display: none; /* 初期状態では非表示 */
+            display: none;
             position: fixed;
-            z-index: 10002; /* 他の要素より手前に表示 */
+            z-index: 10002;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.85); /* 半透明の黒い背景 */
+            background-color: rgba(0, 0, 0, 0.85);
             justify-content: center;
             align-items: center;
             animation: fadeIn 0.3s ease;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
+
         .image-viewer-content {
             margin: auto;
             display: block;
@@ -170,6 +209,7 @@ $json_current_user_id = json_encode($current_user_id);
             max-height: 85vh;
             border-radius: 5px;
         }
+
         .close-viewer-btn {
             position: absolute;
             top: 15px;
@@ -180,23 +220,22 @@ $json_current_user_id = json_encode($current_user_id);
             transition: 0.3s;
             cursor: pointer;
         }
+
         .close-viewer-btn:hover,
         .close-viewer-btn:focus {
             color: #bbb;
             text-decoration: none;
         }
-        /* 投稿画像のカーソルをポインターに変更 */
+
         .post-images img {
             cursor: pointer;
         }
-        /* ▲▲▲ ここまで追加 ▲▲▲ */
     </style>
 </head>
 
 <body>
-    <?php 
-    // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    <?php
+    require_once 'header.php';
     ?>
 
     <main>
@@ -221,18 +260,14 @@ $json_current_user_id = json_encode($current_user_id);
         <a href="post.php" class="new-post-button">新規投稿</a>
     </div>
 
-    <?php 
-    // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    <?php
+    require_once 'footer.php';
     ?>
-    
-    <!-- ▼▼▼ ここから追加 ▼▼▼ -->
-    <!-- 画像拡大表示用のモーダル -->
+
     <div id="image-viewer-modal" class="image-viewer-overlay">
         <span class="close-viewer-btn">&times;</span>
         <img class="image-viewer-content" id="modal-image">
     </div>
-    <!-- ▲▲▲ ここまで追加 ▲▲▲ -->
 
     <script src="js/script.js"></script>
     <script>
