@@ -5,10 +5,6 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: このページのPHPロジックはヘッダー出力前に実行する必要があるため、
-// DB接続とセッション開始はこのファイルで先に行います。
-// header.php内のrequire_onceとsession_start()は、重複実行が防止されるので問題ありません。
-
 // セッションを開始 (HTML出力の前に置く)
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -237,6 +233,54 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
             border-bottom-color: #A0522D;
             font-weight: bold;
         }
+
+        /* ▼▼▼ ここから追加 ▼▼▼ */
+        /* 画像拡大モーダルのスタイル */
+        .image-viewer-overlay {
+            display: none; /* 初期状態では非表示 */
+            position: fixed;
+            z-index: 10002; /* 他の要素より手前に表示 */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.85); /* 半透明の黒い背景 */
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .image-viewer-content {
+            margin: auto;
+            display: block;
+            max-width: 90%;
+            max-height: 85vh;
+            border-radius: 5px;
+        }
+        .close-viewer-btn {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .close-viewer-btn:hover,
+        .close-viewer-btn:focus {
+            color: #bbb;
+            text-decoration: none;
+        }
+        /* 投稿画像のカーソルをポインターに変更 */
+        .post-images img {
+            cursor: pointer;
+        }
+        /* ▲▲▲ ここまで追加 ▲▲▲ */
     </style>
 </head>
 
@@ -308,21 +352,25 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
             </div>
         </div>
     </div>
+    
+    <!-- ▼▼▼ ここから追加 ▼▼▼ -->
+    <!-- 画像拡大表示用のモーダル -->
+    <div id="image-viewer-modal" class="image-viewer-overlay">
+        <span class="close-viewer-btn">&times;</span>
+        <img class="image-viewer-content" id="modal-image">
+    </div>
+    <!-- ▲▲▲ ここまで追加 ▲▲▲ -->
+
     <script src="js/script.js"></script>
     <script src="js/MyPage.js"></script>
     <script>
-        // ▼▼▼ ここから修正 ▼▼▼
-        // PHPから渡されたユーザーIDと投稿データ
         const currentUserId = <?= json_encode($current_user_id) ?>;
-        // const を let に変更して、再代入を可能にする
         let myPostsData = <?= json_encode($my_posts_for_js); ?>;
         let likedPostsData = <?= json_encode($liked_posts_for_js); ?>;
         let bookmarkedPostsData = <?= json_encode($bookmarked_posts_for_js); ?>;
 
-        // PHPからのメッセージング (ページロード時に表示)
         const phpMessage = <?= json_encode($message) ?>;
         const phpMessageType = <?= json_encode($message_type) ?>;
-        // ▲▲▲ ここまで修正 ▲▲▲
     </script>
 </body>
 </html>

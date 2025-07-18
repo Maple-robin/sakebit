@@ -191,8 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         paginationContainer.appendChild(prevButton);
 
-        // --- ここからページ番号ボタンの省略ロジック ---
-        const MAX_VISIBLE = 7; // 最大表示数（両端+前後+現在）
+        const MAX_VISIBLE = 7;
         let start = 1;
         let end = totalPages;
         if (totalPages > MAX_VISIBLE) {
@@ -243,7 +242,6 @@ document.addEventListener('DOMContentLoaded', function() {
             ellipsis.classList.add('page-ellipsis');
             paginationContainer.appendChild(ellipsis);
         }
-        // --- ここまで ---
 
         const nextButton = document.createElement('button');
         nextButton.innerHTML = '&raquo;';
@@ -291,7 +289,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (currentSortOrder === 'lowest_price') {
             filteredProducts.sort((a, b) => a.price - b.price);
         } else if (currentSortOrder === 'ranking') {
-            // 'rankingScore' を実際の販売数 'sales' で並び替え
             filteredProducts.sort((a, b) => b.sales - a.sales);
         }
 
@@ -600,7 +597,9 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (currentSortOrder === 'lowest_price') {
             filteredProducts.sort((a, b) => a.price - b.price);
         } else if (currentSortOrder === 'ranking') {
-            filteredProducts.sort((a, b) => b.rankingScore - a.rankingScore);
+            // ★★★ ここを修正 ★★★
+            // 'rankingScore' を 'sales' に統一
+            filteredProducts.sort((a, b) => b.sales - a.sales);
         }
 
         const productIndex = filteredProducts.findIndex(p => p.id == productId);

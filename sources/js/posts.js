@@ -1,14 +1,14 @@
 // DOMContentLoadedは、HTMLの読み込みが完了したときに実行されます。
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // PHPから渡された投稿データと現在のユーザーIDを使用
     // postsData: [{id, userIcon, userName, title, content, images, likes, hearts, isLiked, isHearted}, ...]
     // currentUserId: 現在ログインしているユーザーのID (nullの場合もあり)
 
-    // ▼▼▼ ここから追加 ▼▼▼
     // 画像拡大モーダルの要素を取得
     const imageModal = document.getElementById('image-viewer-modal');
     const modalImage = document.getElementById('modal-image');
     const closeViewerBtn = document.querySelector('.close-viewer-btn');
+    const postsContainer = document.getElementById('posts-container');
 
     // モーダルを閉じる関数
     function closeImageModal() {
@@ -24,13 +24,28 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     // 背景クリックでモーダルを閉じる
     if (imageModal) {
-        imageModal.addEventListener('click', function(event) {
+        imageModal.addEventListener('click', function (event) {
             if (event.target === imageModal) {
                 closeImageModal();
             }
         });
     }
-    // ▲▲▲ ここまで追加 ▲▲▲
+
+    // ★★★ ここから修正 ★★★
+    // イベント委任を使って、親要素で画像のクリックを監視する
+    if (postsContainer) {
+        postsContainer.addEventListener('click', function (event) {
+            // クリックされた要素が投稿画像(.post-image-thumbnail)かチェック
+            if (event.target.matches('.post-image-thumbnail')) {
+                if (imageModal && modalImage) {
+                    modalImage.src = event.target.src; // クリックされた画像のURLをモーダルに設定
+                    imageModal.style.display = 'flex'; // モーダルを表示
+                    document.body.style.overflow = 'hidden'; // 背景のスクロールを禁止
+                }
+            }
+        });
+    }
+    // ★★★ ここまで修正 ★★★
 
 
     // カスタムメッセージボックスを表示する関数
@@ -58,20 +73,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 投稿カードを生成して表示する関数
     function renderPosts() {
-        const postsContainer = document.getElementById('posts-container');
         if (!postsContainer) {
             console.error('Error: posts-container element not found.');
             return;
         }
-        
+
         postsContainer.innerHTML = ''; // 既存の投稿をクリア
 
         if (postsData && postsData.length > 0) {
             postsData.forEach(post => {
                 let imagesHtml = '';
                 const imgs = post.images || [];
-                
-                // ▼▼▼ ここから修正 ▼▼▼
+
                 // 各imgタグに post-image-thumbnail クラスを追加
                 if (imgs.length === 1) {
                     imagesHtml = `<div class="post-images one"><img class="post-image-thumbnail" src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/600x320/87CEFA/000000?text=No+Image';"></div>`;
@@ -99,7 +112,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img class="post-image-thumbnail" src="${post.images[3]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/F08080/000000?text=No+Image';">
                         </div>`;
                 }
-                // ▲▲▲ ここまで修正 ▲▲▲
 
                 const goodActiveClass = post.isLiked ? ' active' : '';
                 const heartActiveClass = post.isHearted ? ' active' : '';
@@ -141,22 +153,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function attachEventListeners() {
-        // ▼▼▼ ここから追加 ▼▼▼
-        // 画像クリックでモーダルを開く
-        document.querySelectorAll('.post-image-thumbnail').forEach(img => {
-            img.addEventListener('click', function() {
-                if (imageModal && modalImage) {
-                    modalImage.src = this.src;
-                    imageModal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden'; // 背景のスクロールを禁止
-                }
-            });
-        });
-        // ▲▲▲ ここまで追加 ▲▲▲
+        // ★★★ 画像クリックのリスナーはイベント委任に移行したため、ここからは削除 ★★★
 
         // メニューボタンの処理
         document.querySelectorAll('.menu-button').forEach(button => {
-            button.addEventListener('click', function(event) {
+            button.addEventListener('click', function (event) {
                 event.stopPropagation();
                 const dropdown = this.nextElementSibling;
                 document.querySelectorAll('.menu-dropdown.is-active').forEach(openDropdown => {
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // ドロップダウン外をクリックしたら閉じる
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             document.querySelectorAll('.menu-dropdown.is-active').forEach(openDropdown => {
                 if (!openDropdown.contains(event.target) && !openDropdown.previousElementSibling.contains(event.target)) {
                     openDropdown.classList.remove('is-active');
@@ -179,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 「通報する」アクションの処理
         document.querySelectorAll('.report-action').forEach(item => {
-            item.addEventListener('click', function(event) {
+            item.addEventListener('click', function (event) {
                 event.preventDefault();
                 const postId = this.dataset.postId;
                 window.location.href = `report.php?postId=${encodeURIComponent(postId)}`;
@@ -188,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // リアクションボタンの処理
         document.querySelectorAll('.reaction-button').forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 if (currentUserId === null || currentUserId === undefined) {
                     displayMessage('リアクションするにはログインが必要です。', 'error');
                     return;
@@ -200,32 +201,34 @@ document.addEventListener('DOMContentLoaded', function() {
                 const heartCountSpan = this.closest('.post-actions').querySelector('.heart-count');
 
                 fetch('api/reaction_process.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        postId: postId, 
-                        reactionType: reactionType,
-                        userId: currentUserId
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            postId: postId,
+                            reactionType: reactionType,
+                            userId: currentUserId
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        likeCountSpan.textContent = data.newLikes;
-                        heartCountSpan.textContent = data.newHearts;
-                        if (reactionType === 'good') {
-                            this.classList.toggle('active', data.isLiked);
-                        } else if (reactionType === 'heart') {
-                            this.classList.toggle('active', data.isHearted);
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            likeCountSpan.textContent = data.newLikes;
+                            heartCountSpan.textContent = data.newHearts;
+                            if (reactionType === 'good') {
+                                this.classList.toggle('active', data.isLiked);
+                            } else if (reactionType === 'heart') {
+                                this.classList.toggle('active', data.isHearted);
+                            }
+                        } else {
+                            displayMessage('リアクション処理中にエラーが発生しました: ' + data.message, 'error');
                         }
-                    } else {
-                        displayMessage('リアクション処理中にエラーが発生しました: ' + data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetchエラー:', error);
-                    displayMessage('通信エラーが発生しました。', 'error');
-                });
+                    })
+                    .catch(error => {
+                        console.error('Fetchエラー:', error);
+                        displayMessage('通信エラーが発生しました。', 'error');
+                    });
             });
         });
     }
