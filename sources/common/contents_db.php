@@ -446,6 +446,32 @@ class cproduct_info extends crecord
         return $arr;
     }
 
+    /**
+     * クライアント管理画面用：商品の総数を取得
+     */
+    public function get_product_count_for_admin($debug, $client_id = null)
+    {
+        $query = "SELECT COUNT(*) AS total_count FROM product_info p";
+        $prep_arr = [];
+        $where_clauses = [];
+
+        // client_id が指定され、かつ有効な数値の場合のみWHERE句を追加
+        if ($client_id !== null && cutil::is_number($client_id) && $client_id > 0) {
+            $where_clauses[] = "p.client_id = :client_id";
+            $prep_arr[':client_id'] = (int)$client_id;
+        }
+
+        if (!empty($where_clauses)) {
+            $query .= " WHERE " . implode(" AND ", $where_clauses);
+        }
+
+        $this->select_query($debug, $query, $prep_arr);
+        if ($row = $this->fetch_assoc()) {
+            return (int)$row['total_count'];
+        }
+        return 0;
+    }
+
     public function decrease_stock($debug, $product_id, $quantity)
     {
         if (!cutil::is_number($product_id) || $product_id < 1 || !cutil::is_number($quantity) || $quantity < 1) {

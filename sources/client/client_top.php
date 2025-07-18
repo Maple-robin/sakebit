@@ -5,10 +5,20 @@ require_once 'auth_check.php';
 // データベース操作クラスを読み込みます
 require_once '../common/contents_db.php';
 
+// ページネーション設定
+$items_per_page = 10; // 1ページあたりの表示件数
+$current_page = isset($_GET['page']) && is_numeric($_GET['page']) && $_GET['page'] > 0 ? (int)$_GET['page'] : 1;
+$offset = ($current_page - 1) * $items_per_page;
+
 // データ取得処理
 $product_db = new cproduct_info();
-// auth_check.phpで定義された$client_idと$debugを渡します
-$display_products = $product_db->get_product_list_for_admin($debug, $client_id, 0, 100);
+// 総商品数を取得
+$total_products = $product_db->get_product_count_for_admin($debug, $client_id);
+// 現在のページの商品を取得
+$display_products = $product_db->get_product_list_for_admin($debug, $client_id, $offset, $items_per_page);
+
+// ページネーション計算
+$total_pages = ceil($total_products / $items_per_page);
 $product_db = null;
 
 ?>
@@ -122,11 +132,53 @@ $product_db = null;
             </div>
             
             <div class="pagination">
-                <a href="#" class="page-link">&laquo; 前へ</a>
-                <a href="#" class="page-link active">1</a>
-                <a href="#" class="page-link">2</a>
-                <a href="#" class="page-link">3</a>
-                <a href="#" class="page-link">次へ &raquo;</a>
+                <?php if ($total_pages > 1): ?>
+                    <?php
+                    // 前のページへのリンク
+                    if ($current_page > 1):
+                    ?>
+                        <a href="?page=<?= $current_page - 1 ?>" class="page-link">&laquo; 前へ</a>
+                    <?php endif; ?>
+                    
+                    <?php
+                    // ページ番号のリンク
+                    $start_page = max(1, $current_page - 2);
+                    $end_page = min($total_pages, $current_page + 2);
+                    
+                    // 最初のページを表示
+                    if ($start_page > 1):
+                    ?>
+                        <a href="?page=1" class="page-link">1</a>
+                        <?php if ($start_page > 2): ?>
+                            <span class="page-link disabled">...</span>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    
+                    <?php for ($i = $start_page; $i <= $end_page; $i++): ?>
+                        <?php if ($i == $current_page): ?>
+                            <span class="page-link active"><?= $i ?></span>
+                        <?php else: ?>
+                            <a href="?page=<?= $i ?>" class="page-link"><?= $i ?></a>
+                        <?php endif; ?>
+                    <?php endfor; ?>
+                    
+                    <?php
+                    // 最後のページを表示
+                    if ($end_page < $total_pages):
+                        if ($end_page < $total_pages - 1):
+                    ?>
+                            <span class="page-link disabled">...</span>
+                        <?php endif; ?>
+                        <a href="?page=<?= $total_pages ?>" class="page-link"><?= $total_pages ?></a>
+                    <?php endif; ?>
+                    
+                    <?php
+                    // 次のページへのリンク
+                    if ($current_page < $total_pages):
+                    ?>
+                        <a href="?page=<?= $current_page + 1 ?>" class="page-link">次へ &raquo;</a>
+                    <?php endif; ?>
+                <?php endif; ?>
             </div>
         </div>
     </main>

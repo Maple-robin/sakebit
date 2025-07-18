@@ -122,7 +122,15 @@
     border-color: #A0522D;
 }
 
-.page-link:hover {
+.page-link.disabled {
+    background-color: #f9f9f9;
+    color: #999;
+    border-color: #ddd;
+    cursor: default;
+    pointer-events: none;
+}
+
+.page-link:hover:not(.active):not(.disabled) {
     background-color: #f8f8f8;
 }
 
