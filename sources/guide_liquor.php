@@ -104,7 +104,7 @@
                                 <p>リキュール1に対して、炭酸水を3〜4の割合で。清涼感あふれる定番のスタイル。レモンやライムを搾るとさらに爽やかに。</p>
                             </div>
                             <div class="drink-way-item__image">
-                                <img src="img/mojito.png" alt="炭酸で割ったリキュール">
+                                <img src="img/リキュールソーダ割り.png" alt="炭酸で割ったリキュール">
                             </div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                                 <p>オレンジ、グレープフルーツ、パインなどお好みのジュースで。甘みが加わり、アルコール感が和らぐので初心者にもおすすめです。</p>
                             </div>
                             <div class="drink-way-item__image">
-                                <img src="img/peach.png" alt="ジュースで割ったリキュール">
+                                <img src="img/リキュールグレフル割り.png" alt="ジュースで割ったリキュール">
                             </div>
                         </div>
                     </div>
@@ -138,7 +138,7 @@
                                 <p>カシスやカルーア、マリブなど、フルーツ系やコーヒー系のリキュールと相性抜群。デザート感覚で楽しめるまろやかなカクテルに。</p>
                             </div>
                             <div class="drink-way-item__image">
-                                <img src="img/malibu.png" alt="ミルクで割ったリキュール">
+                                <img src="img/リキュールカルーアミルク.png" alt="ミルクで割ったリキュール">
                             </div>
                         </div>
                     </div>
