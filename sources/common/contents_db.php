@@ -1149,10 +1149,35 @@ class cposts extends crecord
         return 0;
     }
 
-    public function get_all($debug, $from, $limit)
+    public function get_all($debug, $from, $limit, $sort_by = 'newest')
     {
         $arr = array();
-        $query = "SELECT * FROM posts WHERE 1 ORDER BY post_id ASC LIMIT :from, :limit";
+        $query = "
+            SELECT
+                p.*,
+                (COUNT(DISTINCT g.good_id) + COUNT(DISTINCT h.heart_id)) AS total_reactions
+            FROM
+                posts p
+            LEFT JOIN
+                good g ON p.post_id = g.post_id
+            LEFT JOIN
+                heart h ON p.post_id = h.post_id
+            GROUP BY
+                p.post_id
+        ";
+
+        switch ($sort_by) {
+            case 'popular':
+                $query .= " ORDER BY total_reactions DESC, p.post_id DESC";
+                break;
+            case 'newest':
+            default:
+                $query .= " ORDER BY p.post_id DESC";
+                break;
+        }
+
+        $query .= " LIMIT :from, :limit";
+
         $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
         $this->select_query($debug, $query, $prep_arr);
         while ($row = $this->fetch_assoc()) {
@@ -1201,15 +1226,26 @@ class cposts extends crecord
         return $arr;
     }
 
+    /**
+     * 【修正】指定されたIDの投稿リストを取得する（IDの順序を維持する）
+     * @param bool $debug デバッグモード
+     * @param array $post_ids 投稿IDの配列
+     * @return array 投稿データの配列
+     */
     public function get_posts_by_ids($debug, $post_ids)
     {
         if (empty($post_ids)) {
             return [];
         }
-        $placeholders = implode(',', array_fill(0, count($post_ids), '?'));
-        $query = "SELECT * FROM posts WHERE post_id IN ($placeholders) ORDER BY post_id DESC";
 
-        $prep_arr = array_map('intval', $post_ids);
+        // プレースホルダを作成
+        $placeholders = implode(',', array_fill(0, count($post_ids), '?'));
+
+        // FIELD() を使って、渡された post_ids の順序を維持するようにクエリを修正
+        $query = "SELECT * FROM posts WHERE post_id IN ($placeholders) ORDER BY FIELD(post_id, $placeholders)";
+
+        // パラメータ配列は post_ids を2回含む必要がある (IN句用とFIELD()句用)
+        $prep_arr = array_merge(array_map('intval', $post_ids), array_map('intval', $post_ids));
 
         $this->select_query($debug, $query, $prep_arr);
 
@@ -1238,6 +1274,7 @@ class cposts extends crecord
         parent::__destruct();
     }
 }
+
 
 class cpost_images extends crecord
 {

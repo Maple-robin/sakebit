@@ -4,6 +4,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // postsData: [{id, userIcon, userName, title, content, images, likes, hearts, isLiked, isHearted}, ...]
     // currentUserId: 現在ログインしているユーザーのID (nullの場合もあり)
 
+    // ▼▼▼ ここから追加 ▼▼▼
+    // 画像拡大モーダルの要素を取得
+    const imageModal = document.getElementById('image-viewer-modal');
+    const modalImage = document.getElementById('modal-image');
+    const closeViewerBtn = document.querySelector('.close-viewer-btn');
+
+    // モーダルを閉じる関数
+    function closeImageModal() {
+        if (imageModal) {
+            imageModal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // 背景のスクロールを再度有効に
+        }
+    }
+
+    // 閉じるボタンのイベントリスナー
+    if (closeViewerBtn) {
+        closeViewerBtn.addEventListener('click', closeImageModal);
+    }
+    // 背景クリックでモーダルを閉じる
+    if (imageModal) {
+        imageModal.addEventListener('click', function(event) {
+            if (event.target === imageModal) {
+                closeImageModal();
+            }
+        });
+    }
+    // ▲▲▲ ここまで追加 ▲▲▲
+
+
     // カスタムメッセージボックスを表示する関数
     function displayMessage(message, type = 'info') {
         const messageBox = document.createElement('div');
@@ -40,37 +69,38 @@ document.addEventListener('DOMContentLoaded', function() {
         if (postsData && postsData.length > 0) {
             postsData.forEach(post => {
                 let imagesHtml = '';
-                const imgs = post.images || []; // 画像がない場合は空配列
+                const imgs = post.images || [];
                 
-                // 画像の枚数に応じたHTML構造を生成
+                // ▼▼▼ ここから修正 ▼▼▼
+                // 各imgタグに post-image-thumbnail クラスを追加
                 if (imgs.length === 1) {
-                    imagesHtml = `<div class="post-images one"><img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/600x320/87CEFA/000000?text=No+Image';"></div>`;
+                    imagesHtml = `<div class="post-images one"><img class="post-image-thumbnail" src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/600x320/87CEFA/000000?text=No+Image';"></div>`;
                 } else if (imgs.length === 2) {
                     imagesHtml = `
                         <div class="post-images two">
-                            <img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/F08080/000000?text=No+Image';">
-                            <img src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/FFDAB9/000000?text=No+Image';">
+                            <img class="post-image-thumbnail" src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/F08080/000000?text=No+Image';">
+                            <img class="post-image-thumbnail" src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/FFDAB9/000000?text=No+Image';">
                         </div>`;
                 } else if (imgs.length === 3) {
                     imagesHtml = `
                         <div class="post-images three">
-                            <div><img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/8B4513/FFFFFF?text=No+Image';"></div>
+                            <div><img class="post-image-thumbnail" src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/300x200/8B4513/FFFFFF?text=No+Image';"></div>
                             <div>
-                                <img src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/6A5ACD/FFFFFF?text=No+Image';">
-                                <img src="${post.images[2]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/F5DEB3/000000?text=No+Image';">
+                                <img class="post-image-thumbnail" src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/6A5ACD/FFFFFF?text=No+Image';">
+                                <img class="post-image-thumbnail" src="${post.images[2]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/F5DEB3/000000?text=No+Image';">
                             </div>
                         </div>`;
-                } else if (imgs.length === 4) {
+                } else if (imgs.length >= 4) {
                     imagesHtml = `
                         <div class="post-images four">
-                            <img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/8B0000/FFFFFF?text=No+Image';">
-                            <img src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/87CEFA/000000?text=No+Image';">
-                            <img src="${post.images[2]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/FFDAB9/000000?text=No+Image';">
-                            <img src="${post.images[3]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/F08080/000000?text=No+Image';">
+                            <img class="post-image-thumbnail" src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/8B0000/FFFFFF?text=No+Image';">
+                            <img class="post-image-thumbnail" src="${post.images[1]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/87CEFA/000000?text=No+Image';">
+                            <img class="post-image-thumbnail" src="${post.images[2]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/FFDAB9/000000?text=No+Image';">
+                            <img class="post-image-thumbnail" src="${post.images[3]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/150x98/F08080/000000?text=No+Image';">
                         </div>`;
                 }
+                // ▲▲▲ ここまで修正 ▲▲▲
 
-                // いいねとハートボタンのアクティブ状態を初期化
                 const goodActiveClass = post.isLiked ? ' active' : '';
                 const heartActiveClass = post.isHearted ? ' active' : '';
 
@@ -104,26 +134,37 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 postsContainer.insertAdjacentHTML('beforeend', postCardHtml);
             });
-            attachEventListeners(); // イベントリスナーをアタッチ
+            attachEventListeners();
         } else {
             postsContainer.innerHTML = '<p style="text-align: center; margin-top: 50px; font-size: 1.8rem; color: #555;">まだ投稿がありません。</p>';
         }
     }
 
-    // イベントリスナーをアタッチする関数
     function attachEventListeners() {
+        // ▼▼▼ ここから追加 ▼▼▼
+        // 画像クリックでモーダルを開く
+        document.querySelectorAll('.post-image-thumbnail').forEach(img => {
+            img.addEventListener('click', function() {
+                if (imageModal && modalImage) {
+                    modalImage.src = this.src;
+                    imageModal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden'; // 背景のスクロールを禁止
+                }
+            });
+        });
+        // ▲▲▲ ここまで追加 ▲▲▲
+
         // メニューボタンの処理
         document.querySelectorAll('.menu-button').forEach(button => {
             button.addEventListener('click', function(event) {
-                event.stopPropagation(); // クリックイベントの伝播を停止
-                const dropdown = this.nextElementSibling; // 次の兄弟要素がドロップダウン
-                // 他の開いているドロップダウンを閉じる
+                event.stopPropagation();
+                const dropdown = this.nextElementSibling;
                 document.querySelectorAll('.menu-dropdown.is-active').forEach(openDropdown => {
                     if (openDropdown !== dropdown) {
                         openDropdown.classList.remove('is-active');
                     }
                 });
-                dropdown.classList.toggle('is-active'); // ドロップダウンの表示/非表示を切り替え
+                dropdown.classList.toggle('is-active');
             });
         });
 
@@ -139,86 +180,51 @@ document.addEventListener('DOMContentLoaded', function() {
         // 「通報する」アクションの処理
         document.querySelectorAll('.report-action').forEach(item => {
             item.addEventListener('click', function(event) {
-                event.preventDefault(); // リンクのデフォルト動作を防ぐ
+                event.preventDefault();
                 const postId = this.dataset.postId;
-                // report.phpに遷移（投稿IDをクエリパラメータで渡す）
                 window.location.href = `report.php?postId=${encodeURIComponent(postId)}`;
             });
         });
 
-        // リアクションボタンの処理 (likes, hearts はDBから取得して初期表示、更新はJS+DB連携)
+        // リアクションボタンの処理
         document.querySelectorAll('.reaction-button').forEach(button => {
             button.addEventListener('click', function() {
-                // ログインしているかチェック
                 if (currentUserId === null || currentUserId === undefined) {
                     displayMessage('リアクションするにはログインが必要です。', 'error');
                     return;
                 }
 
                 const postId = parseInt(this.dataset.postId);
-                const reactionType = this.dataset.reaction; // 'good' または 'heart'
+                const reactionType = this.dataset.reaction;
                 const likeCountSpan = this.closest('.post-actions').querySelector('.like-count');
                 const heartCountSpan = this.closest('.post-actions').querySelector('.heart-count');
 
-                // AJAXリクエストを送信
-                fetch('api/reaction_process.php', { // 新しく作成するPHPエンドポイント
+                fetch('api/reaction_process.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         postId: postId, 
                         reactionType: reactionType,
-                        userId: currentUserId // ログインユーザーIDを送信
+                        userId: currentUserId
                     })
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        // HTTPエラーレスポンス (例: 404, 500)
-                        return response.text().then(text => { // エラーレスポンスの本文を読み込む
-                            console.error('HTTPエラー本文:', text);
-                            throw new Error(`HTTP error! status: ${response.status}. Server response: ${text.substring(0, 100)}...`);
-                        });
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         likeCountSpan.textContent = data.newLikes;
                         heartCountSpan.textContent = data.newHearts;
-                        // クラスのトグルもサーバーからのis_reacted情報に基づいて行う
                         if (reactionType === 'good') {
-                            if (data.isLiked) {
-                                this.classList.add('active');
-                            } else {
-                                this.classList.remove('active');
-                            }
-                            // ハートボタンがもしアクティブなら非アクティブにする（一方しか押せない場合）
-                            if (data.isHearted === false && heartCountSpan.closest('.reaction-button.heart').classList.contains('active')) {
-                                heartCountSpan.closest('.reaction-button.heart').classList.remove('active');
-                                heartCountSpan.textContent = data.newHearts; // ハート数も更新
-                            }
+                            this.classList.toggle('active', data.isLiked);
                         } else if (reactionType === 'heart') {
-                            if (data.isHearted) {
-                                this.classList.add('active');
-                            } else {
-                                this.classList.remove('active');
-                            }
-                            // いいねボタンがもしアクティブなら非アクティブにする（一方しか押せない場合）
-                            if (data.isLiked === false && likeCountSpan.closest('.reaction-button.good').classList.contains('active')) {
-                                likeCountSpan.closest('.reaction-button.good').classList.remove('active');
-                                likeCountSpan.textContent = data.newLikes; // いいね数も更新
-                            }
+                            this.classList.toggle('active', data.isHearted);
                         }
-                        displayMessage('リアクションが更新されました！', 'success'); // 成功メッセージ
                     } else {
-                        console.error('リアクション処理に失敗しました:', data.message);
                         displayMessage('リアクション処理中にエラーが発生しました: ' + data.message, 'error');
                     }
                 })
                 .catch(error => {
                     console.error('Fetchエラー:', error);
-                    displayMessage('通信エラーが発生しました。しばらくしてから再度お試しください。', 'error');
+                    displayMessage('通信エラーが発生しました。', 'error');
                 });
             });
         });
@@ -226,6 +232,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ページ読み込み時に投稿をレンダリング
     renderPosts();
-
-    // カスタムメッセージボックスのスタイルはposts.phpに直接記述されているため不要
 });

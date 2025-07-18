@@ -41,14 +41,14 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error(`Error: posts-list container for #${targetElementId} not found.`);
             return;
         }
-        
+
         postsListContainer.innerHTML = ''; // 既存の投稿をクリア
 
         if (postsData && postsData.length > 0) {
             postsData.forEach(post => {
                 let imagesHtml = '';
                 const imgs = post.images || []; // 画像がない場合は空配列
-                
+
                 // 画像の枚数に応じたHTML構造を生成
                 if (imgs.length === 1) {
                     imagesHtml = `<div class="post-images one"><img src="${post.images[0]}" alt="投稿画像" onerror="this.onerror=null;this.src='https://placehold.co/600x320/87CEFA/000000?text=No+Image';"></div>`;
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const heartActiveClass = post.isHearted ? ' active' : '';
 
                 // 自分の投稿の場合のみ削除ボタンを表示
-                const deleteButtonHtml = post.isMine ? 
+                const deleteButtonHtml = post.isMine ?
                     `<li><a href="#" class="delete-action" data-post-id="${post.id}">削除する</a></li>` : '';
 
                 const postCardHtml = `
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function attachEventListeners() {
         // メニューボタンの処理
         document.querySelectorAll('.menu-button').forEach(button => {
-            button.addEventListener('click', function(event) {
+            button.addEventListener('click', function (event) {
                 event.stopPropagation(); // クリックイベントの伝播を停止
                 const dropdown = this.nextElementSibling; // 次の兄弟要素がドロップダウン
                 // 他の開いているドロップダウンを閉じる
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // ドロップダウン外をクリックしたら閉じる
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             document.querySelectorAll('.menu-dropdown.is-active').forEach(openDropdown => {
                 if (!openDropdown.contains(event.target) && !openDropdown.previousElementSibling.contains(event.target)) {
                     openDropdown.classList.remove('is-active');
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 「通報する」アクションの処理
         document.querySelectorAll('.report-action').forEach(item => {
-            item.addEventListener('click', function(event) {
+            item.addEventListener('click', function (event) {
                 event.preventDefault(); // リンクのデフォルト動作を防ぐ
                 const postId = this.dataset.postId;
                 // report.phpに遷移（投稿IDをクエリパラメータで渡す）
@@ -160,136 +160,134 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 「削除する」アクションの処理 (MyPage専用)
         document.querySelectorAll('.delete-action').forEach(item => {
-            item.addEventListener('click', function(event) {
+            item.addEventListener('click', function (event) {
                 event.preventDefault(); // リンクのデフォルト動作を防ぐ
                 const postId = this.dataset.postId;
                 showCustomConfirm('本当にこの投稿を削除しますか？', () => {
                     // ユーザーが「はい」を選択した場合の処理
                     fetch('api/delete_post.php', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ postId: postId })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            displayMessage('投稿が削除されました。', 'success');
-                            // 投稿をDOMから削除
-                            document.getElementById(`post-${postId}`).remove();
-                            // データからも削除して再レンダリング (もし必要なら)
-                            // myPostsData = myPostsData.filter(post => post.id !== postId);
-                            // renderPosts(myPostsData, 'my-posts-content');
-                            // ページ全体のリロードを推奨する場合もあるが、ここではSPA風に削除
-                            location.reload(); // 簡単な方法としてページリロード
-                        } else {
-                            console.error('削除失敗:', data.message);
-                            displayMessage('投稿の削除に失敗しました: ' + data.message, 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Fetchエラー:', error);
-                        displayMessage('通信エラーが発生しました。しばらくしてから再度お試しください。', 'error');
-                    });
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                postId: postId
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                displayMessage('投稿が削除されました。', 'success');
+                                // ページをリロードして変更を反映
+                                location.reload();
+                            } else {
+                                console.error('削除失敗:', data.message);
+                                displayMessage('投稿の削除に失敗しました: ' + data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fetchエラー:', error);
+                            displayMessage('通信エラーが発生しました。しばらくしてから再度お試しください。', 'error');
+                        });
                 });
             });
         });
 
-        // リアクションボタンの処理 (likes, hearts はDBから取得して初期表示、更新はJS+DB連携)
+        // リアクションボタンの処理
         document.querySelectorAll('.reaction-button').forEach(button => {
-            button.addEventListener('click', function() {
-                // ログインしているかチェック
+            button.addEventListener('click', function () {
                 if (currentUserId === null || currentUserId === undefined) {
                     displayMessage('リアクションするにはログインが必要です。', 'error');
                     return;
                 }
 
                 const postId = parseInt(this.dataset.postId);
-                const reactionType = this.dataset.reaction; // 'good' または 'heart'
-                const likeCountSpan = this.closest('.post-actions').querySelector('.like-count');
-                const heartCountSpan = this.closest('.post-actions').querySelector('.heart-count');
+                const reactionType = this.dataset.reaction;
 
-                // AJAXリクエストを送信
-                fetch('api/reaction_process.php', { // 新しく作成するPHPエンドポイント
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        postId: postId, 
-                        reactionType: reactionType,
-                        userId: currentUserId // ログインユーザーIDを送信
+                fetch('api/reaction_process.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            postId: postId,
+                            reactionType: reactionType,
+                            userId: currentUserId
+                        })
                     })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        // HTTPエラーレスポンス (例: 404, 500)
-                        return response.text().then(text => { // エラーレスポンスの本文を読み込む
-                            console.error('HTTPエラー本文:', text);
-                            throw new Error(`HTTP error! status: ${response.status}. Server response: ${text.substring(0, 100)}...`);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        likeCountSpan.textContent = data.newLikes;
-                        heartCountSpan.textContent = data.newHearts;
-                        // クラスのトグルもサーバーからのis_reacted情報に基づいて行う
-                        if (reactionType === 'good') {
-                            if (data.isLiked) {
-                                this.classList.add('active');
-                            } else {
-                                this.classList.remove('active');
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // ★★★ ここからが修正箇所 ★★★
+
+                            // 1. 操作対象の投稿オブジェクトを見つける
+                            let sourcePost = myPostsData.find(p => p.id === postId) ||
+                                likedPostsData.find(p => p.id === postId) ||
+                                bookmarkedPostsData.find(p => p.id === postId);
+
+                            if (sourcePost) {
+                                // 2. 投稿オブジェクトの情報を更新
+                                sourcePost.likes = data.newLikes;
+                                sourcePost.hearts = data.newHearts;
+                                sourcePost.isLiked = data.isLiked;
+                                sourcePost.isHearted = data.isHearted;
+
+                                // 3. いいねリストを更新
+                                if (data.isLiked) {
+                                    if (!likedPostsData.some(p => p.id === postId)) {
+                                        likedPostsData.unshift(sourcePost); // リストの先頭に追加
+                                    }
+                                } else {
+                                    likedPostsData = likedPostsData.filter(p => p.id !== postId);
+                                }
+
+                                // 4. ブックマークリストを更新
+                                if (data.isHearted) {
+                                    if (!bookmarkedPostsData.some(p => p.id === postId)) {
+                                        bookmarkedPostsData.unshift(sourcePost); // リストの先頭に追加
+                                    }
+                                } else {
+                                    bookmarkedPostsData = bookmarkedPostsData.filter(p => p.id !== postId);
+                                }
                             }
-                            // ハートボタンがもしアクティブなら非アクティブにする（一方しか押せない場合）
-                            if (data.isHearted === false && heartCountSpan.closest('.reaction-button.heart').classList.contains('active')) {
-                                heartCountSpan.closest('.reaction-button.heart').classList.remove('active');
-                                heartCountSpan.textContent = data.newHearts; // ハート数も更新
+
+                            // 5. 現在表示中のタブを再描画して、変更を即時反映
+                            const activeTab = document.querySelector('.tab-content.active');
+                            if (activeTab) {
+                                const activeTabId = activeTab.id;
+                                if (activeTabId === 'my-posts-content') {
+                                    renderPosts(myPostsData, activeTabId);
+                                } else if (activeTabId === 'liked-posts-content') {
+                                    renderPosts(likedPostsData, activeTabId);
+                                } else if (activeTabId === 'bookmarked-posts-content') {
+                                    renderPosts(bookmarkedPostsData, activeTabId);
+                                }
                             }
-                        } else if (reactionType === 'heart') {
-                            if (data.isHearted) {
-                                this.classList.add('active');
-                            } else {
-                                this.classList.remove('active');
-                            }
-                            // いいねボタンがもしアクティブなら非アクティブにする（一方しか押せない場合）
-                            if (data.isLiked === false && likeCountSpan.closest('.reaction-button.good').classList.contains('active')) {
-                                likeCountSpan.closest('.reaction-button.good').classList.remove('active');
-                                likeCountSpan.textContent = data.newLikes; // いいね数も更新
-                            }
+                            // ★★★ ここまで修正 ★★★
+
+                        } else {
+                            displayMessage('リアクション処理中にエラーが発生しました: ' + data.message, 'error');
                         }
-                        displayMessage('リアクションが更新されました！', 'success'); // 成功メッセージ
-                    } else {
-                        console.error('リアクション処理に失敗しました:', data.message);
-                        displayMessage('リアクション処理中にエラーが発生しました: ' + data.message, 'error');
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetchエラー:', error);
-                    displayMessage('通信エラーが発生しました。しばらくしてから再度お試しください。', 'error');
-                });
+                    })
+                    .catch(error => {
+                        console.error('Fetchエラー:', error);
+                        displayMessage('通信エラーが発生しました。', 'error');
+                    });
             });
         });
     }
 
     // タブ切り替えロジック
     document.querySelectorAll('.tab-button').forEach(button => {
-        button.addEventListener('click', function() {
-            // すべてのタブボタンからactiveクラスを削除
+        button.addEventListener('click', function () {
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            // クリックされたボタンにactiveクラスを追加
             this.classList.add('active');
 
-            // すべてのタブコンテンツからactiveクラスを削除
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            // 対応するタブコンテンツにactiveクラスを追加
             const targetTabId = this.dataset.tab;
             const targetTabContent = document.getElementById(targetTabId);
             if (targetTabContent) {
                 targetTabContent.classList.add('active');
-                // タブが切り替わったときに該当の投稿をレンダリング
                 if (targetTabId === 'my-posts-content') {
                     renderPosts(myPostsData, targetTabId);
                 } else if (targetTabId === 'liked-posts-content') {
@@ -301,11 +299,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 初回レンダリング（デフォルトで「自分の投稿」タブを表示）
-    // renderPosts には、PHPで定義された myPostsData 変数を渡す
+    // 初回レンダリング
     renderPosts(myPostsData, 'my-posts-content');
 
-    // カスタム確認モーダルを表示する関数 (MyPage.js 既存ロジック)
+    // カスタム確認モーダルを表示する関数
     function showCustomConfirm(message, onConfirm) {
         const modalOverlay = document.getElementById('custom-confirm-modal');
         const confirmMessage = document.getElementById('confirm-message');
@@ -313,20 +310,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmNoButton = document.getElementById('confirm-no');
 
         confirmMessage.textContent = message;
-        modalOverlay.style.display = 'flex'; // モーダルを表示
-
-        // イベントリスナーを一度だけ設定するために、既存のリスナーを削除
-        confirmYesButton.onclick = null;
-        confirmNoButton.onclick = null;
+        modalOverlay.style.display = 'flex';
 
         confirmYesButton.onclick = () => {
-            modalOverlay.style.display = 'none'; // モーダルを非表示
-            onConfirm(); // 確定時の処理を実行
+            modalOverlay.style.display = 'none';
+            onConfirm();
         };
 
         confirmNoButton.onclick = () => {
-            modalOverlay.style.display = 'none'; // モーダルを非表示
-            // 何もしない
+            modalOverlay.style.display = 'none';
         };
     }
 
@@ -334,8 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const editProfileButton = document.querySelector('.edit-profile-button');
     if (editProfileButton) {
         editProfileButton.addEventListener('click', () => {
-            window.location.href = 'profile_edit.php'; // モーダルではなくページ遷移
+            window.location.href = 'profile_edit.php';
         });
     }
-
 });

@@ -214,6 +214,29 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
             .reaction-button { padding: 6px 12px; font-size: 1.3rem; }
             .reaction-button span { font-size: 1.3rem; }
         }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .tabs .tab-button {
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+            padding: 15px 10px;
+            border: none;
+            border-bottom: 3px solid transparent;
+            background: none;
+            font-size: 1.6rem;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tabs .tab-button.active {
+            color: #A0522D;
+            border-bottom-color: #A0522D;
+            font-weight: bold;
+        }
     </style>
 </head>
 
@@ -248,7 +271,7 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
             <section class="posts-section">
                 <div class="tabs">
                     <button class="tab-button active" data-tab="my-posts-content">自分の投稿</button>
-                    <button class="tab-button" data-tab="liked-posts-content">いいねした投稿</button>
+                    <button class="tab-button" data-tab="liked-posts-content">いいね</button>
                     <button class="tab-button" data-tab="bookmarked-posts-content">ブックマーク</button>
                 </div>
                 <div id="my-posts-content" class="tab-content active">
@@ -288,15 +311,18 @@ if (isset($_GET['profile_updated']) && $_GET['profile_updated'] === 'true') {
     <script src="js/script.js"></script>
     <script src="js/MyPage.js"></script>
     <script>
+        // ▼▼▼ ここから修正 ▼▼▼
         // PHPから渡されたユーザーIDと投稿データ
         const currentUserId = <?= json_encode($current_user_id) ?>;
-        const myPostsData = <?= json_encode($my_posts_for_js); ?>;
-        const likedPostsData = <?= json_encode($liked_posts_for_js); ?>;
-        const bookmarkedPostsData = <?= json_encode($bookmarked_posts_for_js); ?>;
+        // const を let に変更して、再代入を可能にする
+        let myPostsData = <?= json_encode($my_posts_for_js); ?>;
+        let likedPostsData = <?= json_encode($liked_posts_for_js); ?>;
+        let bookmarkedPostsData = <?= json_encode($bookmarked_posts_for_js); ?>;
 
         // PHPからのメッセージング (ページロード時に表示)
         const phpMessage = <?= json_encode($message) ?>;
         const phpMessageType = <?= json_encode($message_type) ?>;
+        // ▲▲▲ ここまで修正 ▲▲▲
     </script>
 </body>
 </html>
