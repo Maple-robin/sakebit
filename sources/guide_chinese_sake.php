@@ -87,7 +87,7 @@
                                 <p>そのまま飲むと、しっかりした味わいや香りをダイレクトに感じられます。</p>
                             </div>
                             <div class="drink-way-item__image">
-                                <img src="img/baijiu_glass.png" alt="ストレートの中国酒">
+                                <img src="img/中国酒ストレート.png" alt="ストレートの中国酒">
                             </div>
                         </div>
                     </div>
@@ -104,7 +104,7 @@
                                 <p>温めると香りや甘みが増し、まろやかな味わいになります。</p>
                             </div>
                             <div class="drink-way-item__image">
-                                <img src="img/hot_shaoxing.png" alt="温めた紹興酒">
+                                <img src="img/中国酒熱燗.png" alt="温めた紹興酒">
                             </div>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                                 <p>炭酸水で割るとすっきりとした飲み口になり、軽やかな味わいが楽しめます。</p>
                             </div>
                             <div class="drink-way-item__image">
-                                <img src="img/soda_chu.png" alt="中国酒のソーダ割り">
+                                <img src="img/中国酒ソーダ割り.png" alt="中国酒のソーダ割り">
                             </div>
                         </div>
                     </div>

@@ -101,7 +101,7 @@
                             <p>梅酒の甘みと酸味がソーダの炭酸で引き立ち、爽快なのどごしに。食前酒にもぴったりです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/umeshu_soda.png" alt="梅酒ソーダ割り">
+                            <img src="img/梅酒ソーダ割り.png" alt="梅酒ソーダ割り">
                         </div>
                     </div>
                 </div>
@@ -118,7 +118,7 @@
                             <p>氷がゆっくり溶けることで、味わいの変化を楽しめます。梅酒本来の濃厚な味わいをじっくりと楽しみたい方へ。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/umeshu_rock.png" alt="梅酒ロック">
+                            <img src="img/梅酒ロック.png" alt="梅酒ロック">
                         </div>
                     </div>
                 </div>
@@ -135,7 +135,7 @@
                             <p>梅の香りがふわりと立ち上り、心も体も温まる飲み方。寝る前のリラックスタイムにもおすすめです。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/umeshu_oyuwari.png" alt="梅酒お湯割り">
+                            <img src="img/梅酒お湯割り.png" alt="梅酒お湯割り">
                         </div>
                     </div>
                 </div>

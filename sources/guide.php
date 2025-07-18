@@ -103,7 +103,7 @@
                             <p>冷蔵庫や氷で冷やします。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/osake.png" alt="グラスに注がれた冷たいお酒">
+                            <img src="img/ガイド冷やす.png" alt="グラスに注がれた冷たいお酒">
                         </div>
                     </div>
                 </div>
@@ -120,7 +120,7 @@
                             <p>徳利や耐熱容器に入れて温めます。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/sake-warm.jpg" alt="温かいお酒、熱燗">
+                            <img src="img/ガイド温める.png" alt="温かいお酒、熱燗">
                         </div>
                     </div>
                 </div>
@@ -137,7 +137,7 @@
                             <p>ソーダやジュースなど、お好みの割り材で割ります。</p>
                         </div>
                         <div class="drink-way-item__image">
-                            <img src="img/gingerale.png" alt="ジンジャーエールで割るお酒">
+                            <img src="img/ガイド割り.png" alt="ジンジャーエールで割るお酒">
                         </div>
                     </div>
                 </div>
