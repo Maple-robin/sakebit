@@ -1294,6 +1294,27 @@ class cposts extends crecord
         );
         return $this->execute_query($debug, $query, $prep_arr);
     }
+    public function get_all_posts_for_admin($debug)
+    {
+        $query = "
+            SELECT
+                p.post_id,
+                p.post_title,
+                p.post_content,
+                u.user_name,
+                (SELECT COUNT(*) FROM good WHERE post_id = p.post_id) AS good_count,
+                (SELECT COUNT(*) FROM heart WHERE post_id = p.post_id) AS heart_count,
+                (SELECT COUNT(*) FROM report_info WHERE post_id = p.post_id) AS report_count
+            FROM
+                posts p
+            JOIN
+                user_info u ON p.user_id = u.user_id
+            ORDER BY
+                p.post_id DESC;
+        ";
+        $stmt = $this->execute_query($debug, $query, []);
+        return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    }
 
     public function __destruct()
     {
@@ -1643,6 +1664,40 @@ class creport_info extends crecord
         $prep_arr = array(':report_id' => (int)$id);
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
+    }
+    public function insert_report($debug, $post_id, $user_id, $category, $content)
+    {
+        $query = "INSERT INTO report_info (post_id, user_id, report_category, report_content) VALUES (:post_id, :user_id, :category, :content)";
+        $prep_arr = [
+            ':post_id' => (int)$post_id,
+            ':user_id' => (int)$user_id,
+            ':category' => $category,
+            ':content' => $content
+        ];
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
+    public function get_all_reports_for_admin($debug)
+    {
+        $query = "
+            SELECT
+                r.report_id,
+                r.report_category,
+                r.report_content,
+                p.post_id,
+                p.post_title,
+                p.post_content AS reported_post_content,
+                u.user_name AS reporter_user_name
+            FROM
+                report_info r
+            JOIN
+                posts p ON r.post_id = p.post_id
+            JOIN
+                user_info u ON r.user_id = u.user_id
+            ORDER BY
+                r.report_id DESC;
+        ";
+        $stmt = $this->execute_query($debug, $query, []);
+        return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
     public function __destruct()

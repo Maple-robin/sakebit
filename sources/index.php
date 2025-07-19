@@ -36,7 +36,7 @@ $beginner_products = $product_db->get_top_selling_products_by_tag($debug, '初�
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAKE BIT | 伊勢の地酒と和食にこだわった料亭</title>
+    <title>SAKE BIT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link

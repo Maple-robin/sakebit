@@ -5,12 +5,26 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、ここでの処理は不要です。
-// session_start();
-// require_once __DIR__ . '/common/contents_db.php';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-// ここに通報ページ固有のPHPロジックがあれば記述します。
-// (例: GETパラメータから通報対象の投稿IDを取得する処理など)
+// ログインしていない場合は、ログインページにリダイレクト
+if (!isset($_SESSION['user_id'])) {
+    // 元のページに戻れるように、リダイレクトURLをセッションに保存
+    $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
+    header('Location: login.php');
+    exit();
+}
+
+// GETパラメータから通報対象の投稿IDを取得
+$post_id = $_GET['postId'] ?? null;
+
+// 投稿IDがない、または不正な場合は投稿一覧ページに戻す
+if (!is_numeric($post_id) || $post_id <= 0) {
+    header('Location: posts.php');
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -30,9 +44,8 @@
 </head>
 
 <body>
-    <?php 
-    // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    <?php
+    require_once 'header.php';
     ?>
 
     <main>
@@ -43,7 +56,8 @@
             </h1>
 
             <form id="report-form" class="report-form">
-                <input type="hidden" id="post-id" value="12345">
+                <!-- PHPから取得した投稿IDをセット -->
+                <input type="hidden" id="post-id" value="<?php echo htmlspecialchars($post_id); ?>">
 
                 <p class="form-description">この投稿を通報する理由を選択してください。</p>
 
@@ -84,14 +98,14 @@
                     <button type="submit" class="submit-button">通報する</button>
                     <button type="button" class="cancel-button" onclick="history.back()">キャンセル</button>
                 </div>
-                <p class="success-message" id="success-message"></p>
+                <!-- 成功/エラーメッセージ表示用のコンテナ -->
+                <div id="form-message-container"></div>
             </form>
         </div>
     </main>
 
-    <?php 
-    // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    <?php
+    require_once 'footer.php';
     ?>
 
     <script src="js/report.js"></script>

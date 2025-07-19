@@ -1,5 +1,17 @@
+<?php
+// admin_header.php でセッションは開始されている想定
+require_once __DIR__ . '/../common/contents_db.php';
+
+if (!defined('DEBUG_MODE')) {
+    define('DEBUG_MODE', false);
+}
+
+$report_db = new creport_info();
+$all_reports = $report_db->get_all_reports_for_admin(DEBUG_MODE);
+?>
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +23,7 @@
     <link rel="stylesheet" href="../admincss/admin.css">
     <link rel="stylesheet" href="../admincss/admin_reports.css">
 </head>
+
 <body>
     <?php require_once 'admin_header.php'; ?>
 
@@ -33,6 +46,26 @@
                         </tr>
                     </thead>
                     <tbody id="report-management-table-body">
+                        <?php if (!empty($all_reports)): ?>
+                            <?php foreach ($all_reports as $report): ?>
+                                <tr>
+                                    <td><?php echo htmlspecialchars($report['reporter_user_name']); ?></td>
+                                    <td><?php echo htmlspecialchars($report['post_title']); ?></td>
+                                    <td class="post-content-cell" title="<?php echo htmlspecialchars($report['reported_post_content']); ?>">
+                                        <?php echo htmlspecialchars(mb_strimwidth($report['reported_post_content'], 0, 30, '...')); ?>
+                                    </td>
+                                    <td><?php echo htmlspecialchars($report['report_category']); ?></td>
+                                    <td class="report-content-cell" title="<?php echo htmlspecialchars($report['report_content']); ?>">
+                                        <?php echo htmlspecialchars(mb_strimwidth($report['report_content'], 0, 30, '...')); ?>
+                                    </td>
+                                    <td><button class="delete-button" data-id="<?php echo htmlspecialchars($report['report_id']); ?>">削除</button></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="6">通報はありません。</td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </section>
@@ -45,7 +78,9 @@
         </div>
     </footer>
 
-    <script src="../adminjs/admin_reports.js"></script>
+    <!-- 削除機能などのためにJSは残しますが、表示には使いません -->
+    <!-- <script src="../adminjs/admin_reports.js"></script> -->
     <script src="../adminjs/admin.js"></script>
 </body>
+
 </html>
