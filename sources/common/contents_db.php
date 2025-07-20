@@ -1426,6 +1426,17 @@ class ccontacts extends crecord
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
+    public function insert_contact($debug, $user_id, $title, $content)
+    {
+        // テーブルのカラム名に合わせて修正
+        $query = "INSERT INTO contacts (user_id, contact_title, contact_content) VALUES (:user_id, :title, :content)";
+        $prep_arr = [
+            ':user_id' => $user_id,
+            ':title' => $title,
+            ':content' => $content
+        ];
+        return $this->execute_query($debug, $query, $prep_arr);
+    }
 
     public function __destruct()
     {

@@ -162,16 +162,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // URLパラメータに応じてメッセージを表示
     const urlParams = new URLSearchParams(window.location.search);
+    const path = window.location.pathname;
+
     if (urlParams.get('registered') === 'true') {
         displayMessage('新規登録が完了しました！', 'success');
-        history.replaceState(null, '', window.location.pathname); // URLパラメータを削除
+        history.replaceState(null, '', path);
     }
     if (urlParams.get('loggedin') === 'true') {
         displayMessage('ログインしました！', 'success');
-        history.replaceState(null, '', window.location.pathname); // URLパラメータを削除
+        history.replaceState(null, '', path);
     }
     if (urlParams.get('loggedout') === 'true') {
         displayMessage('ログアウトしました！', 'success');
-        history.replaceState(null, '', window.location.pathname); // URLパラメータを削除
+        history.replaceState(null, '', path);
     }
+    // ★★★ ここから追加 ★★★
+    if (urlParams.get('contact_success') === 'true') {
+        displayMessage('お問い合わせありがとうございます。', 'success');
+        history.replaceState(null, '', path);
+    }
+    // ★★★ ここまで追加 ★★★
 });

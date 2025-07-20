@@ -1,43 +1,75 @@
-// js/contact.js
-
 document.addEventListener('DOMContentLoaded', function () {
     const contactForm = document.getElementById('contactForm');
     const cancelButton = document.querySelector('.cancel-btn');
+    const messageContainer = document.getElementById('form-message-container');
 
-    // 「キャンセル」ボタンがクリックされた時の処理
     if (cancelButton) {
         cancelButton.addEventListener('click', function () {
-            // 確認ダイアログを表示
-            const confirmCancel = confirm('入力中の内容は破棄されます。本当にキャンセルしますか？');
-            if (confirmCancel) {
-                // ユーザーがOKを選択した場合、前のページに戻る
+            if (confirm('入力中の内容は破棄されます。本当にキャンセルしますか？')) {
                 history.back();
             }
         });
     }
 
-    // フォームが送信された時の処理（仮の動作）
     if (contactForm) {
         contactForm.addEventListener('submit', function (event) {
-            event.preventDefault(); // フォームのデフォルト送信をキャンセル
+            event.preventDefault(); // デフォルトの送信をキャンセル
+
+            if (messageContainer) messageContainer.innerHTML = '';
 
             const title = document.getElementById('contact-title').value.trim();
             const content = document.getElementById('contact-content').value.trim();
 
             if (title === '' || content === '') {
-                alert('件名と内容の両方を入力してください。');
+                displayMessage('件名と内容は必須です。', 'error');
                 return;
             }
 
-            // ここに、入力されたデータをサーバーに送信する処理を追加します。
-            // 例: Fetch API や XMLHttpRequest を使用してデータをPOSTする。
+            const submitButton = contactForm.querySelector('.submit-btn');
+            submitButton.disabled = true;
+            submitButton.textContent = '送信中...';
 
-            alert('お問い合わせを送信しました！\n件名: ' + title + '\n内容: ' + content.substring(0, 50) + '...'); // 内容は一部のみ表示
+            const formData = {
+                title: title,
+                content: content
+            };
 
-            // 実際のサイトでは、送信成功後に別のページにリダイレクトしたり、
-            // フォームをクリアしたりする処理を行います。
-            // 例: window.location.href = 'thank_you_page.php';
-            contactForm.reset(); // フォームをクリア
+            fetch('api/submit_contact.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // ★★★ ここから修正 ★★★
+                        // 成功したら、メッセージ表示用のパラメータを付けてトップページへ遷移
+                        window.location.href = 'index.php?contact_success=true';
+                        // ★★★ ここまで修正 ★★★
+                    } else {
+                        displayMessage(data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayMessage('通信エラーが発生しました。', 'error');
+                })
+                .finally(() => {
+                    // 成功時はリダイレクトするので、この部分は失敗時のみ実行される
+                    submitButton.disabled = false;
+                    submitButton.textContent = '送信する';
+                });
         });
+    }
+
+    // メッセージ表示用の関数
+    function displayMessage(message, type) {
+        if (!messageContainer) return;
+        const messageElement = document.createElement('p');
+        messageElement.textContent = message;
+        messageElement.className = type === 'success' ? 'success-message' : 'error-message';
+        messageContainer.appendChild(messageElement);
     }
 });
