@@ -1437,7 +1437,26 @@ class ccontacts extends crecord
         ];
         return $this->execute_query($debug, $query, $prep_arr);
     }
-
+    public function get_all_contacts_for_admin($debug)
+    {
+        $query = "
+            SELECT
+                c.contact_id,
+                c.contact_title,
+                c.contact_content,
+                c.status,
+                u.user_name,
+                u.user_email
+            FROM
+                contacts c
+            JOIN
+                user_info u ON c.user_id = u.user_id
+            ORDER BY
+                c.contact_id DESC;
+        ";
+        $stmt = $this->execute_query($debug, $query, []);
+        return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    }
     public function __destruct()
     {
         parent::__destruct();
