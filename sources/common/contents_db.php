@@ -249,6 +249,17 @@ class cclient_user_info extends crecord
         $this->select_query($debug, $query, $prep_arr);
         return $this->fetch_assoc();
     }
+    public function get_all_client_users($debug, $from = 0, $limit = 1000)
+    {
+        $arr = array();
+        $query = "SELECT client_id, company_name, email FROM client_user_info ORDER BY client_id ASC LIMIT :from, :limit";
+        $prep_arr = array(':from' => (int)$from, ':limit' => (int)$limit);
+        $this->select_query($debug, $query, $prep_arr);
+        while ($row = $this->fetch_assoc()) {
+            $arr[] = $row;
+        }
+        return $arr;
+    }
 
     public function __destruct()
     {

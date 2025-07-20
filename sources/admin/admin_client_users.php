@@ -1,5 +1,17 @@
+<?php
+// admin_header.php でセッションは開始されている想定
+require_once __DIR__ . '/../common/contents_db.php';
+
+if (!defined('DEBUG_MODE')) {
+    define('DEBUG_MODE', false);
+}
+
+$client_user_db = new cclient_user_info();
+$all_client_users = $client_user_db->get_all_client_users(DEBUG_MODE);
+?>
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +21,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Zen+Old+Mincho:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../admincss/admin.css">
-    <link rel="stylesheet" href="../admincss/admin_client_users.css"> </head>
+    <link rel="stylesheet" href="../admincss/admin_client_users.css">
+</head>
+
 <body>
     <?php require_once 'admin_header.php'; ?>
 
@@ -32,7 +46,25 @@
                             </tr>
                         </thead>
                         <tbody id="client-user-management-table-body">
-                            </tbody>
+                            <?php if (!empty($all_client_users)): ?>
+                                <?php foreach ($all_client_users as $client_user): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($client_user['client_id']); ?></td>
+                                        <td><?php echo htmlspecialchars($client_user['company_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($client_user['email']); ?></td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-sm btn-delete" data-id="<?php echo htmlspecialchars($client_user['client_id']); ?>">削除</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4">企業ユーザーは登録されていません。</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
                     </table>
                 </div>
             </section>
@@ -45,7 +77,8 @@
         </div>
     </footer>
 
-    <script src="../adminjs/admin_client_users.js"></script>
+    <!-- <script src="../adminjs/admin_client_users.js"></script> -->
     <script src="../adminjs/admin.js"></script>
 </body>
+
 </html>

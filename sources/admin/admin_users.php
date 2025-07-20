@@ -1,5 +1,37 @@
+<?php
+// admin_header.php でセッションは開始されている想定
+require_once __DIR__ . '/../common/contents_db.php';
+
+if (!defined('DEBUG_MODE')) {
+    define('DEBUG_MODE', false);
+}
+
+$user_db = new cuser_info();
+// get_all() はページネーション対応ですが、ここでは一旦全件取得します
+$all_users = $user_db->get_all(DEBUG_MODE, 0, 1000);
+
+// 生年月日から年齢を計算する関数
+function calculateAge($birthday)
+{
+    if (!$birthday || $birthday === '0000-00-00') {
+        return '未設定';
+    }
+    try {
+        $birthDate = new DateTime($birthday);
+        $today = new DateTime('today');
+        if ($birthDate > $today) {
+            return '未来日';
+        }
+        $age = $today->diff($birthDate)->y;
+        return $age;
+    } catch (Exception $e) {
+        return '不明';
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +43,9 @@
     <link rel="stylesheet" href="../admincss/admin.css">
     <link rel="stylesheet" href="../admincss/admin_users.css">
 </head>
-<body>    <?php require_once 'admin_header.php'; ?>
+
+<body>
+    <?php require_once 'admin_header.php'; ?>
 
     <main class="admin-main">
         <div class="admin-main__inner">
@@ -33,30 +67,25 @@
                             </tr>
                         </thead>
                         <tbody id="user-management-table-body">
-                            <tr>
-                                <td>テストユーザー１</td>
-                                <td>test1@example.com</td>
-                                <td>1990/01/15</td>
-                                <td>35</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="#" class="btn btn-sm btn-edit">編集</a>
-                                        <button class="btn btn-sm btn-delete">削除</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>テストユーザー２</td>
-                                <td>test2@example.com</td>
-                                <td>1985/05/20</td>
-                                <td>40</td>
-                                <td>
-                                    <div class="action-buttons">
-                                        <a href="#" class="btn btn-sm btn-edit">編集</a>
-                                        <button class="btn btn-sm btn-delete">削除</button>
-                                    </div>
-                                </td>
-                            </tr>
+                            <?php if (!empty($all_users)): ?>
+                                <?php foreach ($all_users as $user): ?>
+                                    <tr>
+                                        <td><?php echo htmlspecialchars($user['user_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($user['user_email']); ?></td>
+                                        <td><?php echo htmlspecialchars($user['user_age']); ?></td>
+                                        <td><?php echo calculateAge($user['user_age']); ?>歳</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-sm btn-delete" data-id="<?php echo htmlspecialchars($user['user_id']); ?>">削除</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5">ユーザーは登録されていません。</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -70,7 +99,8 @@
         </div>
     </footer>
 
-    <script src="../adminjs/admin_users.js"></script>
+    <!-- <script src="../adminjs/admin_users.js"></script> -->
     <script src="../adminjs/admin.js"></script>
 </body>
+
 </html>
