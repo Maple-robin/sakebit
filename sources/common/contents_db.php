@@ -835,7 +835,7 @@ class cproduct_info extends crecord
         ];
         return $this->execute_query($debug, $query, $prep_arr);
     }
-
+    
     public function __destruct()
     {
         parent::__destruct();

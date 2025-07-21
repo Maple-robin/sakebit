@@ -1,5 +1,15 @@
 <?php
 // ヘッダーでセッション開始、DB接続、共通関数の読み込みを行っています。
+
+// ★★★【追加】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
+require_once 'common/contents_db.php';
+
+// ビールカテゴリの人気ランキング商品を取得
+// ビールのカテゴリIDを 10 と仮定します。ご自身の環境のIDに合わせて変更してください。
+$beer_category_id = 10;
+$product_db = new cproduct_info();
+$ranked_beer_products = $product_db->get_top_selling_products_by_category(false, $beer_category_id, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -22,9 +32,9 @@
 </head>
 
 <body>
-    <?php 
+    <?php
     // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    require_once 'header.php';
     ?>
 
     <main>
@@ -54,7 +64,7 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの種類 -->
+        <!-- 主な種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
@@ -137,77 +147,36 @@
             </div>
         </section>
 
-        <!-- おすすめビールカルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おすすめのビール</h2>
-                    <p class="en">Recommended Beer</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=201">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/yebisu.png" alt="ヱビスビール">
-                                </div>
-                                <h3 class="product-item__name">ヱビスビール</h3>
-                                <p class="product-item__price">¥ 350<span>(税込)</span></p>
-                                <p class="product-item__tag">#プレミアム #コク</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=202">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/premium_malts.png" alt="ザ・プレミアム・モルツ">
-                                </div>
-                                <h3 class="product-item__name">ザ・プレミアム・モルツ</h3>
-                                <p class="product-item__price">¥ 340<span>(税込)</span></p>
-                                <p class="product-item__tag">#華やかな香り #深いコク</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=203">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/indonoaooni.png" alt="インドの青鬼">
-                                </div>
-                                <h3 class="product-item__name">インドの青鬼</h3>
-                                <p class="product-item__price">¥ 450<span>(税込)</span></p>
-                                <p class="product-item__tag">#IPA #強烈な苦み</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=204">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/yonayona_ale.png" alt="よなよなエール">
-                                </div>
-                                <h3 class="product-item__name">よなよなエール</h3>
-                                <p class="product-item__price">¥ 420<span>(税込)</span></p>
-                                <p class="product-item__tag">#ペールエール #柑橘香</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=205">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/orion.png" alt="オリオンビール">
-                                </div>
-                                <h3 class="product-item__name">オリオン ザ・ドラフト</h3>
-                                <p class="product-item__price">¥ 300<span>(税込)</span></p>
-                                <p class="product-item__tag">#沖縄 #爽快</p>
-                            </a>
-                        </div>
+        <!-- ★★★【変更箇所】ビール 人気ランキング (動的カルーセル) ★★★ -->
+        <?php if (!empty($ranked_beer_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">ビール 人気ランキング</h2>
+                        <p class="en">Popular Beer Ranking</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($ranked_beer_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $beer_category_id; ?>" class="btn-all-products">ビール一覧を見る</a>
                 </div>
-                 <a href="products_list.php?category=ビール" class="btn-all-products">ビール一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">
@@ -283,9 +252,9 @@
         <!-- /ガイド一覧セクション -->
     </main>
 
-    <?php 
+    <?php
     // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    require_once 'footer.php';
     ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>

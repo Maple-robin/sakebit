@@ -5,7 +5,15 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、このファイルでの処理は不要です。
+// ★★★【変更箇所】エラーを修正するため、相対パスに戻しました ★★★
+require_once 'common/contents_db.php';
+
+// 日本酒カテゴリの人気ランキング商品を取得
+// 日本酒のカテゴリIDを 1 と仮定します。環境に合わせて変更してください。
+$sake_category_id = 1;
+$product_db = new cproduct_info();
+// 既存の関数を呼び出します
+$ranked_sake_products = $product_db->get_top_selling_products_by_category(false, $sake_category_id, 5);
 
 ?>
 <!DOCTYPE html>
@@ -25,15 +33,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <link rel="stylesheet" href="css/top.css">
-    <link rel="stylesheet" href="css/guide.css"> 
+    <link rel="stylesheet" href="css/guide.css">
 </head>
 
 <body>
-    <?php 
+    <?php
     // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    require_once 'header.php';
     ?>
-    
+
     <main>
         <!-- ヒーローセクション -->
         <section class="guide-hero" style="background-image: url('img/日本酒米米.png');">
@@ -61,7 +69,7 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの日本酒 -->
+        <!-- 主な種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
@@ -144,77 +152,35 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの日本酒カルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">初心者におすすめの日本酒</h2>
-                    <p class="en">Recommended Sake for Beginners</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=1">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake_1.jpg" alt="商品1">
-                                </div>
-                                <h3 class="product-item__name">獺祭 純米大吟醸45</h3>
-                                <p class="product-item__price">¥ 3,300<span>(税込)</span></p>
-                                <p class="product-item__tag">#フルーティー #定番</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=2">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake_2.jpg" alt="商品2">
-                                </div>
-                                <h3 class="product-item__name">久保田 千寿</h3>
-                                <p class="product-item__price">¥ 2,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#すっきり #食事と</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=3">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake_3.jpg" alt="商品3">
-                                </div>
-                                <h3 class="product-item__name">八海山 普通酒</h3>
-                                <p class="product-item__price">¥ 2,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#淡麗辛口 #定番</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=4">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake_4.jpg" alt="商品4">
-                                </div>
-                                <h3 class="product-item__name">出羽桜 桜花吟醸酒</h3>
-                                <p class="product-item__price">¥ 3,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#華やか #吟醸香</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=5">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake_5.jpg" alt="商品5">
-                                </div>
-                                <h3 class="product-item__name">作 穂乃智</h3>
-                                <p class="product-item__price">¥ 2,700<span>(税込)</span></p>
-                                <p class="product-item__tag">#軽快 #透明感</p>
-                            </a>
-                        </div>
+        <!-- 日本酒 人気ランキング (動的カルーセル) -->
+        <?php if (!empty($ranked_sake_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">日本酒 人気ランキング</h2>
+                        <p class="en">Popular Sake Ranking</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($ranked_sake_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $sake_category_id; ?>" class="btn-all-products">日本酒一覧を見る</a>
                 </div>
-                 <a href="products_list.php?tag=初心者向け" class="btn-all-products">初心者向け一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
 
         <!-- ガイド一覧セクション -->
         <section class="categories">
@@ -289,9 +255,9 @@
         </section>
     </main>
 
-    <?php 
+    <?php
     // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    require_once 'footer.php';
     ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
