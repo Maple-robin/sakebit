@@ -1,5 +1,15 @@
 <?php
 // ヘッダーでセッション開始、DB接続、共通関数の読み込みを行っています。
+
+// ★★★【変更箇所】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
+require_once 'common/contents_db.php';
+
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
+$chuhai_category_id = 4;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
+$product_db = new cproduct_info();
+$recommended_chuhai_products = $product_db->get_recommended_products_for_guide(false, $chuhai_category_id, $priority_tag_name, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -44,7 +54,7 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの種類 -->
+        <!-- 主な種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
@@ -127,77 +137,36 @@
             </div>
         </section>
 
-        <!-- おすすめ缶チューハイカルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おすすめの缶チューハイ</h2>
-                    <p class="en">Recommended Canned Chuhai</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=801">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/hyoketsu.png" alt="氷結シチリア産レモン">
-                                </div>
-                                <h3 class="product-item__name">キリン 氷結® シチリア産レモン</h3>
-                                <p class="product-item__price">¥ 150<span>(税込)</span></p>
-                                <p class="product-item__tag">#定番 #レモン</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=802">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/strong_zero.png" alt="-196℃ ストロングゼロ">
-                                </div>
-                                <h3 class="product-item__name">-196℃ ストロングゼロ〈ダブルレモン〉</h3>
-                                <p class="product-item__price">¥ 160<span>(税込)</span></p>
-                                <p class="product-item__tag">#高アルコール #ガツン</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=803">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/horoyoi.png" alt="ほろよい 白いサワー">
-                                </div>
-                                <h3 class="product-item__name">ほろよい〈白いサワー〉</h3>
-                                <p class="product-item__price">¥ 140<span>(税込)</span></p>
-                                <p class="product-item__tag">#低アルコール #やさしい</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=804">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/kodawari_sakaba.png" alt="こだわり酒場のレモンサワー">
-                                </div>
-                                <h3 class="product-item__name">こだわり酒場のレモンサワー</h3>
-                                <p class="product-item__price">¥ 155<span>(税込)</span></p>
-                                <p class="product-item__tag">#レモンサワー #本格</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=805">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/kanjyuku_ume.png" alt="贅沢搾り 完熟うめ">
-                                </div>
-                                <h3 class="product-item__name">アサヒ 贅沢搾りプレミアム 完熟うめ</h3>
-                                <p class="product-item__price">¥ 170<span>(税込)</span></p>
-                                <p class="product-item__tag">#梅 #果実感</p>
-                            </a>
-                        </div>
+        <!-- ★★★【変更箇所】おすすめの缶チューハイ (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_chuhai_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">おすすめの缶チューハイ</h2>
+                        <p class="en">Recommended Canned Chuhai</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($recommended_chuhai_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $chuhai_category_id; ?>" class="btn-all-products">缶チューハイ一覧を見る</a>
                 </div>
-                <a href="products_list.php?category=chuhai" class="btn-all-products">缶チューハイ一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">

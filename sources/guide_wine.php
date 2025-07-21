@@ -1,5 +1,15 @@
 <?php
 // ヘッダーでセッション開始、DB接続、共通関数の読み込みを行っています。
+
+// ★★★【変更箇所】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
+require_once 'common/contents_db.php';
+
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
+$wine_category_id = 9;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
+$product_db = new cproduct_info();
+$recommended_wine_products = $product_db->get_recommended_products_for_guide(false, $wine_category_id, $priority_tag_name, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -18,13 +28,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <link rel="stylesheet" href="css/top.css">
-    <link rel="stylesheet" href="css/guide.css"> 
+    <link rel="stylesheet" href="css/guide.css">
 </head>
 
 <body>
-    <?php 
+    <?php
     // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    require_once 'header.php';
     ?>
 
     <main>
@@ -54,12 +64,12 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの種類 -->
+        <!-- 主な種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">初心者におすすめの種類</h2>
-                    <p class="en">Easy to Drink</p>
+                    <h2 class="ja">主な種類</h2>
+                    <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/ワイン赤ワイン.png');">
@@ -138,77 +148,36 @@
             </div>
         </section>
 
-        <!-- おすすめワインカルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おすすめのワイン</h2>
-                    <p class="en">Recommended Wine</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=301">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/wine_red_bottle.png" alt="カサーレヴェッキオ">
-                                </div>
-                                <h3 class="product-item__name">カサーレ・ヴェッキオ モンテプルチアーノ</h3>
-                                <p class="product-item__price">¥ 2,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#赤ワイン #フルボディ</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=302">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/wine_white_bottle.png" alt="クラウディベイ">
-                                </div>
-                                <h3 class="product-item__name">クラウディ・ベイ ソーヴィニヨン・ブラン</h3>
-                                <p class="product-item__price">¥ 4,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#白ワイン #爽やか</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=303">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/wine_sparkling_bottle.png" alt="モエ・エ・シャンドン">
-                                </div>
-                                <h3 class="product-item__name">モエ・エ・シャンドン ブリュット</h3>
-                                <p class="product-item__price">¥ 7,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#シャンパン #辛口</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=304">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/wine_rose_bottle.png" alt="ミラヴァル・ロゼ">
-                                </div>
-                                <h3 class="product-item__name">ミラヴァル・ロゼ</h3>
-                                <p class="product-item__price">¥ 4,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#ロゼ #プロヴァンス</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=305">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/wine_orange_bottle.png" alt="オレンジワイン">
-                                </div>
-                                <h3 class="product-item__name">ラディコン ヤコット</h3>
-                                <p class="product-item__price">¥ 6,200<span>(税込)</span></p>
-                                <p class="product-item__tag">#オレンジワイン #自然派</p>
-                            </a>
-                        </div>
+        <!-- ★★★【変更箇所】おすすめのワイン (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_wine_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">おすすめのワイン</h2>
+                        <p class="en">Recommended Wine</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($recommended_wine_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $wine_category_id; ?>" class="btn-all-products">ワイン一覧を見る</a>
                 </div>
-                 <a href="products_list.php?category=ワイン" class="btn-all-products">ワイン一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">
@@ -284,9 +253,9 @@
         <!-- /ガイド一覧セクション -->
     </main>
 
-    <?php 
+    <?php
     // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    require_once 'footer.php';
     ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>

@@ -1,15 +1,15 @@
 <?php
 // ヘッダーでセッション開始、DB接続、共通関数の読み込みを行っています。
 
-// ★★★【追加】★★★
+// ★★★【変更箇所】★★★
 // データベースクラスを直接使用するため、contents_db.php を読み込みます。
 require_once 'common/contents_db.php';
 
-// ビールカテゴリの人気ランキング商品を取得
-// ビールのカテゴリIDを 10 と仮定します。ご自身の環境のIDに合わせて変更してください。
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
 $beer_category_id = 10;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
 $product_db = new cproduct_info();
-$ranked_beer_products = $product_db->get_top_selling_products_by_category(false, $beer_category_id, 5);
+$recommended_beer_products = $product_db->get_recommended_products_for_guide(false, $beer_category_id, $priority_tag_name, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -147,17 +147,17 @@ $ranked_beer_products = $product_db->get_top_selling_products_by_category(false,
             </div>
         </section>
 
-        <!-- ★★★【変更箇所】ビール 人気ランキング (動的カルーセル) ★★★ -->
-        <?php if (!empty($ranked_beer_products)) : ?>
+        <!-- ★★★【変更箇所】おすすめのビール (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_beer_products)) : ?>
             <section class="guide-section recommended-sake">
                 <div class="section-inner">
                     <div class="section-title">
-                        <h2 class="ja">ビール 人気ランキング</h2>
-                        <p class="en">Popular Beer Ranking</p>
+                        <h2 class="ja">おすすめのビール</h2>
+                        <p class="en">Recommended Beer</p>
                     </div>
                     <div class="swiper recommended-sake-swiper">
                         <div class="swiper-wrapper">
-                            <?php foreach ($ranked_beer_products as $product) : ?>
+                            <?php foreach ($recommended_beer_products as $product) : ?>
                                 <div class="swiper-slide product-item">
                                     <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                         <div class="product-item__img-wrap">

@@ -5,8 +5,15 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、このファイルでの処理は不要です。
+// ★★★【変更箇所】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
+require_once 'common/contents_db.php';
 
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
+$umeshu_category_id = 3;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
+$product_db = new cproduct_info();
+$recommended_umeshu_products = $product_db->get_recommended_products_for_guide(false, $umeshu_category_id, $priority_tag_name, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -27,11 +34,11 @@
 </head>
 
 <body>
-    <?php 
+    <?php
     // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    require_once 'header.php';
     ?>
-    
+
     <main>
         <!-- ヒーローセクション -->
         <section class="guide-hero" style="background-image: url('img/梅酒梅たくさん.png');">
@@ -59,7 +66,7 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの種類 -->
+        <!-- 主な種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
@@ -142,77 +149,36 @@
             </div>
         </section>
 
-        <!-- おすすめ梅酒カルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おすすめの梅酒</h2>
-                    <p class="en">Recommended Umeshu</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=701">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/梅酒原酒_image1.png" alt="特選梅酒うぐいすとまり 鶯とろ">
-                                </div>
-                                <h3 class="product-item__name">特選梅酒うぐいすとまり 鶯とろ</h3>
-                                <p class="product-item__price">¥ 2,900<span>(税込)</span></p>
-                                <p class="product-item__tag">#濃厚 #トロリ</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=702">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/苺梅酒2.png" alt="あまおう梅酒">
-                                </div>
-                                <h3 class="product-item__name">あまおう梅酒 あまおう、はじめました。</h3>
-                                <p class="product-item__price">¥ 3,200<span>(税込)</span></p>
-                                <p class="product-item__tag">#苺 #デザート</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=703">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/choya.png" alt="チョーヤ梅酒">
-                                </div>
-                                <h3 class="product-item__name">チョーヤ The CHOYA SINGLE YEAR</h3>
-                                <p class="product-item__price">¥ 1,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#定番 #紀州南高梅</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=704">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/kokuto_umeshu.png" alt="黒糖梅酒">
-                                </div>
-                                <h3 class="product-item__name">ヘリオス酒造 黒糖梅酒</h3>
-                                <p class="product-item__price">¥ 1,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#黒糖 #コク</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=705">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/sake_umeshu.png" alt="日本酒梅酒">
-                                </div>
-                                <h3 class="product-item__name">八海山の原酒で仕込んだうめ酒</h3>
-                                <p class="product-item__price">¥ 2,600<span>(税込)</span></p>
-                                <p class="product-item__tag">#日本酒ベース #すっきり</p>
-                            </a>
-                        </div>
+        <!-- ★★★【変更箇所】おすすめの梅酒 (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_umeshu_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">おすすめの梅酒</h2>
+                        <p class="en">Recommended Umeshu</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($recommended_umeshu_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $umeshu_category_id; ?>" class="btn-all-products">梅酒一覧を見る</a>
                 </div>
-                 <a href="products_list.php?category=umeshu" class="btn-all-products">梅酒一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">
@@ -288,9 +254,9 @@
         <!-- /ガイド一覧セクション -->
     </main>
 
-    <?php 
+    <?php
     // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    require_once 'footer.php';
     ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>

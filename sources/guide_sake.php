@@ -5,15 +5,15 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★★★【変更箇所】エラーを修正するため、相対パスに戻しました ★★★
+// ★★★【変更箇所】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
 require_once 'common/contents_db.php';
 
-// 日本酒カテゴリの人気ランキング商品を取得
-// 日本酒のカテゴリIDを 1 と仮定します。環境に合わせて変更してください。
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
 $sake_category_id = 1;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
 $product_db = new cproduct_info();
-// 既存の関数を呼び出します
-$ranked_sake_products = $product_db->get_top_selling_products_by_category(false, $sake_category_id, 5);
+$recommended_sake_products = $product_db->get_recommended_products_for_guide(false, $sake_category_id, $priority_tag_name, 5);
 
 ?>
 <!DOCTYPE html>
@@ -152,17 +152,17 @@ $ranked_sake_products = $product_db->get_top_selling_products_by_category(false,
             </div>
         </section>
 
-        <!-- 日本酒 人気ランキング (動的カルーセル) -->
-        <?php if (!empty($ranked_sake_products)) : ?>
+        <!-- ★★★【変更箇所】おすすめの日本酒 (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_sake_products)) : ?>
             <section class="guide-section recommended-sake">
                 <div class="section-inner">
                     <div class="section-title">
-                        <h2 class="ja">日本酒 人気ランキング</h2>
-                        <p class="en">Popular Sake Ranking</p>
+                        <h2 class="ja">おすすめの日本酒</h2>
+                        <p class="en">Recommended Sake</p>
                     </div>
                     <div class="swiper recommended-sake-swiper">
                         <div class="swiper-wrapper">
-                            <?php foreach ($ranked_sake_products as $product) : ?>
+                            <?php foreach ($recommended_sake_products as $product) : ?>
                                 <div class="swiper-slide product-item">
                                     <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                         <div class="product-item__img-wrap">
@@ -181,6 +181,7 @@ $ranked_sake_products = $product_db->get_top_selling_products_by_category(false,
                 </div>
             </section>
         <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">

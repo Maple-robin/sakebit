@@ -5,8 +5,15 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// ★注意: DB接続やセッション開始は header.php で行われるため、このファイルでの処理は不要です。
+// ★★★【変更箇所】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
+require_once 'common/contents_db.php';
 
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
+$liquor_category_id = 8;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
+$product_db = new cproduct_info();
+$recommended_liquor_products = $product_db->get_recommended_products_for_guide(false, $liquor_category_id, $priority_tag_name, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -25,15 +32,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <link rel="stylesheet" href="css/top.css">
-    <link rel="stylesheet" href="css/guide.css"> 
+    <link rel="stylesheet" href="css/guide.css">
 </head>
 
 <body>
-    <?php 
+    <?php
     // 共通ヘッダーを読み込む
-    require_once 'header.php'; 
+    require_once 'header.php';
     ?>
-    
+
     <main>
         <!-- ヒーローセクション -->
         <section class="guide-hero" style="background-image: url('img/リキュール.png');">
@@ -61,7 +68,7 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの飲み方 -->
+        <!-- 主な種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
@@ -146,77 +153,36 @@
             </div>
         </section>
 
-        <!-- おすすめリキュールカルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おすすめのリキュール</h2>
-                    <p class="en">Recommended Liqueur</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=101">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/dita.png" alt="ディタ">
-                                </div>
-                                <h3 class="product-item__name">ディタ ライチ</h3>
-                                <p class="product-item__price">¥ 3,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#ライチ #華やか</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=102">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/campari.png" alt="カンパリ">
-                                </div>
-                                <h3 class="product-item__name">カンパリ</h3>
-                                <p class="product-item__price">¥ 2,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#ハーブ #苦み</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=103">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/ボンベイ・サファイア.png" alt="ボンベイ・サファイア">
-                                </div>
-                                <h3 class="product-item__name">ボンベイ・サファイア</h3>
-                                <p class="product-item__price">¥ 3,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#ジン #ボタニカル</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=104">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/梅酒原酒_image1.png" alt="梅酒">
-                                </div>
-                                <h3 class="product-item__name">特選梅酒うぐいすとまり 鶯とろ</h3>
-                                <p class="product-item__price">¥ 2,900<span>(税込)</span></p>
-                                <p class="product-item__tag">#梅酒 #濃厚</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=105">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/苺梅酒2.png" alt="苺梅酒">
-                                </div>
-                                <h3 class="product-item__name">あまおう梅酒 あまおう、はじめました。</h3>
-                                <p class="product-item__price">¥ 3,200<span>(税込)</span></p>
-                                <p class="product-item__tag">#苺 #デザート</p>
-                            </a>
-                        </div>
+        <!-- ★★★【変更箇所】おすすめのリキュール (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_liquor_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">おすすめのリキュール</h2>
+                        <p class="en">Recommended Liqueur</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($recommended_liquor_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $liquor_category_id; ?>" class="btn-all-products">リキュール一覧を見る</a>
                 </div>
-                 <a href="products_list.php?category=リキュール" class="btn-all-products">リキュール一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">
@@ -292,9 +258,9 @@
         <!-- /ガイド一覧セクション -->
     </main>
 
-    <?php 
+    <?php
     // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    require_once 'footer.php';
     ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>

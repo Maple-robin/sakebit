@@ -1,5 +1,15 @@
 <?php
 // ヘッダーでセッション開始、DB接続、共通関数の読み込みを行っています。
+
+// ★★★【変更箇所】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
+require_once 'common/contents_db.php';
+
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
+$chinese_sake_category_id = 2;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
+$product_db = new cproduct_info();
+$recommended_chinese_sake_products = $product_db->get_recommended_products_for_guide(false, $chinese_sake_category_id, $priority_tag_name, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -44,7 +54,7 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの種類 -->
+        <!-- 主な種類 -->
         <section class="guide-section guide-beginner-types">
             <div class="section-inner">
                 <div class="section-title">
@@ -129,77 +139,36 @@
             </div>
         </section>
 
-        <!-- おすすめ中国酒カルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おすすめの中国酒</h2>
-                    <p class="en">Recommended Chinese Liquor</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=901">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/moutai.png" alt="マオタイ酒">
-                                </div>
-                                <h3 class="product-item__name">貴州茅台酒 (マオタイ酒)</h3>
-                                <p class="product-item__price">¥ 45,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#白酒 #国酒</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=902">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/wuliangye.png" alt="五粮液">
-                                </div>
-                                <h3 class="product-item__name">五粮液 (ゴリョウエキ)</h3>
-                                <p class="product-item__price">¥ 30,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#白酒 #濃香型</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=903">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/shaoxing_kame.png" alt="紹興酒">
-                                </div>
-                                <h3 class="product-item__name">古越龍山 陳年8年</h3>
-                                <p class="product-item__price">¥ 3,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#黄酒 #紹興酒</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=904">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/xinglujiu.png" alt="杏露酒">
-                                </div>
-                                <h3 class="product-item__name">杏露酒 (シンルチュウ)</h3>
-                                <p class="product-item__price">¥ 1,200<span>(税込)</span></p>
-                                <p class="product-item__tag">#果酒 #あんず</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=905">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/国花瓷.png" alt="国花瓷西鳳酒">
-                                </div>
-                                <h3 class="product-item__name">国花瓷西鳳酒</h3>
-                                <p class="product-item__price">¥ 8,800<span>(税込)</span></p>
-                                <p class="product-item__tag">#白酒 #鳳香型</p>
-                            </a>
-                        </div>
+        <!-- ★★★【変更箇所】おすすめの中国酒 (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_chinese_sake_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">おすすめの中国酒</h2>
+                        <p class="en">Recommended Chinese Sake</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($recommended_chinese_sake_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $chinese_sake_category_id; ?>" class="btn-all-products">中国酒一覧を見る</a>
                 </div>
-                <a href="products_list.php?category=chinese_sake" class="btn-all-products">中国酒一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">

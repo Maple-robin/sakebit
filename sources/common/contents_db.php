@@ -835,7 +835,55 @@ class cproduct_info extends crecord
         ];
         return $this->execute_query($debug, $query, $prep_arr);
     }
-    
+    public function get_recommended_products_for_guide($debug, $category_id, $tag_name, $limit = 5)
+    {
+        $query = "
+            SELECT
+                p.product_id,
+                p.product_name,
+                p.product_price,
+                COALESCE(SUM(oi.quantity), 0) AS total_sold,
+                (
+                    SELECT pi.image_path
+                    FROM product_images pi
+                    WHERE pi.product_id = p.product_id
+                    ORDER BY pi.image_type = 'main' DESC, pi.display_order ASC, pi.image_id ASC
+                    LIMIT 1
+                ) AS main_image_path,
+                -- 指定タグを持っているかどうかのフラグ (並び替え用)
+                MAX(CASE WHEN t.tag_name = :tag_name THEN 1 ELSE 0 END) AS has_priority_tag
+            FROM
+                product_info p
+            LEFT JOIN
+                order_items oi ON p.product_id = oi.product_id
+            LEFT JOIN
+                product_tags_relation ptr ON p.product_id = ptr.product_id
+            LEFT JOIN
+                tags t ON ptr.tag_id = t.tag_id
+            WHERE
+                p.product_category = :category_id
+            GROUP BY
+                p.product_id
+            ORDER BY
+                has_priority_tag DESC, -- タグを持つものが優先 (1が先)
+                total_sold DESC,      -- 次に売上順
+                p.product_id DESC     -- 最後にID順
+            LIMIT :limit
+        ";
+
+        $prep_arr = [
+            ':category_id' => (int)$category_id,
+            ':tag_name'    => $tag_name,
+            ':limit'       => (int)$limit
+        ];
+
+        $stmt = $this->execute_query($debug, $query, $prep_arr);
+        if ($stmt) {
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
+        return [];
+    }
+
     public function __destruct()
     {
         parent::__destruct();

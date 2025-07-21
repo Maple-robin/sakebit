@@ -1,5 +1,15 @@
 <?php
 // ヘッダーでセッション開始、DB接続、共通関数の読み込みを行っています。
+
+// ★★★【変更箇所】★★★
+// データベースクラスを直接使用するため、contents_db.php を読み込みます。
+require_once 'common/contents_db.php';
+
+// 「初心者向け」タグを持つ商品を優先的に取得し、足りない分は売上順で補完
+$whisky_category_id = 6;
+$priority_tag_name = '初心者向け'; // 優先したいタグ名を指定
+$product_db = new cproduct_info();
+$recommended_whisky_products = $product_db->get_recommended_products_for_guide(false, $whisky_category_id, $priority_tag_name, 5);
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -44,12 +54,12 @@
             </div>
         </section>
 
-        <!-- 初心者におすすめの種類 -->
+        <!-- 主な種類 -->
         <section class="guide-section beginner-types">
             <div class="section-inner">
                 <div class="section-title">
-                    <h2 class="ja">初心者におすすめの種類</h2>
-                    <p class="en">Easy to Drink</p>
+                    <h2 class="ja">主な種類</h2>
+                    <p class="en">Major Types</p>
                 </div>
                 <div class="alcohol-types">
                     <div class="type-card type-card--bg" style="background-image: url('img/スコッチウイスキー.png');">
@@ -127,77 +137,36 @@
             </div>
         </section>
 
-        <!-- おすすめウィスキーカルーセル -->
-        <section class="guide-section recommended-sake">
-            <div class="section-inner">
-                <div class="section-title">
-                    <h2 class="ja">おすすめのウィスキー</h2>
-                    <p class="en">Recommended Whisky</p>
-                </div>
-                <div class="swiper recommended-sake-swiper">
-                    <div class="swiper-wrapper">
-                        <!-- 商品1 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=501">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/yamazaki.png" alt="山崎">
-                                </div>
-                                <h3 class="product-item__name">サントリーシングルモルトウイスキー 山崎</h3>
-                                <p class="product-item__price">¥ 9,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#ジャパニーズ #シングルモルト</p>
-                            </a>
-                        </div>
-                        <!-- 商品2 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=502">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/hakushu.png" alt="白州">
-                                </div>
-                                <h3 class="product-item__name">サントリーシングルモルトウイスキー 白州</h3>
-                                <p class="product-item__price">¥ 9,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#ジャパニーズ #爽やか</p>
-                            </a>
-                        </div>
-                        <!-- 商品3 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=503">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/hibiki.png" alt="響">
-                                </div>
-                                <h3 class="product-item__name">サントリーウイスキー 響</h3>
-                                <p class="product-item__price">¥ 12,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#ジャパニーズ #ブレンデッド</p>
-                            </a>
-                        </div>
-                        <!-- 商品4 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=504">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/yoichi.png" alt="余市">
-                                </div>
-                                <h3 class="product-item__name">シングルモルト余市</h3>
-                                <p class="product-item__price">¥ 8,500<span>(税込)</span></p>
-                                <p class="product-item__tag">#ジャパニーズ #力強い</p>
-                            </a>
-                        </div>
-                        <!-- 商品5 -->
-                        <div class="swiper-slide product-item">
-                            <a href="product.php?id=505">
-                                <div class="product-item__img-wrap">
-                                    <img src="img/taketsuru.png" alt="竹鶴">
-                                </div>
-                                <h3 class="product-item__name">竹鶴ピュアモルト</h3>
-                                <p class="product-item__price">¥ 7,000<span>(税込)</span></p>
-                                <p class="product-item__tag">#ジャパニーズ #ピュアモルト</p>
-                            </a>
-                        </div>
+        <!-- ★★★【変更箇所】おすすめのウィスキー (動的カルーセル) ★★★ -->
+        <?php if (!empty($recommended_whisky_products)) : ?>
+            <section class="guide-section recommended-sake">
+                <div class="section-inner">
+                    <div class="section-title">
+                        <h2 class="ja">おすすめのウィスキー</h2>
+                        <p class="en">Recommended Whisky</p>
                     </div>
-                    <!-- If we need pagination -->
-                    <div class="swiper-pagination"></div>
+                    <div class="swiper recommended-sake-swiper">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($recommended_whisky_products as $product) : ?>
+                                <div class="swiper-slide product-item">
+                                    <a href="product.php?id=<?php echo htmlspecialchars($product['product_id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        <div class="product-item__img-wrap">
+                                            <img src="<?php echo htmlspecialchars($product['main_image_path'] ?? 'img/no-image.png', ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                        </div>
+                                        <h3 class="product-item__name"><?php echo htmlspecialchars($product['product_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                        <p class="product-item__price">¥ <?php echo number_format($product['product_price']); ?><span>(税込)</span></p>
+                                    </a>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <!-- If we need pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <a href="products_list.php?category=<?php echo $whisky_category_id; ?>" class="btn-all-products">ウィスキー一覧を見る</a>
                 </div>
-                <a href="products_list.php?category=ウィスキー" class="btn-all-products">ウィスキー一覧を見る</a>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
+        <!-- ★★★【変更箇所ここまで】★★★ -->
 
         <!-- ガイド一覧セクション -->
         <section class="categories">
@@ -273,9 +242,9 @@
         <!-- /ガイド一覧セクション -->
     </main>
 
-    <?php 
+    <?php
     // 共通フッターを読み込む
-    require_once 'footer.php'; 
+    require_once 'footer.php';
     ?>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
