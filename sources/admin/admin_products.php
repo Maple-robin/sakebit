@@ -5,14 +5,14 @@
 @copyright Copyright (c) 2024 Your Name.
 */
 
-// PHPスクリプトの冒頭でセッションを開始（必要であれば）
-// session_start();
+// PHPスクリプトの冒頭でセッションを開始
+session_start();
 
-// ログイン状態のチェック (必要であればコメントアウトを解除して使用)
-// if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
-//     header('Location: admin_login.php'); // ログインページのパスに修正
-//     exit();
-// }
+// ログイン状態のチェック
+if (!isset($_SESSION['admin_user_id']) || empty($_SESSION['admin_user_id'])) {
+    header('Location: admin_login.php'); // ログインページへリダイレクト
+    exit();
+}
 
 require_once __DIR__ . '/../common/contents_db.php'; // contents_db.php を読み込み
 
@@ -35,6 +35,7 @@ if ($products === false) {
 ?>
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,6 +46,7 @@ if ($products === false) {
     <link rel="stylesheet" href="../admincss/admin.css">
     <link rel="stylesheet" href="../admincss/admin_products.css">
 </head>
+
 <body>
 
     <?php require_once 'admin_header.php'; ?>
@@ -73,30 +75,30 @@ if ($products === false) {
                                 <th>内容量</th>
                                 <th>度数</th>
                                 <th>在庫数</th>
-                                <th>売れた数</th><!-- 新しい列 -->
-                                <th>訪問数</th><!-- 新しい列 -->
+                                <th>売れた数</th>
+                                <th>訪問数</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (!empty($products)): ?>
                                 <?php foreach ($products as $product): ?>
                                     <?php
-                                        // 商品IDを取得
-                                        $product_id = $product['product_id'];
+                                    // 商品IDを取得
+                                    $product_id = $product['product_id'];
 
-                                        // 画像パスを配列に変換し、各画像を表示
-                                        $image_paths_str = $product['image_paths'] ?? '';
-                                        $image_paths = !empty($image_paths_str) ? explode(';', $image_paths_str) : [];
+                                    // 画像パスを配列に変換し、各画像を表示
+                                    $image_paths_str = $product['image_paths'] ?? '';
+                                    $image_paths = !empty($image_paths_str) ? explode(';', $image_paths_str) : [];
 
-                                        // タグを配列に変換（カンマ区切りで取得されている前提）
-                                        $tags_str = $product['tags_concat'] ?? '';
-                                        $tags = !empty($tags_str) ? explode(',', $tags_str) : [];
+                                    // タグを配列に変換（カンマ区切りで取得されている前提）
+                                    $tags_str = $product['tags_concat'] ?? '';
+                                    $tags = !empty($tags_str) ? explode(',', $tags_str) : [];
 
-                                        // 売れた数を取得
-                                        $sold_count = $order_items_obj->get_total_sold_count_by_product_id(DEBUG, $product_id);
+                                    // 売れた数を取得
+                                    $sold_count = $order_items_obj->get_total_sold_count_by_product_id(DEBUG, $product_id);
 
-                                        // 訪問数を取得
-                                        $view_count = $product_views_obj->get_product_view_count(DEBUG, $product_id);
+                                    // 訪問数を取得
+                                    $view_count = $product_views_obj->get_product_view_count(DEBUG, $product_id);
                                     ?>
                                     <tr>
                                         <td><?php echo htmlspecialchars($product['company_name'] ?? 'N/A'); ?></td>
@@ -105,9 +107,9 @@ if ($products === false) {
                                             <div class="image-thumbs">
                                                 <?php if (!empty($image_paths)): ?>
                                                     <?php foreach ($image_paths as $image_path): ?>
-                                                        <img src="../<?php echo htmlspecialchars($image_path); ?>" 
-                                                             alt="<?php echo htmlspecialchars($product['product_name'] ?? '商品'); ?> 画像"
-                                                             class="product-thumb">
+                                                        <img src="../<?php echo htmlspecialchars($image_path); ?>"
+                                                            alt="<?php echo htmlspecialchars($product['product_name'] ?? '商品'); ?> 画像"
+                                                            class="product-thumb">
                                                     <?php endforeach; ?>
                                                 <?php else: ?>
                                                     <img src="https://placehold.co/60x60?text=NoImage" alt="画像なし" class="product-thumb">
@@ -145,13 +147,13 @@ if ($products === false) {
                                         <td><?php echo htmlspecialchars($product['product_Contents'] ?? 'N/A'); ?></td>
                                         <td><?php echo htmlspecialchars($product['product_degree'] ?? 'N/A') . '%'; ?></td>
                                         <td><?php echo htmlspecialchars($product['product_stock'] ?? 'N/A'); ?></td>
-                                        <td><?php echo htmlspecialchars($sold_count); ?></td><!-- 売れた数 -->
-                                        <td><?php echo htmlspecialchars($view_count); ?></td><!-- 訪問数 -->
+                                        <td><?php echo htmlspecialchars($sold_count); ?></td>
+                                        <td><?php echo htmlspecialchars($view_count); ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="14">商品情報がありません。</td><!-- 列数が増えたのでcolspanも変更 -->
+                                    <td colspan="14">商品情報がありません。</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -167,9 +169,9 @@ if ($products === false) {
             <p class="admin-footer__copyright">© SAKE BIT Admin All Rights Reserved.</p>
         </div>
     </footer>
-    <!-- Font Awesomeの読み込み（CDN） -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
 
     <script src="../adminjs/admin.js"></script>
 </body>
+
 </html>
