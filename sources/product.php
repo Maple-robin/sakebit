@@ -112,12 +112,7 @@
 
     <main>
         <?php if ($product): ?>
-        <div class="breadcrumb">
-            <div class="breadcrumb__inner common-inner">
-                <a href="index.php">HOME</a> &gt; <a href="products_list.php">商品一覧</a> &gt; <?= htmlspecialchars($product['product_name']) ?>
-            </div>
-        </div>
-
+        
         <section class="product-detail-section">
             <div class="product-detail-section__inner common-inner">
                 <div class="product-detail-content">

@@ -12,7 +12,7 @@
 
 /* product-detail-section */
 .product-detail-section {
-    padding: 60px 0; /* スマホ時の上下の余白 */
+    padding: 100px 0 60px 0; /* ヘッダー分の余白を上部に追加（スマホ） */
 }
 
 .product-detail-content {
@@ -570,7 +570,7 @@
 
     /* PC (min-width: 768px) */
     .product-detail-section {
-        padding: 100px 0; /* PC時の上下の余白 */
+        padding: 100px 0 100px 0; /* PC時はさらに余白を増やす */
     }
 
     .product-detail_content {

@@ -74,11 +74,6 @@
 
     <main>
         <?php if ($otumami): ?>
-        <div class="breadcrumb">
-            <div class="breadcrumb__inner common-inner">
-                <a href="index.php">HOME</a> &gt; <a href="otumami_list.php">おつまみ一覧</a> &gt; <?= htmlspecialchars($otumami['otumami_name']) ?>
-            </div>
-        </div>
 
         <section class="product-detail-section">
             <div class="product-detail-section__inner common-inner">
